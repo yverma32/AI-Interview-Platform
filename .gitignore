@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# .NET
+InterviewPlatform.API/bin/
+InterviewPlatform.API/obj/
+
+# Sensitive config (use appsettings.Template.json as reference)
+InterviewPlatform.API/appsettings.json
+InterviewPlatform.API/appsettings.Development.json
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Node / Client
+client/node_modules/
+client/dist/
+client/dist-ssr/
+*.log
+*.local
