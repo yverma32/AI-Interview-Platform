@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useDeepgramRecognition } from '../hooks/useDeepgramRecognition';
 import { interviewService } from '../services/interviewService';
+import api from '../services/api';
 import type { InterviewStartResponse } from '../types/interview';
 import './InterviewRoom.css';
 
@@ -27,6 +29,22 @@ export default function InterviewRoomPage() {
 
   const { speak, stop: stopSpeaking, isSpeaking } = useSpeechSynthesis();
 
+  // ── Deepgram key fetch ──
+  const [deepgramKey, setDeepgramKey] = useState<string | null>(null);
+  const [sttProvider, setSttProvider] = useState<'deepgram' | 'browser' | null>(null);
+  useEffect(() => {
+    api.get<{ available: boolean; key?: string }>('/speech/token')
+      .then(({ data }) => {
+        if (data.available && data.key) {
+          setDeepgramKey(data.key);
+          setSttProvider('deepgram');
+        } else {
+          setSttProvider('browser');
+        }
+      })
+      .catch(() => setSttProvider('browser'));
+  }, []);
+
   // When user stays silent for 3s after speaking, stop listening and
   // populate the text input so they can review / edit before submitting.
   const [voiceDraftReady, setVoiceDraftReady] = useState(false);
@@ -38,6 +56,18 @@ export default function InterviewRoomPage() {
     }
   }, []);
 
+  // ── Both hooks are called unconditionally (React rules), but only one is active ──
+  const deepgram = useDeepgramRecognition(deepgramKey, {
+    silenceTimeoutMs: 3500,
+    onSilenceTimeout: handleSilenceTimeout,
+  });
+  const browser = useSpeechRecognition({
+    silenceTimeoutMs: 3500,
+    onSilenceTimeout: handleSilenceTimeout,
+  });
+
+  // Use Deepgram when available, otherwise fall back to browser Web Speech API
+  const activeSTT = sttProvider === 'deepgram' ? deepgram : browser;
   const {
     transcript,
     interimTranscript,
@@ -47,7 +77,7 @@ export default function InterviewRoomPage() {
     startListening,
     stopListening,
     resetTranscript,
-  } = useSpeechRecognition({ silenceTimeoutMs: 3500, onSilenceTimeout: handleSilenceTimeout });
+  } = activeSTT;
 
   const [phase, setPhase] = useState<ConversationPhase>('permission');
   const [questionNumber, setQuestionNumber] = useState(1);

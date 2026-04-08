@@ -69,41 +69,49 @@ export function useSpeechRecognition(
       recognition.lang = 'en-US';
       recognition.maxAlternatives = 1;
 
+      // Track which result indices we've already folded into the accumulated transcript
+      // so we never double-count finalized results within a continuous session.
+      let processedUpTo = 0;
+
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         // Stale instance — ignore
         if (genRef.current !== generation) return;
 
-        let finalText = '';
+        let newFinalText = '';
         let interimText = '';
 
         for (let i = 0; i < event.results.length; i++) {
           const result = event.results[i];
           if (result.isFinal) {
-            finalText += result[0].transcript + ' ';
+            // Only accumulate results we haven't processed yet
+            if (i >= processedUpTo) {
+              newFinalText += result[0].transcript + ' ';
+              processedUpTo = i + 1;
+            }
           } else {
             interimText += result[0].transcript;
           }
         }
 
-        // Update accumulated ref with new final text
-        if (finalText.trim()) {
+        // Update accumulated ref with only new final text
+        if (newFinalText.trim()) {
           accumulatedTranscriptRef.current = (
             accumulatedTranscriptRef.current +
             ' ' +
-            finalText
+            newFinalText
           ).trim();
         }
 
         setTranscript(accumulatedTranscriptRef.current);
         setInterimTranscript(interimText);
 
-        if (finalText.trim() || interimText.trim()) {
+        if (newFinalText.trim() || interimText.trim()) {
           hasSpokenRef.current = true;
           setIsSpeaking(true);
           resetSilenceTimer();
         }
 
-        if (!interimText.trim() && finalText.trim()) {
+        if (!interimText.trim() && newFinalText.trim()) {
           setIsSpeaking(false);
           resetSilenceTimer();
         }
