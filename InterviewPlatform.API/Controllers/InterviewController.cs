@@ -80,4 +80,12 @@ public class InterviewController : ControllerBase
         if (detail == null) return NotFound(new { success = false, message = "Interview not found." });
         return Ok(detail);
     }
+
+    /// <summary>Get topics where the user scored poorly, optionally filtered by technology.</summary>
+    [HttpGet("weak-topics")]
+    public async Task<IActionResult> GetWeakTopics([FromQuery] string? technology)
+    {
+        var topics = await _interviewService.GetWeakTopicsAsync(GetUserId(), technology);
+        return Ok(topics);
+    }
 }

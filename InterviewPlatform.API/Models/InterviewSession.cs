@@ -19,6 +19,7 @@ public class InterviewSession
     public string? OverallFeedback { get; set; }
     public string? Strengths { get; set; }     // JSON array string
     public string? Improvements { get; set; }  // JSON array string
+    public string? FocusTopics { get; set; }    // JSON array string — weak topics user chose to practice
 
     public DateTime StartedAt { get; set; } = DateTime.UtcNow;
     public DateTime? CompletedAt { get; set; }

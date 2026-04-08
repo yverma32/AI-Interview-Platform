@@ -119,6 +119,14 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+
+    // Add FocusTopics column if it doesn't exist (EnsureCreated won't add new columns to existing tables)
+    try
+    {
+        db.Database.ExecuteSqlRaw(
+            "ALTER TABLE InterviewSessions ADD COLUMN FocusTopics TEXT NULL");
+    }
+    catch { /* Column already exists */ }
 }
 
 // ---------- Middleware Pipeline (order matters!) ----------

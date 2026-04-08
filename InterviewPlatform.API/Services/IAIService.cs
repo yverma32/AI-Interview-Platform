@@ -12,7 +12,9 @@ public interface IAIService
         string experienceLevel,
         int totalQuestions,
         int currentQuestion,
-        List<ChatMessage> conversationHistory);
+        List<ChatMessage> conversationHistory,
+        List<string>? previousTopics = null,
+        List<string>? focusTopics = null);
 
     /// <summary>
     /// Generate interview questions for a given technology/topic (no answers).

@@ -21,6 +21,18 @@ public class InterviewService : IInterviewService
 
     public async Task<InterviewStartResponse> StartInterviewAsync(int userId, StartInterviewRequest request)
     {
+        // Query past interview sessions for this user + technology to get previously asked first-question topics
+        var previousTopics = await _db.InterviewMessages
+            .Where(m => m.Session.UserId == userId
+                     && m.Session.Technology == request.Technology
+                     && m.Role == "interviewer"
+                     && m.QuestionNumber == 1
+                     && m.QuestionTopic != null)
+            .OrderByDescending(m => m.CreatedAt)
+            .Select(m => m.QuestionTopic!)
+            .Take(20) // Keep last 20 to avoid prompt bloat
+            .ToListAsync();
+
         var session = new InterviewSession
         {
             UserId = userId,
@@ -29,19 +41,23 @@ public class InterviewService : IInterviewService
             TotalQuestions = request.TotalQuestions,
             CurrentQuestionNumber = 1,
             Status = "InProgress",
+            FocusTopics = request.FocusTopics != null && request.FocusTopics.Count > 0
+                ? JsonSerializer.Serialize(request.FocusTopics) : null,
             StartedAt = DateTime.UtcNow
         };
 
         _db.InterviewSessions.Add(session);
         await _db.SaveChangesAsync();
 
-        // Ask AI for the first question (empty conversation history)
+        // Ask AI for the first question (empty conversation history, with past topic history for variety)
         var aiResponse = await _ai.GetInterviewResponseAsync(
             session.Technology,
             session.ExperienceLevel,
             session.TotalQuestions,
             1,
-            new List<ChatMessage>());
+            new List<ChatMessage>(),
+            previousTopics.Count > 0 ? previousTopics : null,
+            request.FocusTopics);
 
         // Store the interviewer's opening message
         var interviewerMessage = new InterviewMessage
@@ -100,12 +116,17 @@ public class InterviewService : IInterviewService
         var isLastAnswer = session.CurrentQuestionNumber >= session.TotalQuestions;
 
         // 4. Get AI evaluation + next question (or summary)
+        // Restore focus topics from session so the AI stays on-topic throughout
+        var focusTopics = !string.IsNullOrWhiteSpace(session.FocusTopics)
+            ? JsonSerializer.Deserialize<List<string>>(session.FocusTopics) : null;
+
         var aiResponse = await _ai.GetInterviewResponseAsync(
             session.Technology,
             session.ExperienceLevel,
             session.TotalQuestions,
             isLastAnswer ? session.TotalQuestions : nextQuestion,
-            conversationHistory);
+            conversationHistory,
+            focusTopics: focusTopics);
 
         // 5. Store the AI's response as an interviewer message
         var interviewerMessage = new InterviewMessage
@@ -241,6 +262,42 @@ public class InterviewService : IInterviewService
             {
                 return new ChatMessage { Role = "user", Content = m.Content };
             }
+        }).ToList();
+    }
+
+    public async Task<List<WeakTopicItem>> GetWeakTopicsAsync(int userId, string? technology = null)
+    {
+        var query = _db.InterviewMessages
+            .Where(m => m.Session.UserId == userId
+                     && m.Session.Status == "Completed"
+                     && m.Role == "interviewer"
+                     && m.Score.HasValue
+                     && !string.IsNullOrWhiteSpace(m.QuestionTopic));
+
+        if (!string.IsNullOrWhiteSpace(technology))
+            query = query.Where(m => m.Session.Technology == technology);
+
+        var weakTopics = await query
+            .GroupBy(m => new { m.QuestionTopic, m.Session.Technology })
+            .Select(g => new
+            {
+                Topic = g.Key.QuestionTopic!,
+                Technology = g.Key.Technology,
+                AverageScore = g.Average(m => m.Score!.Value),
+                QuestionCount = g.Count()
+            })
+            .Where(t => t.AverageScore < 6 && t.QuestionCount >= 1)
+            .OrderBy(t => t.AverageScore)
+            .ThenByDescending(t => t.QuestionCount)
+            .Take(15)
+            .ToListAsync();
+
+        return weakTopics.Select(t => new WeakTopicItem
+        {
+            Topic = t.Topic,
+            Technology = t.Technology,
+            AverageScore = Math.Round(t.AverageScore, 1),
+            QuestionCount = t.QuestionCount
         }).ToList();
     }
 }

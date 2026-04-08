@@ -16,6 +16,10 @@ public class StartInterviewRequest
 
     [Range(3, 20, ErrorMessage = "Number of questions must be between 3 and 20.")]
     public int TotalQuestions { get; set; } = 10;
+
+    /// <summary>Optional list of weak topic areas to focus the interview on</summary>
+    [MaxLength(10, ErrorMessage = "Cannot focus on more than 10 topics.")]
+    public List<string>? FocusTopics { get; set; }
 }
 
 public class SubmitAnswerRequest
@@ -218,4 +222,13 @@ public class RecentSession
     public double? OverallScore { get; set; }
     public string StartedAt { get; set; } = string.Empty;
     public string? Duration { get; set; }
+}
+
+/// <summary>A topic where the user scored poorly and should practice more</summary>
+public class WeakTopicItem
+{
+    public string Topic { get; set; } = string.Empty;
+    public double AverageScore { get; set; }
+    public int QuestionCount { get; set; }
+    public string Technology { get; set; } = string.Empty;
 }

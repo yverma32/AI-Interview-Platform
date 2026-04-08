@@ -6,6 +6,7 @@ import type {
   InterviewDetail,
   StartInterviewRequest,
   SubmitAnswerRequest,
+  WeakTopicItem,
 } from '../types/interview';
 
 export const interviewService = {
@@ -26,6 +27,12 @@ export const interviewService = {
 
   async getDetail(sessionId: number): Promise<InterviewDetail> {
     const { data } = await api.get<InterviewDetail>(`/interview/${sessionId}`);
+    return data;
+  },
+
+  async getWeakTopics(technology?: string): Promise<WeakTopicItem[]> {
+    const params = technology ? { technology } : {};
+    const { data } = await api.get<WeakTopicItem[]>('/interview/weak-topics', { params });
     return data;
   },
 };

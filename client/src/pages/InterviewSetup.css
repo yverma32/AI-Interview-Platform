@@ -172,6 +172,69 @@
   to { transform: rotate(360deg); }
 }
 
+/* ───── Weak Topics / Practice Mode ───── */
+.weak-topics-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.section-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+.weak-topics-hint {
+  color: #9090b0;
+  font-size: 0.88rem;
+  margin: -0.5rem 0 1rem;
+  line-height: 1.4;
+}
+.weak-grid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.weak-card {
+  position: relative;
+  padding: 0.75rem 0.6rem 0.65rem;
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.weak-card:hover {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.weak-card.selected {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.15);
+}
+.weak-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.focus-badge {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #f59e0b;
+  font-weight: 600;
+  padding: 0.5rem;
+  background: rgba(245, 158, 11, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.15);
+}
+.weak-loading {
+  text-align: center;
+  color: #808098;
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .tech-grid {

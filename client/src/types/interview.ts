@@ -62,8 +62,16 @@ export interface StartInterviewRequest {
   technology: string;
   experienceLevel: string;
   totalQuestions: number;
+  focusTopics?: string[];
 }
 
 export interface SubmitAnswerRequest {
   answer: string;
+}
+
+export interface WeakTopicItem {
+  topic: string;
+  averageScore: number;
+  questionCount: number;
+  technology: string;
 }

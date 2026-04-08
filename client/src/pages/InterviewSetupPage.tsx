@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { interviewService } from '../services/interviewService';
+import type { WeakTopicItem } from '../types/interview';
 import './InterviewSetup.css';
 
 const TECHNOLOGIES = [
@@ -41,6 +42,40 @@ export default function InterviewSetupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Weak topics state
+  const [weakTopics, setWeakTopics] = useState<WeakTopicItem[]>([]);
+  const [selectedWeakTopics, setSelectedWeakTopics] = useState<string[]>([]);
+  const [loadingWeakTopics, setLoadingWeakTopics] = useState(false);
+
+  // Fetch weak topics when technology changes
+  const fetchWeakTopics = useCallback(async (tech: string) => {
+    if (!tech) {
+      setWeakTopics([]);
+      setSelectedWeakTopics([]);
+      return;
+    }
+    setLoadingWeakTopics(true);
+    try {
+      const topics = await interviewService.getWeakTopics(tech);
+      setWeakTopics(topics);
+      setSelectedWeakTopics([]);
+    } catch {
+      setWeakTopics([]);
+    } finally {
+      setLoadingWeakTopics(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchWeakTopics(technology);
+  }, [technology, fetchWeakTopics]);
+
+  const handleToggleWeakTopic = (topic: string) => {
+    setSelectedWeakTopics(prev =>
+      prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
+    );
+  };
+
   const canStart = technology && experienceLevel && !isLoading;
 
   const handleStart = async () => {
@@ -53,6 +88,7 @@ export default function InterviewSetupPage() {
         technology,
         experienceLevel,
         totalQuestions,
+        ...(selectedWeakTopics.length > 0 && { focusTopics: selectedWeakTopics }),
       });
 
       navigate(`/interview/room/${response.sessionId}`, {
@@ -99,6 +135,46 @@ export default function InterviewSetupPage() {
             ))}
           </div>
         </section>
+
+        {/* Weak Topics — Practice Your Weak Areas */}
+        {technology && !loadingWeakTopics && weakTopics.length > 0 && (
+          <section className="setup-section weak-topics-section">
+            <h2>
+              <span className="section-badge">Practice Mode</span>
+              Improve Your Weak Areas
+            </h2>
+            <p className="weak-topics-hint">
+              Based on your past interviews, these topics need more practice. Select any to focus your next interview on them.
+            </p>
+            <div className="option-grid weak-grid">
+              {weakTopics.map((item) => (
+                <button
+                  key={item.topic}
+                  className={`option-card weak-card${selectedWeakTopics.includes(item.topic) ? ' selected' : ''}`}
+                  onClick={() => handleToggleWeakTopic(item.topic)}
+                >
+                  <span className="weak-score" style={{ color: item.averageScore < 4 ? '#ef4444' : '#f59e0b' }}>
+                    {item.averageScore.toFixed(1)}/10
+                  </span>
+                  <span className="option-label">{item.topic}</span>
+                  <span className="option-desc">
+                    Asked {item.questionCount} time{item.questionCount !== 1 ? 's' : ''}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {selectedWeakTopics.length > 0 && (
+              <div className="focus-badge">
+                Focused practice: {selectedWeakTopics.length} topic{selectedWeakTopics.length !== 1 ? 's' : ''} selected
+              </div>
+            )}
+          </section>
+        )}
+        {technology && loadingWeakTopics && (
+          <section className="setup-section">
+            <div className="weak-loading">Checking your weak areas...</div>
+          </section>
+        )}
 
         {/* Experience Level */}
         <section className="setup-section">

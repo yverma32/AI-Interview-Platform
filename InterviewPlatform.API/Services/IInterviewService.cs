@@ -8,4 +8,5 @@ public interface IInterviewService
     Task<AnswerResponse> SubmitAnswerAsync(int userId, int sessionId, SubmitAnswerRequest request);
     Task<List<InterviewHistoryItem>> GetHistoryAsync(int userId);
     Task<InterviewDetailResponse?> GetInterviewDetailAsync(int userId, int sessionId);
+    Task<List<WeakTopicItem>> GetWeakTopicsAsync(int userId, string? technology = null);
 }
