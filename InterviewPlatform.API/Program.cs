@@ -12,8 +12,31 @@ using InterviewPlatform.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Database (PostgreSQL) ----------
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Accept either an Npgsql key=value string or a postgresql:// URI (which is what Railway,
+// Heroku, Fly etc. hand out). Convert URIs to key=value before passing to Npgsql.
+var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+var connectionString = NormalizePostgresConnectionString(rawConnectionString);
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+static string? NormalizePostgresConnectionString(string? input)
+{
+    if (string.IsNullOrWhiteSpace(input)) return input;
+    if (!input.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) &&
+        !input.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+    {
+        return input; // already key=value
+    }
+
+    var uri = new Uri(input);
+    var userInfo = uri.UserInfo.Split(':', 2);
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
+    var database = uri.AbsolutePath.TrimStart('/');
+    var port = uri.Port > 0 ? uri.Port : 5432;
+
+    return $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+}
 
 // ---------- Redis (caching + rate-limit backing) ----------
 var redisConnection = builder.Configuration.GetConnectionString("Redis");
