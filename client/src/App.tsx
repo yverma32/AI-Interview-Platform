@@ -20,7 +20,9 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
-          <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+          {/* No GuestRoute on /register: the page itself handles the post-signup resume step,
+              which needs to render even after auto-login flips isAuthenticated to true. */}
+          <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/dashboard"
             element={

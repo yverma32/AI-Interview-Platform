@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Target, AlertTriangle, Eye, EyeOff, Check, FileText, SkipForward } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ResumeUpload from '../components/ResumeUpload';
@@ -50,8 +50,16 @@ export default function RegisterPage() {
   // Post-registration: show the optional resume step before sending the user to the dashboard.
   const [step, setStep] = useState<'form' | 'resume'>('form');
 
-  const { register } = useAuth();
+  const { register, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // If a returning user (with a valid session cookie) lands on /register, bounce them to
+  // the dashboard. But ONLY when we're still on the form step — once registration has
+  // succeeded and we've moved to the resume step, isAuthenticated is true *because we
+  // just signed up*; the resume step needs to render.
+  if (!authLoading && isAuthenticated && step === 'form') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const passwordStrength = form.password ? getPasswordStrength(form.password) : null;
 

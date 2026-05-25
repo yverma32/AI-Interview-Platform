@@ -10,28 +10,43 @@ const api = axios.create({
   withCredentials: true, // Send HttpOnly cookies with every request
 });
 
-// Request interceptor — automatically attach CSRF token for state-changing requests
+// In-memory CSRF token cache. We can't reliably read the XSRF-TOKEN cookie via
+// document.cookie in cross-site deployments (cookie is set on the API origin, JS
+// runs on the frontend origin). So we ask the API for the token, store the value
+// returned in the response body, and replay it as the X-XSRF-TOKEN header. The
+// browser still sends the cookie back to the API automatically, so server-side
+// validation (cookie vs header) keeps working.
+let cachedCsrfToken: string | undefined;
+
+async function fetchCsrfTokenInternal(): Promise<string | undefined> {
+  try {
+    const { data } = await axios.get<{ success: boolean; token?: string }>(
+      `${API_BASE_URL}/api/csrf/token`,
+      { withCredentials: true },
+    );
+    if (data?.token) {
+      cachedCsrfToken = data.token;
+      return data.token;
+    }
+  } catch {
+    /* fall through, request will fail with 403 and surface a user-facing error */
+  }
+  // Fall back to cookie read for same-site deployments where document.cookie sees it.
+  const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
+
+// Request interceptor — automatically attach CSRF token for state-changing requests.
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase();
   if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
-    // Read existing CSRF cookie
-    let csrfToken = getCsrfFromCookie();
-    if (!csrfToken) {
-      // Fetch a fresh token
-      await axios.get(`${API_BASE_URL}/api/csrf/token`, { withCredentials: true });
-      csrfToken = getCsrfFromCookie();
-    }
+    const csrfToken = cachedCsrfToken ?? (await fetchCsrfTokenInternal());
     if (csrfToken) {
       config.headers['X-XSRF-TOKEN'] = csrfToken;
     }
   }
   return config;
 });
-
-function getCsrfFromCookie(): string | undefined {
-  const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : undefined;
-}
 
 // Response interceptor — auto-refresh on 401 using cookie-based refresh
 api.interceptors.response.use(
@@ -65,14 +80,12 @@ api.interceptors.response.use(
 );
 
 /**
- * Fetch a CSRF token cookie from the server.
- * Must be called before state-changing requests (logout, etc.)
+ * Fetch a CSRF token from the server. Returns the token (from the response body
+ * on cross-site deployments, from document.cookie as fallback) and caches it for
+ * subsequent state-changing requests.
  */
 export async function fetchCsrfToken(): Promise<string | undefined> {
-  await api.get('/csrf/token');
-  // Read the non-HttpOnly XSRF-TOKEN cookie
-  const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : undefined;
+  return fetchCsrfTokenInternal();
 }
 
 /**

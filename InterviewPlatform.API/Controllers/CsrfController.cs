@@ -43,6 +43,12 @@ public class CsrfController : ControllerBase
             MaxAge = TimeSpan.FromHours(2)
         });
 
-        return Ok(new { success = true });
+        // Also return the token in the response body. Cross-site deployments (Vercel⇄Railway)
+        // can't read the cookie from JS because document.cookie only exposes cookies for the
+        // current page's origin. The frontend reads this body, holds the token in memory, and
+        // sends it as X-XSRF-TOKEN on every state-changing request. The cookie still gets sent
+        // to the API automatically by the browser, so the middleware's cookie-vs-header
+        // comparison still works on the server side.
+        return Ok(new { success = true, token });
     }
 }
