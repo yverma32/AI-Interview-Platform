@@ -47,6 +47,9 @@ export const analytics = {
   interviewAbandoned: (reason: string, questionNumber: number) =>
     capture('interview_abandoned', { reason, questionNumber }),
 
+  userRegistered: (props?: { experienceLevel?: string; preferredTechnologies?: string }) =>
+    capture('user_registered', props),
+
   resumeUploaded: () => capture('resume_uploaded'),
 
   creditsPurchased: (packId: string, basicCredits: number, premiumCredits: number) =>

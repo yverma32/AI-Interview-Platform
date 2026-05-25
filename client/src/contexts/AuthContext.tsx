@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { User } from '../types/auth';
 import { authService } from '../services/authService';
+import { analytics } from '../services/analytics';
 
 interface AuthContextType {
   user: User | null;
@@ -89,6 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.register(data);
       if (response.success) {
+        // Fire the signup event before auto-login so the funnel is "anonymous → user_registered → identified".
+        analytics.userRegistered({
+          experienceLevel: data.experienceLevel,
+          preferredTechnologies: data.preferredTechnologies,
+        });
         // Registration succeeded — now auto-login to set cookies
         return await login(data.email, data.password);
       }
