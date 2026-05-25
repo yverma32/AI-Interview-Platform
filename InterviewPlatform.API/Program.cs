@@ -13,22 +13,65 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Database (PostgreSQL) ----------
 // Accept either an Npgsql key=value string or a postgresql:// URI (which is what Railway,
-// Heroku, Fly etc. hand out). Convert URIs to key=value before passing to Npgsql.
+// Heroku, Fly etc. hand out). Also handle the case where the operator pasted the URI inside
+// a Host=... key — Npgsql treats that as a literal hostname and fails DNS lookup at runtime.
 var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 var connectionString = NormalizePostgresConnectionString(rawConnectionString);
+
+// One-line startup hint: log the resolved Host so config mistakes surface in the deploy log
+// without ever leaking the password. If you see "Host: <empty>" the variable isn't set at all.
+if (!string.IsNullOrWhiteSpace(connectionString))
+{
+    var hostPart = connectionString
+        .Split(';', StringSplitOptions.RemoveEmptyEntries)
+        .FirstOrDefault(p => p.StartsWith("Host=", StringComparison.OrdinalIgnoreCase));
+    Console.WriteLine($"[startup] Postgres Host resolved to: {hostPart ?? "<no Host key found>"}");
+}
+else
+{
+    Console.WriteLine("[startup] Postgres connection string is EMPTY — set ConnectionStrings__DefaultConnection or DATABASE_URL.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 static string? NormalizePostgresConnectionString(string? input)
 {
     if (string.IsNullOrWhiteSpace(input)) return input;
-    if (!input.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) &&
-        !input.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+
+    var trimmed = input.Trim();
+
+    // Case 1: bare URI — postgresql://user:pass@host:port/db
+    if (trimmed.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+        trimmed.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
     {
-        return input; // already key=value
+        return ConvertUri(trimmed);
     }
 
-    var uri = new Uri(input);
+    // Case 2: key=value form that accidentally has a URI embedded in Host=...
+    // (happens when someone pastes the URI into a value template like Host=...;Port=5432).
+    // Detect by looking inside the Host= value for the "://" scheme separator.
+    var pairs = trimmed.Split(';', StringSplitOptions.RemoveEmptyEntries);
+    foreach (var pair in pairs)
+    {
+        var eq = pair.IndexOf('=');
+        if (eq < 0) continue;
+        var key = pair[..eq].Trim();
+        var value = pair[(eq + 1)..].Trim();
+        if (string.Equals(key, "Host", StringComparison.OrdinalIgnoreCase) &&
+            (value.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+             value.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase)))
+        {
+            return ConvertUri(value);
+        }
+    }
+
+    return trimmed; // assume already valid Npgsql key=value
+}
+
+static string ConvertUri(string uriString)
+{
+    var uri = new Uri(uriString);
     var userInfo = uri.UserInfo.Split(':', 2);
     var username = Uri.UnescapeDataString(userInfo[0]);
     var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
