@@ -3,18 +3,17 @@
 # qualified with InterviewPlatform.API/.
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
+WORKDIR /src/InterviewPlatform.API
 
 # Copy csproj first so the restore layer caches across code-only changes.
-COPY InterviewPlatform.API/InterviewPlatform.API.csproj InterviewPlatform.API/
-RUN dotnet restore InterviewPlatform.API/InterviewPlatform.API.csproj
+COPY InterviewPlatform.API/InterviewPlatform.API.csproj ./
+RUN dotnet restore
 
 # Copy the rest of the project sources and publish in Release mode.
-COPY InterviewPlatform.API/ InterviewPlatform.API/
-RUN dotnet publish InterviewPlatform.API/InterviewPlatform.API.csproj \
-    -c Release \
-    -o /app/publish \
-    /p:UseAppHost=false
+# Working from inside the project dir ensures MSBuild's default Compile/EmbeddedResource
+# globs ("**/*.cs", "**/*.resx") resolve correctly against the project root.
+COPY InterviewPlatform.API/ ./
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app

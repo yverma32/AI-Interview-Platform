@@ -1,0 +1,35 @@
+# Build artifacts — must NOT leak into the Linux container.
+# These paths exist on the developer's local machine after running `dotnet build`
+# and contain NuGet/MSBuild caches with absolute paths that break inside Docker.
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/out
+
+# SQLite dev databases left behind from earlier work — pre-Postgres
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Local secrets / dev-only config
+**/appsettings.Development.json
+**/.env.local
+**/.env.development
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+*.user
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Salesforce CLI workspace
+.sfdx/
+
+# Frontend (the .NET image doesn't need React sources)
+client/
