@@ -9,7 +9,8 @@ public class AIService : IAIService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
-    private readonly string _model;
+    private readonly string _interviewModel;
+    private readonly string _bulkModel;
     private readonly ILogger<AIService> _logger;
 
     public AIService(IConfiguration config, ILogger<AIService> logger)
@@ -18,7 +19,11 @@ public class AIService : IAIService
         _apiKey = config["OpenAI:ApiKey"]
             ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             ?? string.Empty;
-        _model = config["OpenAI:Model"] ?? "gpt-4o-mini";
+        // InterviewModel: high-quality chat for scoring legacy interview sessions (Phase 9: gpt-4o).
+        // BulkModel: cheaper model for question generation, resume parsing, batch answers (gpt-4o-mini).
+        // Both fall back to the legacy "Model" key if present, for backwards compatibility.
+        _interviewModel = config["OpenAI:InterviewModel"] ?? config["OpenAI:Model"] ?? "gpt-4o";
+        _bulkModel = config["OpenAI:BulkModel"] ?? config["OpenAI:Model"] ?? "gpt-4o-mini";
         _logger = logger;
     }
 
@@ -46,7 +51,7 @@ public class AIService : IAIService
 
         var requestBody = new
         {
-            model = _model,
+            model = _interviewModel,
             messages,
             temperature = 0.7,
             max_tokens = 1024,
@@ -61,7 +66,7 @@ public class AIService : IAIService
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
 
         _logger.LogInformation("Calling OpenAI ({Model}) for {Tech}/{Level} Q{Q}/{Total}",
-            _model, technology, experienceLevel, currentQuestion, totalQuestions);
+            _interviewModel, technology, experienceLevel, currentQuestion, totalQuestions);
 
         var response = await _httpClient.SendAsync(request);
         var responseContent = await response.Content.ReadAsStringAsync();
@@ -147,12 +152,13 @@ public class AIService : IAIService
             YOUR BEHAVIOR:
             1. Ask ONE clear, specific technical question at a time appropriate for {{experienceLevel}} level.
             2. Cover diverse aspects of {{technology}}: core concepts, practical scenarios, best practices, problem-solving, architecture, and debugging.
-            3. After receiving an answer, briefly evaluate it, then ask the next question.
-            4. Be professional, conversational, and encouraging — like a real human interviewer.
-            5. Adapt difficulty slightly based on the candidate's performance so far.
+            3. You are an INTERVIEWER, not a teacher or tutor. NEVER explain, define, summarize, or teach the topic of the question yourself. If the candidate gives a non-answer ("yes", "no", "I know it", "easy", "I don't know", "skip"), do NOT supply the answer — either probe deeper ("Walk me through it, then.", "Can you elaborate?", "What does that mean in your own words?") or move on to a different question. Never restate the correct answer in your message.
+            4. Stay neutral. NEVER start a reply with "Great!", "Nice!", "Good!", "Excellent!", "Correct!", "That's right!", "Perfect!", "Awesome!", or any praise/affirmation word. Never say "actually", "the correct answer is", "to clarify", "as you may know", or hint at how the candidate scored. The candidate must not be able to tell from your message whether the previous answer was right, wrong, or partial.
+            5. Adapt difficulty slightly based on the candidate's performance so far (privately — don't announce it).
             6. Do NOT prefix questions with numbers like "Question 3:" — weave them naturally into conversation.
-            7. Keep your spoken message concise (2-4 sentences for the question, 2-3 sentences for feedback).
+            7. Keep your spoken message concise: just a neutral transition phrase (e.g., "Got it.", "Thanks.", "Moving on.", "Next question:") followed by the next question. 2-4 sentences total. No teaching, no recap, no commentary on the answer.
             8. Throughout the interview, ensure you cover DIFFERENT topics — never repeat a topic area already discussed.
+            9. Score and feedback go ONLY into the JSON fields "score" and "feedback" — those are persisted and shown to the candidate ONLY after the interview ends. They never appear in "message".
 
             SCORING GUIDELINES:
             - 9-10: Exceptional answer with deep insight and real-world experience
@@ -165,9 +171,9 @@ public class AIService : IAIService
 
             When asking a question (including the first one):
             {
-              "message": "Your natural spoken response. For the first question, include a brief greeting. For subsequent questions, include brief feedback on the previous answer and the next question.",
+              "message": "STRICT FORMAT: [neutral 1-3 word transition like 'Got it.' or 'Thanks.' or 'Next question:'] + [the next question]. For Q1 only, a brief 1-sentence greeting is allowed in place of the transition. FORBIDDEN content: any evaluation/praise/correction of the previous answer, any explanation or definition of the previous topic, any model answer, any opinion words ('Great', 'Nice', 'Correct', 'Actually', 'The answer is…'). If the candidate's last answer was a non-answer like 'yes' or 'I don't know', DO NOT teach them — instead either probe ('Walk me through it.') or pivot to a new question, but never supply the answer yourself.",
               "score": null or 1-10,
-              "feedback": null or "2-3 sentence evaluation of previous answer",
+              "feedback": null or "2-3 sentence evaluation of previous answer (HIDDEN from the candidate during the interview, shown only on the post-interview results page)",
               "topic": "topic of the question being asked (e.g., React Hooks, State Management)",
               "questionNumber": {{currentQuestion}},
               "isComplete": false
@@ -277,7 +283,7 @@ public class AIService : IAIService
 
         var requestBody = new
         {
-            model = _model,
+            model = _bulkModel,
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },
@@ -366,7 +372,7 @@ public class AIService : IAIService
 
         var requestBody = new
         {
-            model = _model,
+            model = _bulkModel,
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },
@@ -423,5 +429,60 @@ public class AIService : IAIService
         return result;
     }
 
+    public async Task<string> ParseResumeAsync(string rawText)
+    {
+        if (string.IsNullOrWhiteSpace(_apiKey))
+            throw new InvalidOperationException("OpenAI API key is not configured.");
 
+        var truncated = rawText.Length > 15000 ? rawText[..15000] : rawText;
+
+        var systemPrompt = """
+            Extract the following from the resume text and return ONLY valid JSON, no other text:
+            {
+              "name": string,
+              "currentRole": string,
+              "totalExperience": string,
+              "skills": string[],
+              "projects": [{ "name": string, "description": string, "technologies": string[], "impact": string }],
+              "companies": [{ "name": string, "role": string, "duration": string, "highlights": string[] }],
+              "education": [{ "degree": string, "institution": string, "year": string }]
+            }
+            If a field is unknown, use null or an empty array. Be faithful to the source — do not invent details.
+            """;
+
+        var requestBody = new
+        {
+            model = _bulkModel,
+            messages = new[]
+            {
+                new { role = "system", content = systemPrompt },
+                new { role = "user", content = truncated }
+            },
+            temperature = 0.2,
+            max_tokens = 2048,
+            response_format = new { type = "json_object" }
+        };
+
+        var json = JsonSerializer.Serialize(requestBody);
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+
+        _logger.LogInformation("Parsing resume ({Length} chars)", truncated.Length);
+
+        var response = await _httpClient.SendAsync(request);
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("OpenAI resume parse failed: {Status} {Body}", response.StatusCode, responseContent);
+            throw new HttpRequestException($"AI service returned {(int)response.StatusCode}.");
+        }
+
+        using var doc = JsonDocument.Parse(responseContent);
+        var content = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
+        return content ?? "{}";
+    }
 }

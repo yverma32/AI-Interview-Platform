@@ -10,12 +10,14 @@ public class CsrfMiddleware
     private const string CsrfCookieName = "XSRF-TOKEN";
     private const string CsrfHeaderName = "X-XSRF-TOKEN";
 
-    // Paths that are exempt from CSRF (public auth endpoints that don't need cookies yet)
+    // Paths that are exempt from CSRF (public auth endpoints that don't need cookies yet,
+    // plus server-to-server webhooks which authenticate via their own signature header).
     private static readonly HashSet<string> ExemptPaths = new(StringComparer.OrdinalIgnoreCase)
     {
         "/api/auth/login",
         "/api/auth/register",
-        "/api/auth/refresh"   // Refresh uses HttpOnly+SameSite cookie — no extra CSRF needed
+        "/api/auth/refresh",       // Refresh uses HttpOnly+SameSite cookie — no extra CSRF needed
+        "/api/payment/webhook"     // Razorpay calls us server-to-server; authenticated via X-Razorpay-Signature
     };
 
     public CsrfMiddleware(RequestDelegate next)

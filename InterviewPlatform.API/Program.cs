@@ -4,15 +4,35 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using InterviewPlatform.API.Data;
 using InterviewPlatform.API.Middleware;
 using InterviewPlatform.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- Database ----------
+// ---------- Database (PostgreSQL) ----------
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ---------- Redis (caching + rate-limit backing) ----------
+var redisConnection = builder.Configuration.GetConnectionString("Redis");
+var redisEnabled = !string.IsNullOrWhiteSpace(redisConnection);
+if (redisEnabled)
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConnection;
+        options.InstanceName = "interview:";
+    });
+    builder.Services.AddSingleton<IConnectionMultiplexer>(
+        _ => ConnectionMultiplexer.Connect(redisConnection!));
+    builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+}
+else
+{
+    builder.Services.AddSingleton<ICacheService, NullCacheService>();
+}
 
 // ---------- Authentication (JWT via HttpOnly Cookie) ----------
 var jwtSecret = builder.Configuration["Jwt:Secret"]
@@ -56,29 +76,40 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // ---------- Rate Limiting ----------
+// When Redis is configured we use a distributed sliding-window limiter (survives multi-instance deploys).
+// Otherwise we fall back to the in-memory fixed-window limiter.
 builder.Services.AddRateLimiter(options =>
 {
-    // Auth endpoints: 10 requests per minute per IP
-    options.AddPolicy("auth", context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 10,
-                Window = TimeSpan.FromMinutes(1),
-                QueueLimit = 0
-            }));
+    RateLimitPartition<string> BuildPartition(HttpContext context, string policyName, int limit, TimeSpan window, int queueLimit)
+    {
+        var key = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-    // General API: 60 requests per minute per IP
-    options.AddPolicy("api", context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new FixedWindowRateLimiterOptions
+        if (redisEnabled)
+        {
+            return RateLimitPartition.Get(key, _ =>
             {
-                PermitLimit = 60,
-                Window = TimeSpan.FromMinutes(1),
-                QueueLimit = 2
-            }));
+                var mux = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
+                return new RedisSlidingWindowLimiter(
+                    mux.GetDatabase(),
+                    $"ratelimit:{policyName}:{key}",
+                    limit,
+                    window);
+            });
+        }
+
+        return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = limit,
+            Window = window,
+            QueueLimit = queueLimit
+        });
+    }
+
+    options.AddPolicy("auth", context => BuildPartition(context, "auth", 10, TimeSpan.FromMinutes(1), 0));
+    options.AddPolicy("api",  context => BuildPartition(context, "api",  60, TimeSpan.FromMinutes(1), 2));
+
+    // Realtime session creation — tight cap to prevent ephemeral-key farming.
+    options.AddPolicy("realtime", context => BuildPartition(context, "realtime", 5, TimeSpan.FromHours(1), 0));
 
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.OnRejected = async (context, cancellationToken) =>
@@ -94,6 +125,12 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IAIService, AIService>();
 builder.Services.AddScoped<IInterviewService, InterviewService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IRealtimeSessionService, RealtimeSessionService>();
+builder.Services.AddScoped<IResumeService, ResumeService>();
+builder.Services.AddScoped<IOnboardingService, OnboardingService>();
+builder.Services.AddHttpClient("Razorpay");
+builder.Services.AddHttpClient("OpenAIRealtime", c => c.Timeout = TimeSpan.FromSeconds(15));
 
 // ---------- CORS ----------
 builder.Services.AddCors(options =>
@@ -114,19 +151,17 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// ---------- Migrate DB on startup ----------
+// ---------- Apply EF Core migrations on startup ----------
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
 
-    // Add FocusTopics column if it doesn't exist (EnsureCreated won't add new columns to existing tables)
-    try
-    {
-        db.Database.ExecuteSqlRaw(
-            "ALTER TABLE InterviewSessions ADD COLUMN FocusTopics TEXT NULL");
-    }
-    catch { /* Column already exists */ }
+    // Credit-system backfill: grant 2 basic + 1 premium to any user still on the legacy 0/0 state.
+    // Safe to re-run — the WHERE clause guarantees idempotency.
+    db.Database.ExecuteSqlRaw(
+        "UPDATE \"Users\" SET \"BasicCreditsBalance\" = 2, \"PremiumCreditsBalance\" = 1 " +
+        "WHERE \"BasicCreditsBalance\" = 0 AND \"PremiumCreditsBalance\" = 0");
 }
 
 // ---------- Middleware Pipeline (order matters!) ----------

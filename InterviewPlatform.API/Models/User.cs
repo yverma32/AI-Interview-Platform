@@ -12,6 +12,12 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; set; }
 
+    // --- Credit system ---
+    // 2 basic + 1 premium granted on signup; never expire. Deducted at interview start.
+    public int BasicCreditsBalance { get; set; } = 2;
+    public int PremiumCreditsBalance { get; set; } = 1;
+    public string? RazorpayCustomerId { get; set; }
+
     // --- Account lockout ---
     public int FailedLoginAttempts { get; set; } = 0;
     public DateTime? LockoutEnd { get; set; }

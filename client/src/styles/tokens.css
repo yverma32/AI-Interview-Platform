@@ -1,0 +1,271 @@
+/* =============================================================================
+   Design Tokens — cyberpunk / neon-glow aesthetic.
+   Themes: dark (default, the canonical look), light (subdued daytime variant).
+   Honors prefers-color-scheme; `data-theme="..."` on <html> overrides for toggle.
+
+   Aesthetic notes:
+   - Backdrop is near-black with electric magenta + cyan radial glows.
+   - Accents are neon: cyan #00f0ff and magenta #ff2bd6, used together for
+     dual-tone glow effects (think Blade Runner signage).
+   - Surfaces stay translucent so the backdrop bleeds through — frosted neon.
+   - Borders are sharp 1px with optional accent glow rings.
+   - Shadows are colored (cyan/magenta) instead of black.
+   ========================================================================== */
+
+:root {
+  /* ── Typography ──────────────────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-display: 'Inter', system-ui, sans-serif;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ── Spacing scale (4px base) ────────────────────────────────────────── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── Radii — sharper than glassmorphism, hint of brutalism ──────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  /* ── Neon palette — used by both themes ─────────────────────────────── */
+  --neon-cyan:    #00f0ff;
+  --neon-magenta: #ff2bd6;
+  --neon-purple:  #b026ff;
+  --neon-pink:    #ff3d9a;
+  --neon-lime:    #b3ff00;
+  --neon-amber:   #ffb800;
+
+  /* Primary gradient — cyan → magenta sweep is the platform signature */
+  --grad-1: var(--neon-cyan);
+  --grad-2: var(--neon-purple);
+  --grad-3: var(--neon-magenta);
+  --gradient-primary: linear-gradient(135deg, var(--grad-1), var(--grad-2), var(--grad-3));
+  --gradient-soft:    linear-gradient(135deg,
+    color-mix(in srgb, var(--grad-1) 22%, transparent),
+    color-mix(in srgb, var(--grad-3) 22%, transparent));
+  --gradient-text:    linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+
+  /* ── Motion ──────────────────────────────────────────────────────────── */
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── DARK theme (default — the canonical cyberpunk look) ──────────────── */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Backdrop — deep void with electric radial glows */
+  --bg-base:        #050510;
+  --bg-gradient:
+    radial-gradient(circle at 10% -10%, rgba(0, 240, 255, 0.22), transparent 45%),
+    radial-gradient(circle at 92% 8%,   rgba(255, 43, 214, 0.20), transparent 50%),
+    radial-gradient(circle at 50% 115%, rgba(176, 38, 255, 0.24), transparent 55%),
+    var(--bg-base);
+
+  /* Optional scanline overlay variable — opt in per-page via background-image */
+  --scanlines:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 240, 255, 0.03) 0px,
+      rgba(0, 240, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+
+  /* Glass surfaces — translucent over the neon backdrop */
+  --surface-1: rgba(255, 255, 255, 0.035);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.09);
+  --surface-elevated: rgba(12, 12, 24, 0.78);
+
+  --border-subtle: rgba(0, 240, 255, 0.10);
+  --border-base:   rgba(0, 240, 255, 0.20);
+  --border-strong: rgba(0, 240, 255, 0.38);
+  --border-accent: rgba(255, 43, 214, 0.55);
+
+  /* Text — cool whites; secondary leans cyan for tech-readout vibe */
+  --text-primary:   #f0f6ff;
+  --text-secondary: #b8c5d6;
+  --text-tertiary:  #8a96ad;
+  --text-muted:     #5a647a;
+  --text-on-accent: #050510;
+
+  /* States — use neon variants */
+  --accent:       var(--neon-cyan);
+  --accent-soft:  rgba(0, 240, 255, 0.15);
+  --success:      var(--neon-lime);
+  --success-soft: rgba(179, 255, 0, 0.14);
+  --warning:      var(--neon-amber);
+  --warning-soft: rgba(255, 184, 0, 0.15);
+  --danger:       var(--neon-pink);
+  --danger-soft:  rgba(255, 61, 154, 0.16);
+
+  /* Shadows — colored neon glows instead of grey drop-shadows */
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md:   0 4px 18px rgba(0, 0, 0, 0.55), 0 0 1px rgba(0, 240, 255, 0.3);
+  --shadow-lg:   0 14px 48px rgba(0, 0, 0, 0.6),  0 0 2px rgba(0, 240, 255, 0.4);
+  --shadow-glow: 0 0 24px rgba(0, 240, 255, 0.45), 0 0 48px rgba(255, 43, 214, 0.25);
+  --shadow-glow-magenta: 0 0 24px rgba(255, 43, 214, 0.5), 0 0 48px rgba(176, 38, 255, 0.25);
+  --shadow-inset-glow:   inset 0 0 12px rgba(0, 240, 255, 0.12);
+
+  /* Text glow utilities — assign to text-shadow */
+  --text-glow-cyan:    0 0 8px rgba(0, 240, 255, 0.6), 0 0 24px rgba(0, 240, 255, 0.35);
+  --text-glow-magenta: 0 0 8px rgba(255, 43, 214, 0.6), 0 0 24px rgba(255, 43, 214, 0.35);
+
+  /* Backdrop blur — signature frosted-neon effect */
+  --blur-sm: 8px;
+  --blur-md: 16px;
+  --blur-lg: 24px;
+}
+
+/* ── LIGHT theme — daytime variant, neon dialed down but still present ── */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg-base:        #eef1fa;
+  --bg-gradient:
+    radial-gradient(ellipse at 12% 8%,   rgba(99, 102, 241, 0.28), transparent 45%),
+    radial-gradient(ellipse at 88% 20%,  rgba(217, 70, 239, 0.22), transparent 50%),
+    radial-gradient(ellipse at 50% 55%,  rgba(140, 60, 220, 0.14), transparent 55%),
+    radial-gradient(ellipse at 8% 92%,   rgba(56, 189, 248, 0.22), transparent 50%),
+    radial-gradient(ellipse at 92% 88%,  rgba(244, 114, 182, 0.16), transparent 50%),
+    var(--bg-base);
+
+  --scanlines:
+    repeating-linear-gradient(
+      0deg,
+      rgba(99, 102, 241, 0.025) 0px,
+      rgba(99, 102, 241, 0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+
+  --surface-1: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.70);
+  --surface-3: rgba(255, 255, 255, 0.85);
+  --surface-elevated: rgba(255, 255, 255, 0.92);
+
+  --border-subtle: rgba(99, 102, 241, 0.12);
+  --border-base:   rgba(99, 102, 241, 0.22);
+  --border-strong: rgba(99, 102, 241, 0.38);
+  --border-accent: rgba(217, 70, 239, 0.55);
+
+  --text-primary:   #0b0f24;
+  --text-secondary: #232a47;
+  --text-tertiary:  #4a516c;
+  --text-muted:     #7a82a0;
+  --text-on-accent: #ffffff;
+
+  --accent:       #6366f1;
+  --accent-soft:  rgba(99, 102, 241, 0.14);
+  --success:      #16a34a;
+  --success-soft: rgba(22, 163, 74, 0.12);
+  --warning:      #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.12);
+  --danger:       #e11d48;
+  --danger-soft:  rgba(225, 29, 72, 0.12);
+
+  --shadow-sm:   0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md:   0 6px 20px rgba(15, 23, 42, 0.10);
+  --shadow-lg:   0 18px 48px rgba(15, 23, 42, 0.16);
+  --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.32), 0 0 48px rgba(217, 70, 239, 0.18);
+  --shadow-glow-magenta: 0 0 22px rgba(217, 70, 239, 0.35);
+  --shadow-inset-glow:   inset 0 0 12px rgba(99, 102, 241, 0.10);
+
+  --text-glow-cyan:    0 0 6px rgba(99, 102, 241, 0.50);
+  --text-glow-magenta: 0 0 6px rgba(217, 70, 239, 0.50);
+
+  --blur-sm: 8px;
+  --blur-md: 16px;
+  --blur-lg: 24px;
+}
+
+/* ── System-preference override (only when no manual theme is set) ─────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg-base: #eef1fa;
+    --bg-gradient:
+      radial-gradient(ellipse at 12% 8%,   rgba(99, 102, 241, 0.28), transparent 45%),
+      radial-gradient(ellipse at 88% 20%,  rgba(217, 70, 239, 0.22), transparent 50%),
+      radial-gradient(ellipse at 50% 55%,  rgba(140, 60, 220, 0.14), transparent 55%),
+      radial-gradient(ellipse at 8% 92%,   rgba(56, 189, 248, 0.22), transparent 50%),
+      radial-gradient(ellipse at 92% 88%,  rgba(244, 114, 182, 0.16), transparent 50%),
+      var(--bg-base);
+    --scanlines:
+      repeating-linear-gradient(
+        0deg,
+        rgba(99, 102, 241, 0.025) 0px,
+        rgba(99, 102, 241, 0.025) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    --surface-1: rgba(255, 255, 255, 0.55);
+    --surface-2: rgba(255, 255, 255, 0.70);
+    --surface-3: rgba(255, 255, 255, 0.85);
+    --surface-elevated: rgba(255, 255, 255, 0.92);
+    --border-subtle: rgba(99, 102, 241, 0.12);
+    --border-base:   rgba(99, 102, 241, 0.22);
+    --border-strong: rgba(99, 102, 241, 0.38);
+    --border-accent: rgba(217, 70, 239, 0.55);
+    --text-primary:   #0b0f24;
+    --text-secondary: #232a47;
+    --text-tertiary:  #4a516c;
+    --text-muted:     #7a82a0;
+    --accent:       #6366f1;
+    --accent-soft:  rgba(99, 102, 241, 0.14);
+    --success:      #16a34a;
+    --success-soft: rgba(22, 163, 74, 0.12);
+    --warning:      #d97706;
+    --warning-soft: rgba(217, 119, 6, 0.12);
+    --danger:       #e11d48;
+    --danger-soft:  rgba(225, 29, 72, 0.12);
+    --shadow-sm:   0 1px 3px rgba(15, 23, 42, 0.08);
+    --shadow-md:   0 6px 20px rgba(15, 23, 42, 0.10);
+    --shadow-lg:   0 18px 48px rgba(15, 23, 42, 0.16);
+    --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.32), 0 0 48px rgba(217, 70, 239, 0.18);
+    --shadow-glow-magenta: 0 0 22px rgba(217, 70, 239, 0.35);
+    --text-glow-cyan:    0 0 6px rgba(99, 102, 241, 0.50);
+    --text-glow-magenta: 0 0 6px rgba(217, 70, 239, 0.50);
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

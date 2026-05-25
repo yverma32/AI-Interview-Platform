@@ -31,3 +31,6 @@ client/dist/
 client/dist-ssr/
 *.log
 *.local
+
+# Salesforce CLI workspace data (not part of this project)
+.sfdx/

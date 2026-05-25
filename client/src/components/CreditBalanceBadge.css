@@ -1,0 +1,108 @@
+.credit-balance {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--surface-2, rgba(99, 102, 241, 0.08));
+  font-size: 13px;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .credit-balance {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .credit-label {
+    display: none;
+  }
+}
+
+.credit-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.credit-basic {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+}
+
+.credit-premium {
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+}
+
+.credit-count {
+  font-weight: 700;
+}
+
+.credit-label {
+  opacity: 0.85;
+}
+
+.buy-credits-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #6366f1;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12px;
+  transition: background 0.15s ease;
+}
+
+.buy-credits-btn:hover {
+  background: #4f46e5;
+}
+
+.low-credit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 16px 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.08));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--text-primary, #1f2937);
+}
+
+.low-credit-banner.exhausted {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.14), rgba(220, 38, 38, 0.08));
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.low-credit-banner-text {
+  font-size: 14px;
+}
+
+.low-credit-banner-text strong {
+  font-weight: 600;
+}
+
+.low-credit-banner-cta {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #6366f1;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.low-credit-banner-cta:hover {
+  background: #4f46e5;
+}

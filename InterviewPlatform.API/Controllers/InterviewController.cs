@@ -88,4 +88,27 @@ public class InterviewController : ControllerBase
         var topics = await _interviewService.GetWeakTopicsAsync(GetUserId(), technology);
         return Ok(topics);
     }
+
+    /// <summary>Mark an in-progress interview as abandoned.</summary>
+    [HttpPost("{sessionId}/abandon")]
+    public async Task<IActionResult> AbandonInterview(int sessionId)
+    {
+        try
+        {
+            await _interviewService.AbandonInterviewAsync(GetUserId(), sessionId);
+            return Ok(new { success = true });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { success = false, message = "Interview session not found." });
+        }
+    }
+
+    /// <summary>Get the user's current basic + premium credit balances.</summary>
+    [HttpGet("credits")]
+    public async Task<IActionResult> GetCredits()
+    {
+        var balance = await _interviewService.GetCreditBalanceAsync(GetUserId());
+        return Ok(balance);
+    }
 }

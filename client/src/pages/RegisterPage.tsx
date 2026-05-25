@@ -1,7 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Target, AlertTriangle, Eye, EyeOff, Check, FileText, SkipForward } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import ResumeUpload from '../components/ResumeUpload';
 import './Auth.css';
+import './InterviewSetup.css';
 
 const EXPERIENCE_LEVELS = ['Junior (0-2 yrs)', 'Mid (2-5 yrs)', 'Senior (5+ yrs)', 'Lead / Architect'];
 const TECHNOLOGIES = ['.NET', 'React', 'Java', 'Angular', 'Python', 'Node.js', 'SQL', 'AWS', 'Azure', 'Docker'];
@@ -43,6 +46,9 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Post-registration: show the optional resume step before sending the user to the dashboard.
+  const [step, setStep] = useState<'form' | 'resume'>('form');
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -145,7 +151,9 @@ export default function RegisterPage() {
       });
 
       if (result.success) {
-        navigate('/dashboard', { replace: true });
+        // Registration auto-logged the user in (cookies set). Show the optional resume step
+        // before sending them to the dashboard — uploading needs auth, so this can only run now.
+        setStep('resume');
       } else {
         setError(result.message || 'Registration failed. Please try again.');
       }
@@ -156,18 +164,53 @@ export default function RegisterPage() {
     }
   };
 
+  if (step === 'resume') {
+    return (
+      <div className="auth-container">
+        <div className="auth-card auth-card-wide">
+          <div className="auth-header">
+            <div className="auth-logo"><FileText size={32} aria-hidden /></div>
+            <h1>Add Your Resume</h1>
+            <p>Optional — makes Resume Deep Dive interviews far more personal. You can also add it later.</p>
+          </div>
+
+          <div style={{ marginTop: 'var(--space-4)' }}>
+            <ResumeUpload onReady={() => { /* uploaded — user clicks Continue below */ }} />
+          </div>
+
+          <div className="resume-step-actions">
+            <button
+              type="button"
+              className="auth-btn auth-btn-ghost"
+              onClick={() => navigate('/dashboard', { replace: true })}
+            >
+              <SkipForward size={16} aria-hidden /> Skip for now
+            </button>
+            <button
+              type="button"
+              className="auth-btn"
+              onClick={() => navigate('/dashboard', { replace: true })}
+            >
+              Continue to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="auth-container">
       <div className="auth-card auth-card-wide">
         <div className="auth-header">
-          <div className="auth-logo">🎯</div>
+          <div className="auth-logo"><Target size={32} aria-hidden /></div>
           <h1>Join AI Interview Simulator</h1>
           <p>Create your account and start preparing</p>
         </div>
 
         {error && (
           <div className="auth-error">
-            <span className="error-icon">⚠️</span>
+            <AlertTriangle className="error-icon" size={16} aria-hidden />
             <span>{error}</span>
           </div>
         )}
@@ -227,7 +270,7 @@ export default function RegisterPage() {
                   tabIndex={-1}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  {showPassword ? <EyeOff size={16} aria-hidden /> : <Eye size={16} aria-hidden />}
                 </button>
               </div>
               {touched.password && fieldErrors.password && (
@@ -270,14 +313,14 @@ export default function RegisterPage() {
                   tabIndex={-1}
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showConfirmPassword ? '🙈' : '👁️'}
+                  {showConfirmPassword ? <EyeOff size={16} aria-hidden /> : <Eye size={16} aria-hidden />}
                 </button>
               </div>
               {touched.confirmPassword && fieldErrors.confirmPassword && (
                 <span className="field-error">{fieldErrors.confirmPassword}</span>
               )}
               {form.confirmPassword && !fieldErrors.confirmPassword && touched.confirmPassword && (
-                <span className="field-success">Passwords match ✓</span>
+                <span className="field-success"><Check size={12} aria-hidden /> Passwords match</span>
               )}
             </div>
           </div>

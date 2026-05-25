@@ -25,4 +25,9 @@ public interface IAIService
     /// Generate answers for a batch of questions.
     /// </summary>
     Task<List<QuestionAnswer>> GenerateBatchAnswersAsync(string technology, List<QuestionItem> questions);
+
+    /// <summary>
+    /// Parse a raw resume text blob into structured JSON. Returns the JSON string verbatim from GPT.
+    /// </summary>
+    Task<string> ParseResumeAsync(string rawText);
 }

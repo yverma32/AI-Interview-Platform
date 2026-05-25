@@ -1,0 +1,15 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "InterviewPlatform.API/Dockerfile",
+    "buildContext": "InterviewPlatform.API"
+  },
+  "deploy": {
+    "startCommand": "dotnet InterviewPlatform.API.dll",
+    "healthcheckPath": "/api/pricing/packs",
+    "healthcheckTimeout": 30,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  }
+}

@@ -21,6 +21,15 @@ public class InterviewService : IInterviewService
 
     public async Task<InterviewStartResponse> StartInterviewAsync(int userId, StartInterviewRequest request)
     {
+        // Credit gate: verify and atomically deduct the right credit type for the chosen mode.
+        var creditCheck = await CheckCreditsAsync(userId, request.InterviewMode);
+        if (!creditCheck.HasCredits)
+            throw new InvalidOperationException(creditCheck.Reason ?? "Insufficient credits.");
+
+        var deducted = await DeductCreditAsync(userId, request.InterviewMode);
+        if (!deducted)
+            throw new InvalidOperationException("Failed to deduct credit. Please try again.");
+
         // Query past interview sessions for this user + technology to get previously asked first-question topics
         var previousTopics = await _db.InterviewMessages
             .Where(m => m.Session.UserId == userId
@@ -41,6 +50,8 @@ public class InterviewService : IInterviewService
             TotalQuestions = request.TotalQuestions,
             CurrentQuestionNumber = 1,
             Status = "InProgress",
+            InterviewMode = request.InterviewMode,
+            CreditsConsumed = 1,
             FocusTopics = request.FocusTopics != null && request.FocusTopics.Count > 0
                 ? JsonSerializer.Serialize(request.FocusTopics) : null,
             StartedAt = DateTime.UtcNow
@@ -82,7 +93,8 @@ public class InterviewService : IInterviewService
             Message = aiResponse.Message,
             QuestionNumber = 1,
             TotalQuestions = session.TotalQuestions,
-            Topic = aiResponse.Topic
+            Topic = aiResponse.Topic,
+            InterviewMode = session.InterviewMode
         };
     }
 
@@ -299,5 +311,72 @@ public class InterviewService : IInterviewService
             AverageScore = Math.Round(t.AverageScore, 1),
             QuestionCount = t.QuestionCount
         }).ToList();
+    }
+
+    public async Task AbandonInterviewAsync(int userId, int sessionId)
+    {
+        var session = await _db.InterviewSessions
+            .FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
+
+        if (session == null) throw new KeyNotFoundException("Session not found.");
+        if (session.Status == "Completed") return; // Already finished
+
+        session.Status = "Abandoned";
+        session.CompletedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+        _logger.LogInformation("Interview {SessionId} abandoned by user {UserId} at Q{Q}/{Total}",
+            sessionId, userId, session.CurrentQuestionNumber, session.TotalQuestions);
+    }
+
+    public async Task<CreditCheckResult> CheckCreditsAsync(int userId, string interviewMode)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null)
+            return new CreditCheckResult { HasCredits = false, Reason = "User not found." };
+
+        var isPremium = interviewMode == "premium";
+        var enough = isPremium ? user.PremiumCreditsBalance > 0 : user.BasicCreditsBalance > 0;
+
+        return new CreditCheckResult
+        {
+            HasCredits = enough,
+            BasicBalance = user.BasicCreditsBalance,
+            PremiumBalance = user.PremiumCreditsBalance,
+            Reason = enough
+                ? null
+                : isPremium
+                    ? "No premium credits remaining. Buy a Premium or Pro pack to continue."
+                    : "No basic credits remaining. Buy a credit pack to continue."
+        };
+    }
+
+    public async Task<bool> DeductCreditAsync(int userId, string interviewMode)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return false;
+
+        if (interviewMode == "premium")
+        {
+            if (user.PremiumCreditsBalance <= 0) return false;
+            user.PremiumCreditsBalance--;
+        }
+        else
+        {
+            if (user.BasicCreditsBalance <= 0) return false;
+            user.BasicCreditsBalance--;
+        }
+
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<CreditBalanceDto> GetCreditBalanceAsync(int userId)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        return new CreditBalanceDto
+        {
+            BasicCredits = user?.BasicCreditsBalance ?? 0,
+            PremiumCredits = user?.PremiumCreditsBalance ?? 0
+        };
     }
 }

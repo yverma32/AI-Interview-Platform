@@ -1,11 +1,14 @@
 // ───────────── Interview Types ─────────────
 
+export type InterviewMode = 'basic' | 'premium';
+
 export interface InterviewStartResponse {
   sessionId: number;
   message: string;
   questionNumber: number;
   totalQuestions: number;
   topic?: string;
+  interviewMode: InterviewMode;
 }
 
 export interface AnswerResponse {
@@ -63,6 +66,7 @@ export interface StartInterviewRequest {
   experienceLevel: string;
   totalQuestions: number;
   focusTopics?: string[];
+  interviewMode: InterviewMode;
 }
 
 export interface SubmitAnswerRequest {
@@ -74,4 +78,9 @@ export interface WeakTopicItem {
   averageScore: number;
   questionCount: number;
   technology: string;
+}
+
+export interface CreditBalance {
+  basicCredits: number;
+  premiumCredits: number;
 }

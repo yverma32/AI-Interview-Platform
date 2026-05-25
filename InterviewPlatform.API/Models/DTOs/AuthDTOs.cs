@@ -51,4 +51,6 @@ public class UserProfile
     public string Role { get; set; } = string.Empty;
     public string? ExperienceLevel { get; set; }
     public string? PreferredTechnologies { get; set; }
+    public int BasicCredits { get; set; }
+    public int PremiumCredits { get; set; }
 }

@@ -174,7 +174,9 @@ public class AuthService : IAuthService
         Email = user.Email,
         Role = user.Role,
         ExperienceLevel = user.ExperienceLevel,
-        PreferredTechnologies = user.PreferredTechnologies
+        PreferredTechnologies = user.PreferredTechnologies,
+        BasicCredits = user.BasicCreditsBalance,
+        PremiumCredits = user.PremiumCreditsBalance
     };
 
     private string GenerateJwtToken(User user)

@@ -5,6 +5,8 @@ export interface User {
   role: string;
   experienceLevel?: string;
   preferredTechnologies?: string;
+  basicCredits: number;
+  premiumCredits: number;
 }
 
 export interface AuthResponse {

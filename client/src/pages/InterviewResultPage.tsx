@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Target, CheckCircle2, AlertTriangle, NotebookPen, BarChart3, RotateCcw } from 'lucide-react';
 import { interviewService } from '../services/interviewService';
 import type { InterviewDetail } from '../types/interview';
 import './InterviewResult.css';
@@ -99,7 +100,7 @@ export default function InterviewResultPage() {
 
         {/* Header */}
         <div className="result-header">
-          <div className="result-badge">🎯</div>
+          <div className="result-badge"><Target size={14} aria-hidden /></div>
           <h1>Interview Results</h1>
           <p className="result-meta">
             {detail.technology} · {detail.experienceLevel} · {detail.totalQuestions} Questions
@@ -129,7 +130,7 @@ export default function InterviewResultPage() {
         <div className="insight-grid">
           {detail.strengths && detail.strengths.length > 0 && (
             <div className="insight-card strengths">
-              <h3>✅ Strengths</h3>
+              <h3><CheckCircle2 size={18} aria-hidden /> Strengths</h3>
               <ul>
                 {detail.strengths.map((s, i) => (
                   <li key={i}>{s}</li>
@@ -139,7 +140,7 @@ export default function InterviewResultPage() {
           )}
           {detail.improvements && detail.improvements.length > 0 && (
             <div className="insight-card improvements">
-              <h3>⚠️ Areas to Improve</h3>
+              <h3><AlertTriangle size={18} aria-hidden /> Areas to Improve</h3>
               <ul>
                 {detail.improvements.map((s, i) => (
                   <li key={i}>{s}</li>
@@ -152,14 +153,14 @@ export default function InterviewResultPage() {
         {/* Overall Feedback */}
         {detail.overallFeedback && (
           <div className="overall-feedback">
-            <h3>📝 Overall Feedback</h3>
+            <h3><NotebookPen size={18} aria-hidden /> Overall Feedback</h3>
             <p>{detail.overallFeedback}</p>
           </div>
         )}
 
         {/* Question Breakdown */}
         <div className="breakdown-section">
-          <h3>📊 Question Breakdown</h3>
+          <h3><BarChart3 size={18} aria-hidden /> Question Breakdown</h3>
           <div className="breakdown-list">
             {questions.map((q) => (
               <details key={q.number} className="breakdown-item">
@@ -196,7 +197,7 @@ export default function InterviewResultPage() {
         {/* Actions */}
         <div className="result-actions">
           <button className="primary-btn" onClick={() => navigate('/interview/setup')}>
-            🔄 Try Again
+            <RotateCcw size={16} aria-hidden /> Try Again
           </button>
           <button className="secondary-btn" onClick={() => navigate('/dashboard')}>
             ← Dashboard

@@ -20,6 +20,10 @@ public class StartInterviewRequest
     /// <summary>Optional list of weak topic areas to focus the interview on</summary>
     [MaxLength(10, ErrorMessage = "Cannot focus on more than 10 topics.")]
     public List<string>? FocusTopics { get; set; }
+
+    /// <summary>"basic" (text Q&amp;A) or "premium" (Realtime voice). Defaults to basic.</summary>
+    [RegularExpression("^(basic|premium)$", ErrorMessage = "InterviewMode must be 'basic' or 'premium'.")]
+    public string InterviewMode { get; set; } = "basic";
 }
 
 public class SubmitAnswerRequest
@@ -38,6 +42,7 @@ public class InterviewStartResponse
     public int QuestionNumber { get; set; }
     public int TotalQuestions { get; set; }
     public string? Topic { get; set; }
+    public string InterviewMode { get; set; } = "basic";
 }
 
 public class AnswerResponse
@@ -232,3 +237,4 @@ public class WeakTopicItem
     public int QuestionCount { get; set; }
     public string Technology { get; set; } = string.Empty;
 }
+

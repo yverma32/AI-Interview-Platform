@@ -6,10 +6,13 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import InterviewSetupPage from './pages/InterviewSetupPage';
-import InterviewRoomPage from './pages/InterviewRoomPage';
+import RealtimeInterviewRoomPage from './pages/RealtimeInterviewRoomPage';
+import BasicInterviewRoomPage from './pages/BasicInterviewRoomPage';
 import InterviewResultPage from './pages/InterviewResultPage';
+import OnboardingAssessmentPage from './pages/OnboardingAssessmentPage';
 import QuestionBankPage from './pages/QuestionBankPage';
 import MyProgressPage from './pages/MyProgressPage';
+import PricingPage from './pages/PricingPage';
 
 function App() {
   return (
@@ -35,10 +38,26 @@ function App() {
             }
           />
           <Route
-            path="/interview/room/:sessionId"
+            path="/interview/realtime"
             element={
               <ProtectedRoute>
-                <InterviewRoomPage />
+                <RealtimeInterviewRoomPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/interview/basic/:sessionId"
+            element={
+              <ProtectedRoute>
+                <BasicInterviewRoomPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <OnboardingAssessmentPage />
               </ProtectedRoute>
             }
           />
@@ -66,6 +85,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>

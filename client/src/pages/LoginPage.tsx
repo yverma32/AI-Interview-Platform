@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Target, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './Auth.css';
 
@@ -78,14 +79,14 @@ export default function LoginPage() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo">🎯</div>
+          <div className="auth-logo"><Target size={32} aria-hidden /></div>
           <h1>Welcome Back</h1>
           <p>Sign in to continue your interview prep</p>
         </div>
 
         {error && (
           <div className="auth-error">
-            <span className="error-icon">⚠️</span>
+            <AlertTriangle className="error-icon" size={16} aria-hidden />
             <span>{error}</span>
           </div>
         )}
@@ -136,7 +137,7 @@ export default function LoginPage() {
                 tabIndex={-1}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? '🙈' : '👁️'}
+                {showPassword ? <EyeOff size={16} aria-hidden /> : <Eye size={16} aria-hidden />}
               </button>
             </div>
             {touched.password && fieldErrors.password && (

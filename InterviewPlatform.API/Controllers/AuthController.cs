@@ -111,14 +111,14 @@ public class AuthController : ControllerBase
 
     private void SetAuthCookies(string accessToken, string refreshToken)
     {
-        var isProduction = !HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsDevelopment();
+        var (secure, sameSite) = ResolveCookiePolicy(HttpContext, _config);
         var expirationMinutes = double.Parse(_config["Jwt:ExpirationInMinutes"] ?? "15");
 
         Response.Cookies.Append("access_token", accessToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = isProduction,
-            SameSite = SameSiteMode.Strict,
+            Secure = secure,
+            SameSite = sameSite,
             Path = "/",
             MaxAge = TimeSpan.FromMinutes(expirationMinutes)
         });
@@ -126,8 +126,8 @@ public class AuthController : ControllerBase
         Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = isProduction,
-            SameSite = SameSiteMode.Strict,
+            Secure = secure,
+            SameSite = sameSite,
             Path = "/api/auth", // Only sent to auth endpoints
             MaxAge = TimeSpan.FromDays(7)
         });
@@ -135,7 +135,25 @@ public class AuthController : ControllerBase
 
     private void ClearAuthCookies()
     {
-        Response.Cookies.Delete("access_token", new CookieOptions { Path = "/" });
-        Response.Cookies.Delete("refresh_token", new CookieOptions { Path = "/api/auth" });
+        var (secure, sameSite) = ResolveCookiePolicy(HttpContext, _config);
+        Response.Cookies.Delete("access_token", new CookieOptions { Path = "/", Secure = secure, SameSite = sameSite });
+        Response.Cookies.Delete("refresh_token", new CookieOptions { Path = "/api/auth", Secure = secure, SameSite = sameSite });
+    }
+
+    /// <summary>
+    /// Picks cookie attributes based on environment + deployment topology.
+    /// - Local dev (HTTP): Secure=false, SameSite=Lax so cookies work without TLS.
+    /// - Same-site prod: Secure=true, SameSite=Strict (the strictest viable default).
+    /// - Cross-site prod (frontend on different domain than API, e.g. Vercel ⇄ Railway): Secure=true, SameSite=None.
+    ///   Triggered by setting Cookies:CrossSite=true in config / env (COOKIES__CROSSSITE=true).
+    /// </summary>
+    internal static (bool secure, SameSiteMode sameSite) ResolveCookiePolicy(HttpContext ctx, IConfiguration config)
+    {
+        var isDev = ctx.RequestServices.GetRequiredService<IHostEnvironment>().IsDevelopment();
+        var crossSite = config.GetValue<bool>("Cookies:CrossSite");
+
+        if (isDev) return (false, SameSiteMode.Lax);
+        if (crossSite) return (true, SameSiteMode.None);
+        return (true, SameSiteMode.Strict);
     }
 }

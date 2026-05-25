@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  BarChart3, Target, Mic, Trophy, HelpCircle, Code2,
+  TrendingUp, Dumbbell, NotebookPen, Clock,
+} from 'lucide-react';
 import { progressService } from '../services/progressService';
 import type { ProgressData } from '../services/progressService';
 import './MyProgress.css';
@@ -39,7 +43,7 @@ export default function MyProgressPage() {
       <div className="mp">
         <header className="mp-header">
           <button className="mp-back" onClick={() => navigate('/dashboard')}>← Dashboard</button>
-          <div className="mp-title"><span className="mp-title-icon">📊</span><h1>My Progress</h1></div>
+          <div className="mp-title"><span className="mp-title-icon"><BarChart3 size={22} aria-hidden /></span><h1>My Progress</h1></div>
         </header>
         <div className="mp-loading">
           <div className="mp-spinner" />
@@ -54,7 +58,7 @@ export default function MyProgressPage() {
       <div className="mp">
         <header className="mp-header">
           <button className="mp-back" onClick={() => navigate('/dashboard')}>← Dashboard</button>
-          <div className="mp-title"><span className="mp-title-icon">📊</span><h1>My Progress</h1></div>
+          <div className="mp-title"><span className="mp-title-icon"><BarChart3 size={22} aria-hidden /></span><h1>My Progress</h1></div>
         </header>
         <div className="mp-loading">
           <div className="mp-error">{error}</div>
@@ -68,10 +72,10 @@ export default function MyProgressPage() {
       <div className="mp">
         <header className="mp-header">
           <button className="mp-back" onClick={() => navigate('/dashboard')}>← Dashboard</button>
-          <div className="mp-title"><span className="mp-title-icon">📊</span><h1>My Progress</h1></div>
+          <div className="mp-title"><span className="mp-title-icon"><BarChart3 size={22} aria-hidden /></span><h1>My Progress</h1></div>
         </header>
         <div className="mp-empty">
-          <span className="mp-empty-icon">🎯</span>
+          <Target className="mp-empty-icon" size={48} aria-hidden />
           <h2>No Interview Data Yet</h2>
           <p>Complete your first AI interview to start tracking your progress.</p>
           <button className="mp-start-btn" onClick={() => navigate('/interview/setup')}>
@@ -93,7 +97,7 @@ export default function MyProgressPage() {
       <header className="mp-header">
         <button className="mp-back" onClick={() => navigate('/dashboard')}>← Dashboard</button>
         <div className="mp-title">
-          <span className="mp-title-icon">📊</span>
+          <span className="mp-title-icon"><BarChart3 size={22} aria-hidden /></span>
           <h1>My Progress</h1>
         </div>
       </header>
@@ -102,7 +106,7 @@ export default function MyProgressPage() {
         {/* ── Stats Cards ── */}
         <section className="mp-stats-grid">
           <div className="mp-stat-card">
-            <span className="mp-stat-icon">🎤</span>
+            <span className="mp-stat-icon"><Mic size={20} aria-hidden /></span>
             <div className="mp-stat-info">
               <span className="mp-stat-value">{stats.completedInterviews}</span>
               <span className="mp-stat-label">Interviews Completed</span>
@@ -118,7 +122,7 @@ export default function MyProgressPage() {
             </div>
           </div>
           <div className="mp-stat-card">
-            <span className="mp-stat-icon">🏆</span>
+            <span className="mp-stat-icon"><Trophy size={20} aria-hidden /></span>
             <div className="mp-stat-info">
               <span className="mp-stat-value" style={{ color: stats.bestScore ? SCORE_COLOR(stats.bestScore) : undefined }}>
                 {stats.bestScore?.toFixed(1) ?? '—'}
@@ -127,7 +131,7 @@ export default function MyProgressPage() {
             </div>
           </div>
           <div className="mp-stat-card">
-            <span className="mp-stat-icon">❓</span>
+            <span className="mp-stat-icon"><HelpCircle size={20} aria-hidden /></span>
             <div className="mp-stat-info">
               <span className="mp-stat-value">{stats.totalQuestionsAnswered}</span>
               <span className="mp-stat-label">Questions Answered</span>
@@ -141,7 +145,7 @@ export default function MyProgressPage() {
             </div>
           </div>
           <div className="mp-stat-card">
-            <span className="mp-stat-icon">💻</span>
+            <span className="mp-stat-icon"><Code2 size={20} aria-hidden /></span>
             <div className="mp-stat-info">
               <span className="mp-stat-value">{technologyBreakdown.length}</span>
               <span className="mp-stat-label">Technologies Practiced</span>
@@ -152,7 +156,7 @@ export default function MyProgressPage() {
         {/* ── Score Trend ── */}
         {scoreHistory.length > 1 && (
           <section className="mp-card">
-            <h2>📈 Score Trend</h2>
+            <h2><TrendingUp size={18} aria-hidden /> Score Trend</h2>
             <div className="mp-chart">
               <div className="mp-chart-y-axis">
                 <span>10</span>
@@ -194,7 +198,7 @@ export default function MyProgressPage() {
         <div className="mp-two-col">
           {/* ── Technology Breakdown ── */}
           <section className="mp-card">
-            <h2>💻 By Technology</h2>
+            <h2><Code2 size={18} aria-hidden /> By Technology</h2>
             {technologyBreakdown.length === 0 ? (
               <p className="mp-muted">No completed interviews yet.</p>
             ) : (
@@ -234,7 +238,7 @@ export default function MyProgressPage() {
 
           {/* ── Topic Scores ── */}
           <section className="mp-card">
-            <h2>🎯 Topic Performance</h2>
+            <h2><Target size={18} aria-hidden /> Topic Performance</h2>
             {topicScores.length === 0 ? (
               <p className="mp-muted">No topic-level data yet.</p>
             ) : (
@@ -269,7 +273,7 @@ export default function MyProgressPage() {
           <div className="mp-two-col">
             {strengths.length > 0 && (
               <section className="mp-card mp-strengths">
-                <h2>💪 Key Strengths</h2>
+                <h2><Dumbbell size={18} aria-hidden /> Key Strengths</h2>
                 <ul className="mp-insight-list">
                   {strengths.map((s, i) => (
                     <li key={i}>{s}</li>
@@ -279,7 +283,7 @@ export default function MyProgressPage() {
             )}
             {improvements.length > 0 && (
               <section className="mp-card mp-improvements">
-                <h2>📝 Areas to Improve</h2>
+                <h2><NotebookPen size={18} aria-hidden /> Areas to Improve</h2>
                 <ul className="mp-insight-list">
                   {improvements.map((s, i) => (
                     <li key={i}>{s}</li>
@@ -292,7 +296,7 @@ export default function MyProgressPage() {
 
         {/* ── Recent Sessions ── */}
         <section className="mp-card">
-          <h2>🕐 Recent Interviews</h2>
+          <h2><Clock size={18} aria-hidden /> Recent Interviews</h2>
           {recentSessions.length === 0 ? (
             <p className="mp-muted">No interviews yet.</p>
           ) : (

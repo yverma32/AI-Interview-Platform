@@ -1,24 +1,30 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Atom, Type, Heart, Circle, Coffee, Snail, FileType2, Database, Layers,
+  BarChart3, Cloud, Container, Wrench,
+  BookOpen, Bot, Sparkles, Download, ChevronUp, Lightbulb, NotebookPen, Target,
+  type LucideIcon,
+} from 'lucide-react';
 import { questionBankService } from '../services/questionBankService';
 import type { GeneratedQuestion, QuestionAnswer } from '../services/questionBankService';
 import './QuestionBank.css';
 
-const TECHNOLOGIES = [
-  { id: 'React', label: 'React', icon: '⚛️' },
-  { id: 'Angular', label: 'Angular', icon: '🅰️' },
-  { id: 'Vue.js', label: 'Vue.js', icon: '💚' },
-  { id: 'Node.js', label: 'Node.js', icon: '🟢' },
-  { id: '.NET/C#', label: '.NET / C#', icon: '🟣' },
-  { id: 'Java', label: 'Java', icon: '☕' },
-  { id: 'Python', label: 'Python', icon: '🐍' },
-  { id: 'TypeScript', label: 'TypeScript', icon: '📘' },
-  { id: 'SQL/Databases', label: 'SQL / DB', icon: '🗄️' },
-  { id: 'System Design', label: 'System Design', icon: '🏗️' },
-  { id: 'DSA', label: 'DSA', icon: '📊' },
-  { id: 'AWS', label: 'AWS', icon: '☁️' },
-  { id: 'Docker/Kubernetes', label: 'Docker / K8s', icon: '🐳' },
-  { id: 'DevOps', label: 'DevOps', icon: '🔧' },
+const TECHNOLOGIES: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: 'React',             label: 'React',         icon: Atom },
+  { id: 'Angular',           label: 'Angular',       icon: Type },
+  { id: 'Vue.js',            label: 'Vue.js',        icon: Heart },
+  { id: 'Node.js',           label: 'Node.js',       icon: Circle },
+  { id: '.NET/C#',           label: '.NET / C#',     icon: Circle },
+  { id: 'Java',              label: 'Java',          icon: Coffee },
+  { id: 'Python',            label: 'Python',        icon: Snail },
+  { id: 'TypeScript',        label: 'TypeScript',    icon: FileType2 },
+  { id: 'SQL/Databases',     label: 'SQL / DB',      icon: Database },
+  { id: 'System Design',     label: 'System Design', icon: Layers },
+  { id: 'DSA',               label: 'DSA',           icon: BarChart3 },
+  { id: 'AWS',               label: 'AWS',           icon: Cloud },
+  { id: 'Docker/Kubernetes', label: 'Docker / K8s',  icon: Container },
+  { id: 'DevOps',            label: 'DevOps',        icon: Wrench },
 ];
 
 const DIFF_COLORS: Record<string, string> = {
@@ -49,49 +55,68 @@ export default function QuestionBankPage() {
   const [questions, setQuestions] = useState<QuestionWithAnswer[]>([]);
   const [error, setError] = useState('');
   const [loadingMore, setLoadingMore] = useState(false);
-  const [answersLoaded, setAnswersLoaded] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const downloadRef = useRef<HTMLDivElement>(null);
 
-  const fetchAnswersInBackground = (tech: string, qs: QuestionWithAnswer[]) => {
-    questionBankService
-      .getBatchAnswers(tech, qs.map((q) => ({ id: q.id, question: q.question })))
-      .then((answers) => {
-        const answerMap = new Map<number, QuestionAnswer>();
-        answers.forEach((a) => answerMap.set(a.id, a));
-        setQuestions((prev) =>
-          prev.map((item) => {
-            const ans = answerMap.get(item.id);
-            return ans
-              ? { ...item, answer: ans.answer, keyPoints: ans.keyPoints, tips: ans.tips, loadingAnswer: false }
-              : item;
-          })
-        );
-        setAnswersLoaded(true);
+  /**
+   * Apply a batch of answers from the API onto our local question list, matched by id.
+   * Used by both single-question fetch and bulk "fetch all".
+   */
+  const applyAnswers = (answers: QuestionAnswer[]) => {
+    const answerMap = new Map<number, QuestionAnswer>();
+    answers.forEach((a) => answerMap.set(a.id, a));
+    setQuestions((prev) =>
+      prev.map((item) => {
+        const ans = answerMap.get(item.id);
+        return ans
+          ? { ...item, answer: ans.answer, keyPoints: ans.keyPoints, tips: ans.tips, loadingAnswer: false }
+          : item;
       })
-      .catch(() => {
-        // Silently fail — user can still see questions
-        setQuestions((prev) => prev.map((item) => ({ ...item, loadingAnswer: false })));
-      });
+    );
   };
 
   const handleGenerate = async () => {
     if (!technology) return;
     setError('');
     setPhase('loading');
-    setAnswersLoaded(false);
 
     try {
+      // Just fetch questions — answers come on-demand to save tokens.
       const result = await questionBankService.generateQuestions(technology, topic || undefined, 10);
-      const withState = result.map((q) => ({ ...q, showAnswer: false, loadingAnswer: true }));
-      setQuestions(withState);
+      setQuestions(result.map((q) => ({ ...q, showAnswer: false })));
       setPhase('questions');
-      // Fetch answers in background
-      fetchAnswersInBackground(technology, withState);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } }; message?: string };
       setError(error.response?.data?.message || error.message || 'Failed to generate questions.');
       setPhase('setup');
+    }
+  };
+
+  /**
+   * Fetch the answer for a single question on demand. Marks the row loading, then either reveals
+   * the answer when it lands or surfaces an inline error if the API call fails.
+   */
+  const handleFetchAnswer = async (questionId: number) => {
+    const target = questions.find((q) => q.id === questionId);
+    if (!target || target.answer) {
+      // Already cached — just toggle visibility.
+      setQuestions((prev) => prev.map((q) => q.id === questionId ? { ...q, showAnswer: !q.showAnswer } : q));
+      return;
+    }
+
+    setQuestions((prev) => prev.map((q) => q.id === questionId ? { ...q, loadingAnswer: true } : q));
+    try {
+      const answers = await questionBankService.getBatchAnswers(
+        technology,
+        [{ id: target.id, question: target.question }],
+      );
+      applyAnswers(answers);
+      // Auto-reveal after fetch (the user clicked Fetch Answer — they want to read it now).
+      setQuestions((prev) => prev.map((q) => q.id === questionId ? { ...q, showAnswer: true, loadingAnswer: false } : q));
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(e.response?.data?.message || e.message || 'Failed to fetch answer.');
+      setQuestions((prev) => prev.map((q) => q.id === questionId ? { ...q, loadingAnswer: false } : q));
     }
   };
 
@@ -101,6 +126,43 @@ export default function QuestionBankPage() {
         item.id === questionId ? { ...item, showAnswer: !item.showAnswer } : item
       )
     );
+  };
+
+  /**
+   * Fetch answers for every question that doesn't already have one. Used by the "Fetch all answers"
+   * button and as a prerequisite step when the user downloads the PDF with answers.
+   * @returns the up-to-date list with all answers, suitable for the caller to use directly.
+   */
+  const [fetchingAll, setFetchingAll] = useState(false);
+  const fetchAllMissingAnswers = async (): Promise<QuestionWithAnswer[]> => {
+    const missing = questions.filter((q) => !q.answer);
+    if (missing.length === 0) return questions;
+
+    setFetchingAll(true);
+    setQuestions((prev) => prev.map((q) => q.answer ? q : { ...q, loadingAnswer: true }));
+    try {
+      const answers = await questionBankService.getBatchAnswers(
+        technology,
+        missing.map((q) => ({ id: q.id, question: q.question })),
+      );
+      const answerMap = new Map<number, QuestionAnswer>();
+      answers.forEach((a) => answerMap.set(a.id, a));
+      const updated = questions.map((item) => {
+        const ans = answerMap.get(item.id);
+        return ans
+          ? { ...item, answer: ans.answer, keyPoints: ans.keyPoints, tips: ans.tips, loadingAnswer: false }
+          : { ...item, loadingAnswer: false };
+      });
+      setQuestions(updated);
+      return updated;
+    } catch (err: unknown) {
+      setQuestions((prev) => prev.map((q) => ({ ...q, loadingAnswer: false })));
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(e.response?.data?.message || e.message || 'Failed to fetch answers.');
+      return questions;
+    } finally {
+      setFetchingAll(false);
+    }
   };
 
   const handleLoadMore = async () => {
@@ -113,11 +175,8 @@ export default function QuestionBankPage() {
         ...q,
         id: startId + q.id,
         showAnswer: false,
-        loadingAnswer: true,
       }));
       setQuestions((p) => [...p, ...newQs]);
-      // Fetch answers for the new batch in background
-      fetchAnswersInBackground(technology, newQs);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } }; message?: string };
       setError(error.response?.data?.message || error.message || 'Failed to load more questions.');
@@ -126,8 +185,15 @@ export default function QuestionBankPage() {
     }
   };
 
-  const handleDownloadPDF = (withAnswers: boolean) => {
+  const handleDownloadPDF = async (withAnswers: boolean) => {
     setShowDownloadMenu(false);
+
+    // If the user wants answers but we haven't fetched them all yet, fetch the missing ones first.
+    // Otherwise the PDF would show "Answer not yet loaded" placeholders, which is worse than waiting.
+    let questionsForPdf = questions;
+    if (withAnswers) {
+      questionsForPdf = await fetchAllMissingAnswers();
+    }
 
     const title = `${technology} Interview Questions${topic ? ` — ${topic}` : ''}`;
     const html = `
@@ -159,8 +225,8 @@ export default function QuestionBankPage() {
 </style>
 </head><body>
   <h1>${title}</h1>
-  <p class="subtitle">Generated on ${new Date().toLocaleDateString()} • ${questions.length} questions${withAnswers ? ' • With Answers' : ''}</p>
-  ${questions.map((q, i) => `
+  <p class="subtitle">Generated on ${new Date().toLocaleDateString()} • ${questionsForPdf.length} questions${withAnswers ? ' • With Answers' : ''}</p>
+  ${questionsForPdf.map((q, i) => `
     <div class="q-card">
       <div class="q-header">
         <span class="q-num">Q${i + 1}</span>
@@ -194,7 +260,6 @@ export default function QuestionBankPage() {
     setQuestions([]);
     setError('');
     setShowDownloadMenu(false);
-    setAnswersLoaded(false);
   };
 
   return (
@@ -205,7 +270,7 @@ export default function QuestionBankPage() {
           ← {phase === 'setup' ? 'Dashboard' : 'Back'}
         </button>
         <div className="qb-title">
-          <span className="qb-title-icon">📚</span>
+          <span className="qb-title-icon"><BookOpen size={22} aria-hidden /></span>
           <h1>Question Bank</h1>
         </div>
       </header>
@@ -222,16 +287,19 @@ export default function QuestionBankPage() {
           <section className="qb-section">
             <h3>Select Technology</h3>
             <div className="qb-tech-grid">
-              {TECHNOLOGIES.map((tech) => (
-                <button
-                  key={tech.id}
-                  className={`qb-tech-card${technology === tech.id ? ' selected' : ''}`}
-                  onClick={() => setTechnology(tech.id)}
-                >
-                  <span className="qb-tech-icon">{tech.icon}</span>
-                  <span className="qb-tech-label">{tech.label}</span>
-                </button>
-              ))}
+              {TECHNOLOGIES.map((tech) => {
+                const Icon = tech.icon;
+                return (
+                  <button
+                    key={tech.id}
+                    className={`qb-tech-card${technology === tech.id ? ' selected' : ''}`}
+                    onClick={() => setTechnology(tech.id)}
+                  >
+                    <span className="qb-tech-icon"><Icon size={22} aria-hidden /></span>
+                    <span className="qb-tech-label">{tech.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </section>
 
@@ -250,7 +318,7 @@ export default function QuestionBankPage() {
           {error && <div className="qb-error">{error}</div>}
 
           <button className="qb-generate-btn" onClick={handleGenerate} disabled={!technology}>
-            🤖 Generate Questions
+            <Bot size={18} aria-hidden /> Generate Questions
           </button>
         </div>
       )}
@@ -275,17 +343,35 @@ export default function QuestionBankPage() {
               <span className="qb-questions-count">{questions.length} questions</span>
             </div>
             <div className="qb-header-actions">
+              {questions.some((q) => !q.answer) && (
+                <button
+                  className="qb-fetch-all-btn"
+                  onClick={fetchAllMissingAnswers}
+                  disabled={fetchingAll}
+                >
+                  {fetchingAll ? (
+                    <><span className="qb-btn-spinner" /> Fetching answers...</>
+                  ) : (
+                    <><Sparkles size={14} aria-hidden /> Fetch All Answers</>
+                  )}
+                </button>
+              )}
               <div className="qb-download-wrapper" ref={downloadRef}>
                 <button
                   className="qb-download-btn"
                   onClick={() => setShowDownloadMenu((prev) => !prev)}
                 >
-                  📥 Download PDF
+                  <Download size={14} aria-hidden /> Download PDF
                 </button>
                 {showDownloadMenu && (
                   <div className="qb-download-menu">
                     <button onClick={() => handleDownloadPDF(false)}>Questions Only</button>
-                    <button onClick={() => handleDownloadPDF(true)}>With Answers</button>
+                    <button onClick={() => handleDownloadPDF(true)}>
+                      With Answers
+                      {questions.some((q) => !q.answer) && (
+                        <span className="qb-download-hint"> (will fetch missing first)</span>
+                      )}
+                    </button>
                   </div>
                 )}
               </div>
@@ -316,15 +402,17 @@ export default function QuestionBankPage() {
                 <div className="qb-q-actions">
                   <button
                     className={`qb-answer-btn${q.showAnswer ? ' active' : ''}`}
-                    onClick={() => handleToggleAnswer(q.id)}
+                    onClick={() => q.answer ? handleToggleAnswer(q.id) : handleFetchAnswer(q.id)}
                     disabled={q.loadingAnswer}
                   >
                     {q.loadingAnswer ? (
-                      <><span className="qb-btn-spinner" /> Loading answer...</>
+                      <><span className="qb-btn-spinner" /> Fetching answer...</>
+                    ) : !q.answer ? (
+                      <><Sparkles size={14} aria-hidden /> Fetch Answer</>
                     ) : q.showAnswer ? (
-                      '🔼 Hide Answer'
+                      <><ChevronUp size={14} aria-hidden /> Hide Answer</>
                     ) : (
-                      '💡 Show Answer'
+                      <><Lightbulb size={14} aria-hidden /> Show Answer</>
                     )}
                   </button>
                 </div>
@@ -332,20 +420,20 @@ export default function QuestionBankPage() {
                 {q.showAnswer && q.answer && (
                   <div className="qb-answer-panel">
                     <div className="qb-answer-section">
-                      <h4>📝 Model Answer</h4>
+                      <h4><NotebookPen size={14} aria-hidden /> Model Answer</h4>
                       <div className="qb-answer-text">{q.answer}</div>
                     </div>
 
                     {q.keyPoints && (
                       <div className="qb-answer-section">
-                        <h4>🎯 Key Points</h4>
+                        <h4><Target size={14} aria-hidden /> Key Points</h4>
                         <div className="qb-answer-text qb-key-points">{q.keyPoints}</div>
                       </div>
                     )}
 
                     {q.tips && (
                       <div className="qb-answer-section">
-                        <h4>💡 Tips</h4>
+                        <h4><Lightbulb size={14} aria-hidden /> Tips</h4>
                         <div className="qb-answer-text qb-tips">{q.tips}</div>
                       </div>
                     )}

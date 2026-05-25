@@ -11,6 +11,9 @@ public class AppDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<InterviewSession> InterviewSessions => Set<InterviewSession>();
     public DbSet<InterviewMessage> InterviewMessages => Set<InterviewMessage>();
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<UserResume> UserResumes => Set<UserResume>();
+    public DbSet<UserSkillProfile> UserSkillProfiles => Set<UserSkillProfile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +50,33 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Session)
                   .WithMany(s => s.Messages)
                   .HasForeignKey(e => e.SessionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasIndex(e => e.RazorpayOrderId).IsUnique();
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UserResume>(entity =>
+        {
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.UserId, e.UploadedAt });
+        });
+
+        modelBuilder.Entity<UserSkillProfile>(entity =>
+        {
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }
