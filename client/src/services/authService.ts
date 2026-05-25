@@ -25,6 +25,14 @@ export const authService = {
 
   async getProfile(): Promise<User> {
     const { data } = await api.get<User>('/auth/profile');
+    // Guard against the API path being misconfigured — if the request hit a SPA shell
+    // (e.g. VITE_API_URL points to a frontend host and that host's catch-all serves
+    // index.html), axios will hand us an HTML string or a string-with-no-id object.
+    // Reject anything that doesn't look like a real User payload so the AuthProvider
+    // doesn't end up "logged in" as a phantom.
+    if (!data || typeof data !== 'object' || typeof (data as User).id !== 'number') {
+      throw new Error('Profile response was not a valid user object — check VITE_API_URL.');
+    }
     return data;
   },
 };
