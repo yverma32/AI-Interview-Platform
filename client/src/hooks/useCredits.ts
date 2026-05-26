@@ -48,12 +48,30 @@ export const useCreateOrder = () =>
       api.post<CreateOrderResponse>('/payment/create-order', { packId }).then((r) => r.data),
   });
 
-interface VerifyPaymentResponse {
+export interface VerifyPaymentResponse {
   success: boolean;
   message?: string;
   packId?: string;
+  basicCreditsAdded: number;
+  premiumCreditsAdded: number;
+  foundingMemberBonusApplied: boolean;
   credits?: CreditBalance;
 }
+
+export interface FoundingStatus {
+  totalSpots: number;
+  spotsRemaining: number;
+  active: boolean;
+}
+
+export const useFoundingStatus = () =>
+  useQuery<FoundingStatus>({
+    queryKey: ['founding-status'],
+    queryFn: () => api.get<FoundingStatus>('/pricing/founding-status').then((r) => r.data),
+    // Refresh every 60s so the counter feels live as other people redeem during a launch window.
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
 
 export const useVerifyPayment = () => {
   const queryClient = useQueryClient();
@@ -66,6 +84,9 @@ export const useVerifyPayment = () => {
       api.post<VerifyPaymentResponse>('/payment/verify', data).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credits'] });
+      // A successful purchase may have just consumed a founding-member spot — refresh the counter
+      // so the banner on the pricing page reflects it immediately for other tabs/visitors.
+      queryClient.invalidateQueries({ queryKey: ['founding-status'] });
     },
   });
 };

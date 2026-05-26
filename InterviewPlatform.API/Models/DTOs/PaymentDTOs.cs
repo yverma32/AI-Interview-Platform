@@ -34,5 +34,23 @@ public class VerifyPaymentResponse
     public bool Success { get; set; }
     public string? Message { get; set; }
     public string? PackId { get; set; }
+    /// <summary>Basic credits added in THIS purchase (already accounting for any bonus multiplier).</summary>
+    public int BasicCreditsAdded { get; set; }
+    /// <summary>Premium credits added in THIS purchase (already accounting for any bonus multiplier).</summary>
+    public int PremiumCreditsAdded { get; set; }
+    /// <summary>True if the founding-member 2× bonus was applied to this purchase. Used by the
+    /// frontend to render the celebratory confetti modal.</summary>
+    public bool FoundingMemberBonusApplied { get; set; }
     public CreditBalanceDto? Credits { get; set; }
+}
+
+/// <summary>
+/// Public state of the launch founding-member promo. Drives the live counter banner on the
+/// pricing page so visitors can see how many spots remain. No auth required.
+/// </summary>
+public class FoundingStatusDto
+{
+    public int TotalSpots { get; set; }
+    public int SpotsRemaining { get; set; }
+    public bool Active => SpotsRemaining > 0;
 }

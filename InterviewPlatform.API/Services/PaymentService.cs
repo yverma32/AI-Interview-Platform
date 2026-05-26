@@ -10,6 +10,9 @@ namespace InterviewPlatform.API.Services;
 
 public class PaymentService : IPaymentService
 {
+    /// <summary>How many users are eligible for the launch double-credit bonus. First 50 buyers.</summary>
+    public const int FoundingMemberCap = 50;
+
     private readonly AppDbContext _db;
     private readonly IConfiguration _config;
     private readonly HttpClient _http;
@@ -128,9 +131,13 @@ public class PaymentService : IPaymentService
         if (user == null)
             return new VerifyPaymentResponse { Success = false, Message = "User not found." };
 
-        // 2. Mark payment complete and top up credits in a single SaveChanges.
-        user.BasicCreditsBalance += payment.BasicCreditsAdded;
-        user.PremiumCreditsBalance += payment.PremiumCreditsAdded;
+        // 2. Decide whether this purchase qualifies for the founding-member bonus, then mark
+        // payment complete and top up credits in a single SaveChanges so the credit grant
+        // and the founding-member flag commit atomically.
+        var (basicAdded, premiumAdded, bonusApplied) = await ApplyFoundingMemberBonusAsync(user, payment);
+
+        user.BasicCreditsBalance += basicAdded;
+        user.PremiumCreditsBalance += premiumAdded;
 
         payment.RazorpayPaymentId = request.RazorpayPaymentId;
         payment.RazorpaySignature = request.RazorpaySignature;
@@ -139,20 +146,49 @@ public class PaymentService : IPaymentService
 
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Credits topped up for user {UserId}: +{Basic} basic, +{Premium} premium (pack {Pack})",
-            userId, payment.BasicCreditsAdded, payment.PremiumCreditsAdded, payment.PackId);
+        _logger.LogInformation("Credits topped up for user {UserId}: +{Basic} basic, +{Premium} premium (pack {Pack}, founding-bonus={Bonus})",
+            userId, basicAdded, premiumAdded, payment.PackId, bonusApplied);
 
         return new VerifyPaymentResponse
         {
             Success = true,
-            Message = "Credits added to your account!",
+            Message = bonusApplied
+                ? "🎉 Founding member bonus applied! Credits doubled."
+                : "Credits added to your account!",
             PackId = payment.PackId,
+            BasicCreditsAdded = basicAdded,
+            PremiumCreditsAdded = premiumAdded,
+            FoundingMemberBonusApplied = bonusApplied,
             Credits = new CreditBalanceDto
             {
                 BasicCredits = user.BasicCreditsBalance,
                 PremiumCredits = user.PremiumCreditsBalance
             }
         };
+    }
+
+    /// <summary>
+    /// Decides if THIS payment qualifies the user as a founding member (first 50 buyers).
+    /// Returns the (possibly doubled) credit amounts plus a flag so callers can surface "bonus applied".
+    /// Idempotent at the user level: once a user IsFoundingMember, future purchases get normal credits.
+    /// </summary>
+    private async Task<(int basicAdded, int premiumAdded, bool bonusApplied)> ApplyFoundingMemberBonusAsync(User user, Payment payment)
+    {
+        if (user.IsFoundingMember)
+        {
+            // Already a founding member from a prior purchase; future purchases credit normally.
+            return (payment.BasicCreditsAdded, payment.PremiumCreditsAdded, false);
+        }
+
+        var founderCount = await _db.Users.CountAsync(u => u.IsFoundingMember);
+        if (founderCount >= FoundingMemberCap)
+        {
+            // Cap already filled.
+            return (payment.BasicCreditsAdded, payment.PremiumCreditsAdded, false);
+        }
+
+        user.IsFoundingMember = true;
+        return (payment.BasicCreditsAdded * 2, payment.PremiumCreditsAdded * 2, true);
     }
 
     public async Task<bool> HandleWebhookAsync(string rawBody, string signatureHeader)
@@ -236,8 +272,12 @@ public class PaymentService : IPaymentService
             return true;
         }
 
-        user.BasicCreditsBalance += payment.BasicCreditsAdded;
-        user.PremiumCreditsBalance += payment.PremiumCreditsAdded;
+        // Apply the same founding-member bonus path as the client /verify route. The user-level
+        // IsFoundingMember check ensures we don't double-grant if the webhook arrives after /verify.
+        var (basicAdded, premiumAdded, bonusApplied) = await ApplyFoundingMemberBonusAsync(user, payment);
+
+        user.BasicCreditsBalance += basicAdded;
+        user.PremiumCreditsBalance += premiumAdded;
 
         // We don't have the client-side payment_id / signature here, but Razorpay's payload does — keep them if available.
         if (root.TryGetProperty("payload", out var pl) &&
@@ -252,8 +292,8 @@ public class PaymentService : IPaymentService
 
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Razorpay webhook credited user {UserId} via order {OrderId}: +{Basic} basic, +{Premium} premium (pack {Pack})",
-            payment.UserId, orderId, payment.BasicCreditsAdded, payment.PremiumCreditsAdded, payment.PackId);
+        _logger.LogInformation("Razorpay webhook credited user {UserId} via order {OrderId}: +{Basic} basic, +{Premium} premium (pack {Pack}, founding-bonus={Bonus})",
+            payment.UserId, orderId, basicAdded, premiumAdded, payment.PackId, bonusApplied);
 
         return true;
     }

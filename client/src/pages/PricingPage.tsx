@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Diamond, Star, MessageCircle, Mic } from 'lucide-react';
+import { Check, Diamond, Star, MessageCircle, Mic, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useCredits, useCreditPacks, useCreateOrder, useVerifyPayment, type CreditPack } from '../hooks/useCredits';
+import {
+  useCredits, useCreditPacks, useCreateOrder, useVerifyPayment, useFoundingStatus,
+  type CreditPack,
+} from '../hooks/useCredits';
 import CreditBalanceBadge from '../components/CreditBalanceBadge';
+import FoundingMemberModal from '../components/FoundingMemberModal';
 import { analytics } from '../services/analytics';
 import './Pricing.css';
 
@@ -41,12 +45,21 @@ export default function PricingPage() {
   const { user, isAuthenticated } = useAuth();
   const { data: packsData, isLoading: packsLoading } = useCreditPacks();
   const { data: credits } = useCredits();
+  const { data: foundingStatus } = useFoundingStatus();
   const createOrder = useCreateOrder();
   const verifyPayment = useVerifyPayment();
 
   const [processingPack, setProcessingPack] = useState<string | null>(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
+
+  // Founding-member celebration modal state. Surfaced when verify response says the 2× bonus fired.
+  const [foundingModal, setFoundingModal] = useState<{
+    open: boolean;
+    packName: string;
+    basicCreditsAdded: number;
+    premiumCreditsAdded: number;
+  }>({ open: false, packName: '', basicCreditsAdded: 0, premiumCreditsAdded: 0 });
 
   useEffect(() => {
     if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
@@ -92,7 +105,26 @@ export default function PricingPage() {
             });
             if (result.success) {
               analytics.creditsPurchased(pack.id, pack.basicCredits, pack.premiumCredits);
-              setFeedback({ kind: 'success', message: result.message || 'Credits added!' });
+              // If the founding-member 2× bonus fired, surface the celebration modal instead of
+              // the generic toast — the modal owns the post-purchase communication.
+              if (result.foundingMemberBonusApplied) {
+                setFoundingModal({
+                  open: true,
+                  packName: pack.name,
+                  basicCreditsAdded: result.basicCreditsAdded,
+                  premiumCreditsAdded: result.premiumCreditsAdded,
+                });
+              } else {
+                const parts: string[] = [];
+                if (result.basicCreditsAdded > 0) parts.push(`${result.basicCreditsAdded} Basic`);
+                if (result.premiumCreditsAdded > 0) parts.push(`${result.premiumCreditsAdded} Premium`);
+                setFeedback({
+                  kind: 'success',
+                  message: parts.length > 0
+                    ? `${parts.join(' + ')} credits added to your account!`
+                    : (result.message || 'Credits added!'),
+                });
+              }
             } else {
               setFeedback({ kind: 'error', message: result.message || 'Payment verification failed.' });
             }
@@ -150,11 +182,34 @@ export default function PricingPage() {
         )}
       </header>
 
+      {/* Launch promo banner — shows only while spots remain. Drives urgency with a live counter. */}
+      {foundingStatus?.active && (
+        <div className="founding-banner" role="status">
+          <Sparkles size={18} aria-hidden />
+          <div className="founding-banner-text">
+            <strong>🎯 Founding Member offer:</strong> First {foundingStatus.totalSpots} buyers get{' '}
+            <strong>DOUBLE credits</strong> on any pack.
+          </div>
+          <div className="founding-banner-counter">
+            <span className="founding-banner-count">{foundingStatus.spotsRemaining}</span>
+            <span className="founding-banner-label">spots left</span>
+          </div>
+        </div>
+      )}
+
       {feedback && (
         <div className={`pricing-feedback pricing-feedback--${feedback.kind}`} role="status">
           {feedback.message}
         </div>
       )}
+
+      <FoundingMemberModal
+        open={foundingModal.open}
+        packName={foundingModal.packName}
+        basicCreditsAdded={foundingModal.basicCreditsAdded}
+        premiumCreditsAdded={foundingModal.premiumCreditsAdded}
+        onClose={() => setFoundingModal((p) => ({ ...p, open: false }))}
+      />
 
       <section className="pricing-grid">
         {packs.map((pack) => (

@@ -1,0 +1,204 @@
+.fm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+  animation: fm-fade-in 0.25s ease-out;
+}
+
+@keyframes fm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg, 16px);
+  padding: 32px;
+  text-align: center;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  animation: fm-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fm-pop-in {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.fm-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-full, 999px);
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fm-modal-close:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+.fm-modal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 18px;
+}
+
+.fm-modal-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  background: var(--gradient-text, linear-gradient(135deg, #00F0FF, #FF2BD6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.fm-modal-emoji {
+  /* The emoji shouldn't inherit the gradient — gradients on emoji look like garbage */
+  background: none;
+  -webkit-text-fill-color: initial;
+  color: initial;
+}
+
+.fm-modal-sub {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0 0 18px;
+}
+
+.fm-modal-pack {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--surface-2);
+  border: 1px solid var(--border-base);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.fm-modal-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.fm-credit-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-base);
+  border-radius: 12px;
+}
+
+.fm-credit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.fm-credit-icon--basic {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+
+.fm-credit-icon--premium {
+  background: color-mix(in srgb, var(--neon-magenta, #FF2BD6) 18%, transparent);
+  color: var(--neon-magenta, #FF2BD6);
+}
+
+.fm-credit-text {
+  flex: 1;
+  text-align: left;
+}
+
+.fm-credit-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.fm-credit-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.fm-credit-bonus {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--gradient-primary, linear-gradient(135deg, #00F0FF, #B026FF, #FF2BD6));
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.fm-modal-cta {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  background: var(--gradient-primary, linear-gradient(135deg, #00F0FF, #B026FF, #FF2BD6));
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.15s ease;
+}
+
+.fm-modal-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+@media (max-width: 480px) {
+  .fm-modal { padding: 24px 20px; }
+  .fm-modal-title { font-size: 24px; }
+  .fm-credit-row { padding: 12px; gap: 10px; }
+  .fm-credit-amount { font-size: 18px; }
+}

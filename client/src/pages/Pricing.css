@@ -410,10 +410,79 @@
   border-bottom: none;
 }
 
+/* ── Founding-member promo banner ────────────────────────────────────── */
+.founding-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto var(--space-6);
+  padding: 16px 22px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      color-mix(in srgb, var(--neon-magenta, #FF2BD6) 16%, transparent));
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+}
+
+.founding-banner > svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.founding-banner-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.founding-banner-text strong {
+  font-weight: 700;
+}
+
+.founding-banner-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+}
+
+.founding-banner-count {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--gradient-text, linear-gradient(135deg, #00F0FF, #FF2BD6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.founding-banner-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .pricing-page { padding: var(--space-4); gap: var(--space-6); }
   .pricing-card--featured { transform: none; }
   .pricing-header h1 { font-size: var(--text-3xl); }
   .mode-compare { grid-template-columns: 1fr; }
+  .founding-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
 }

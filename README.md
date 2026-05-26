@@ -321,3 +321,78 @@ Foreign keys cascade on user deletion. Schema migrations beyond the initial `Ens
 - Question-variety guard added to the system prompt — past opening topics are passed in to prevent repeats.
 - Weak-topic practice mode: focus topics persist on the session and shape every prompt in the interview.
 - Razorpay payments + tiered subscription enforcement wired through the interview start flow.
+
+Deploy steps
+A. Railway (API + Postgres + Redis)
+Create the project. Go to https://railway.app → New Project → Deploy from GitHub repo. Pick your repo. Railway will detect railway.json and build the Dockerfile at InterviewPlatform.API/Dockerfile.
+
+Add Postgres. In the project canvas → New → Database → Add Postgres. It auto-creates DATABASE_URL (Railway's format) and PG* vars.
+
+Add Redis. New → Database → Add Redis. Auto-creates REDIS_URL.
+
+Set environment variables on your API service (Variables tab). Use double-underscore for nested .NET keys:
+
+
+ASPNETCORE_ENVIRONMENT=Production
+PORT=8080
+ConnectionStrings__DefaultConnection=Host=${{Postgres.PGHOST}};Port=${{Postgres.PGPORT}};Database=${{Postgres.PGDATABASE}};Username=${{Postgres.PGUSER}};Password=${{Postgres.PGPASSWORD}};SSL Mode=Require;Trust Server Certificate=true
+ConnectionStrings__Redis=${{Redis.REDIS_URL}}
+Jwt__Secret=<generate 64+ random chars, e.g. openssl rand -base64 48>
+Jwt__Issuer=InterviewPlatform
+Jwt__Audience=InterviewPlatformUsers
+Jwt__ExpirationInMinutes=15
+OpenAI__ApiKey=<your existing key>
+OpenAI__InterviewModel=gpt-4o
+OpenAI__BulkModel=gpt-4o-mini
+OpenAI__RealtimeModel=gpt-realtime
+Razorpay__KeyId=rzp_test_Stge103I2Xn5Gu
+Razorpay__KeySecret=LsPiFH5AvhRFmIAdMWLXtLaS
+Razorpay__WebhookSecret=j45xW_wJrYajmTg
+Cookies__CrossSite=true
+Cors__AllowedOrigins__0=https://<your-vercel-domain>.vercel.app
+The ${{Postgres.PGHOST}} syntax is Railway's variable referencing — Railway substitutes them at deploy time. Note SSL Mode=Require — Railway Postgres requires TLS.
+
+Deploy — Railway will build and run. Once it's healthy, click Settings → Networking → Generate Domain for the API service to get https://<something>.up.railway.app.
+
+Run the EF migration. First deploy will hit the Database.Migrate() call in Program.cs and run pending migrations automatically. Watch the deploy logs. The credit-system backfill in Program.cs:163 also runs there.
+
+B. Vercel (frontend)
+Import the repo. https://vercel.com/new → import your GitHub repo.
+
+Configure project settings:
+
+Root Directory: client
+Framework: Vite (auto-detected)
+Build Command: npm run build (default)
+Output Directory: dist (default)
+Environment variables (Project Settings → Environment Variables):
+
+
+VITE_API_URL=https://<your-railway-domain>.up.railway.app
+(Skip VITE_POSTHOG_KEY unless you want analytics.)
+
+Deploy. Vercel will give you https://<project>.vercel.app.
+
+C. Wire the two together
+Go back to Railway, edit Cors__AllowedOrigins__0 so it matches your actual Vercel URL (including https:// and no trailing slash). Redeploy if the value changed.
+
+Update the Razorpay webhook URL. In your Razorpay dashboard, edit the webhook you created earlier — change the URL from your ngrok URL to:
+
+
+https://<your-railway-domain>.up.railway.app/api/payment/webhook
+Keep the same webhook secret (already in env vars).
+
+D. Smoke test
+Open the Vercel URL → register a new account (post-register resume step shows up).
+Dashboard shows 2 Basic + 1 Premium credit.
+Try Basic interview — should complete and show results.
+Visit /pricing → buy Starter Pack with test card 4111 1111 1111 1111 → credits update.
+Check Railway logs for Razorpay webhook credited user X via order ... after a few seconds.
+Things to watch out for
+First deploy is slow — Railway compiles the .NET image fresh (~3-5 min). Subsequent deploys reuse the restore layer.
+The free Railway plan has $5/month credit — fine for testing but the API + Postgres + Redis services will eat through it in ~10 days of continuous uptime. Use Railway's sleep-on-idle setting or pause the project when not testing.
+appsettings.json is gitignored, so Railway sees only the env vars. Don't be surprised if local dev still works (reading from appsettings.json) while Railway depends entirely on env vars.
+CORS errors in the browser console after deploy almost always mean the Cors__AllowedOrigins__0 value doesn't exactly match the request Origin. Check protocol (https://) and trailing slashes.
+Want me to also push these files to a deploy branch, or are you good to take it from here?
+
+Host=postgresql://postgres:tqWIgRsxZDgDzlvlLBACwLMzNGypaiSj@postgres.railway.internal:5432/railway;Port=5432;Database=railway;Username=postgres;Password=tqWIgRsxZDgDzlvlLBACwLMzNGypaiSj;SSL Mode=Require;Trust Server Certificate=true
