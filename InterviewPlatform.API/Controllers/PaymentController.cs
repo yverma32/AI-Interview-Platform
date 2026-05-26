@@ -31,7 +31,7 @@ public class PaymentController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem();
         try
         {
-            var order = await _paymentService.CreateCreditOrderAsync(GetUserId(), request.PackId);
+            var order = await _paymentService.CreateCreditOrderAsync(GetUserId(), request.PackId, request.Currency);
             return Ok(order);
         }
         catch (ArgumentException ex)

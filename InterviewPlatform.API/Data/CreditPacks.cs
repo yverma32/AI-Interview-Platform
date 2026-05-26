@@ -16,6 +16,7 @@ public static class CreditPacks
             Id = "starter",
             Name = "Starter Pack",
             PriceInPaise = 19900,
+            PriceInCents = 299,
             BasicCredits = 5,
             PremiumCredits = 0,
             Description = "5 text interviews — perfect to get started"
@@ -25,6 +26,7 @@ public static class CreditPacks
             Id = "basic",
             Name = "Basic Pack",
             PriceInPaise = 49900,
+            PriceInCents = 599,
             BasicCredits = 15,
             PremiumCredits = 0,
             Description = "15 text interviews — best for regular practice"
@@ -34,6 +36,7 @@ public static class CreditPacks
             Id = "premium",
             Name = "Premium Pack",
             PriceInPaise = 149900,
+            PriceInCents = 1799,
             BasicCredits = 10,
             PremiumCredits = 5,
             Description = "10 text + 5 voice interviews — serious prep"
@@ -43,6 +46,7 @@ public static class CreditPacks
             Id = "pro",
             Name = "Pro Pack",
             PriceInPaise = 299900,
+            PriceInCents = 3499,
             BasicCredits = 20,
             PremiumCredits = 10,
             Description = "20 text + 10 voice interviews — active job seekers"

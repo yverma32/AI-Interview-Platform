@@ -6,6 +6,7 @@ import {
   useCredits, useCreditPacks, useCreateOrder, useVerifyPayment, useFoundingStatus,
   type CreditPack,
 } from '../hooks/useCredits';
+import { useGeoLocation } from '../hooks/useGeoLocation';
 import CreditBalanceBadge from '../components/CreditBalanceBadge';
 import FoundingMemberModal from '../components/FoundingMemberModal';
 import { analytics } from '../services/analytics';
@@ -43,6 +44,7 @@ interface RazorpayResponse {
 export default function PricingPage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { currency } = useGeoLocation();
   const { data: packsData, isLoading: packsLoading } = useCreditPacks();
   const { data: credits } = useCredits();
   const { data: foundingStatus } = useFoundingStatus();
@@ -52,6 +54,9 @@ export default function PricingPage() {
   const [processingPack, setProcessingPack] = useState<string | null>(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
+
+  const currencySymbol = currency === 'INR' ? '₹' : '$';
+  const getPrice = (pack: CreditPack) => currency === 'INR' ? pack.priceINR : pack.priceUSD;
 
   // Founding-member celebration modal state. Surfaced when verify response says the 2× bonus fired.
   const [foundingModal, setFoundingModal] = useState<{
@@ -87,7 +92,7 @@ export default function PricingPage() {
     setFeedback(null);
 
     try {
-      const order = await createOrder.mutateAsync(pack.id);
+      const order = await createOrder.mutateAsync({ packId: pack.id, currency });
 
       const options: RazorpayOptions = {
         key: order.razorpayKeyId,
@@ -219,8 +224,8 @@ export default function PricingPage() {
             {pack.highlight && <div className="featured-badge">Most Popular</div>}
             <h2 className="plan-name">{pack.name}</h2>
             <div className="plan-price">
-              <span className="price-currency">₹</span>
-              <span className="price-amount">{pack.price}</span>
+              <span className="price-currency">{currencySymbol}</span>
+              <span className="price-amount">{getPrice(pack)}</span>
             </div>
             <div className="plan-interviews">
               <div className="credit-line">
@@ -249,7 +254,7 @@ export default function PricingPage() {
               disabled={processingPack !== null}
               onClick={() => handleBuy(pack)}
             >
-              {processingPack === pack.id ? 'Processing...' : `Buy for ₹${pack.price}`}
+              {processingPack === pack.id ? 'Processing...' : `Buy for ${currencySymbol}${getPrice(pack)}`}
             </button>
           </div>
         ))}

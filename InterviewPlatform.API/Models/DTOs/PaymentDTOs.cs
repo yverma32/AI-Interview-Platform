@@ -7,12 +7,16 @@ public class CreateOrderRequest
     [Required]
     [RegularExpression("^(starter|basic|premium|pro)$", ErrorMessage = "Invalid pack. Must be starter, basic, premium, or pro.")]
     public string PackId { get; set; } = string.Empty;
+
+    [RegularExpression("^(INR|USD)$", ErrorMessage = "Invalid currency. Must be INR or USD.")]
+    public string Currency { get; set; } = "INR";
 }
 
 public class CreateOrderResponse
 {
     public string OrderId { get; set; } = string.Empty;
-    public int Amount { get; set; } // in paise
+    /// <summary>Smallest currency unit — paise for INR, cents for USD.</summary>
+    public int Amount { get; set; }
     public string Currency { get; set; } = "INR";
     public string RazorpayKeyId { get; set; } = string.Empty;
     public string PackId { get; set; } = string.Empty;
@@ -68,6 +72,7 @@ public class PaymentHistoryItem
     public string PackName { get; set; } = string.Empty;
     public decimal AmountRupees { get; set; }
     public string Currency { get; set; } = "INR";
+    public string CurrencySymbol { get; set; } = "₹";
     public string Status { get; set; } = string.Empty;
     public string? RazorpayOrderId { get; set; }
     public string? RazorpayPaymentId { get; set; }

@@ -8,7 +8,8 @@ public class CreditPack
 {
     public string Id { get; set; } = string.Empty;       // starter | basic | premium | pro
     public string Name { get; set; } = string.Empty;
-    public int PriceInPaise { get; set; }
+    public int PriceInPaise { get; set; }                // INR price in paise (e.g., 19900 = ₹199)
+    public int PriceInCents { get; set; }                // USD price in cents (e.g., 299 = $2.99)
     public int BasicCredits { get; set; }
     public int PremiumCredits { get; set; }
     public string Description { get; set; } = string.Empty;

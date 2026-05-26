@@ -128,7 +128,7 @@ function PaymentRow({ item }: { item: PaymentHistoryItem }) {
     <tr>
       <td>{dateLabel}</td>
       <td className="cell-pack">{item.packName}</td>
-      <td>₹{item.amountRupees.toFixed(0)}</td>
+      <td>{item.currencySymbol}{item.amountRupees.toFixed(2)}</td>
       <td>
         <CreditsCell item={item} />
       </td>
@@ -147,7 +147,7 @@ function PaymentCard({ item }: { item: PaymentHistoryItem }) {
           <div className="payment-card-pack">{item.packName}</div>
           <div className="payment-card-date">{dateLabel}</div>
         </div>
-        <div className="payment-card-amount">₹{item.amountRupees.toFixed(0)}</div>
+        <div className="payment-card-amount">{item.currencySymbol}{item.amountRupees.toFixed(2)}</div>
       </div>
       <div className="payment-card-row">
         <span className="payment-card-label">Credits</span>

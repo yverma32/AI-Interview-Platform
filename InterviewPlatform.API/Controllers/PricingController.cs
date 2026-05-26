@@ -27,18 +27,21 @@ public class PricingController : ControllerBase
     {
         var packs = CreditPacks.All.Select(p =>
         {
-            var priceRupees = p.PriceInPaise / 100m;
+            var priceINR = p.PriceInPaise / 100m;
+            var priceUSD = p.PriceInCents / 100m;
             return new
             {
                 p.Id,
                 p.Name,
-                Price = priceRupees,
-                Currency = "INR",
+                PriceINR = priceINR,
+                PriceUSD = priceUSD,
                 p.BasicCredits,
                 p.PremiumCredits,
                 p.Description,
-                PerBasicCredit = p.BasicCredits > 0 ? Math.Round(priceRupees / p.BasicCredits, 2) : (decimal?)null,
-                PerPremiumCredit = p.PremiumCredits > 0 ? Math.Round(priceRupees / p.PremiumCredits, 2) : (decimal?)null,
+                PerBasicCreditINR = p.BasicCredits > 0 ? Math.Round(priceINR / p.BasicCredits, 2) : (decimal?)null,
+                PerBasicCreditUSD = p.BasicCredits > 0 ? Math.Round(priceUSD / p.BasicCredits, 2) : (decimal?)null,
+                PerPremiumCreditINR = p.PremiumCredits > 0 ? Math.Round(priceINR / p.PremiumCredits, 2) : (decimal?)null,
+                PerPremiumCreditUSD = p.PremiumCredits > 0 ? Math.Round(priceUSD / p.PremiumCredits, 2) : (decimal?)null,
                 Highlight = p.Id == "premium"
             };
         });

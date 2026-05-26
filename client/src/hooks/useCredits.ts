@@ -9,13 +9,15 @@ export interface CreditBalance {
 export interface CreditPack {
   id: 'starter' | 'basic' | 'premium' | 'pro';
   name: string;
-  price: number;
-  currency: string;
+  priceINR: number;
+  priceUSD: number;
   basicCredits: number;
   premiumCredits: number;
   description: string;
-  perBasicCredit: number | null;
-  perPremiumCredit: number | null;
+  perBasicCreditINR: number | null;
+  perBasicCreditUSD: number | null;
+  perPremiumCreditINR: number | null;
+  perPremiumCreditUSD: number | null;
   highlight: boolean;
 }
 
@@ -28,7 +30,7 @@ export const useCredits = () =>
 
 export const useCreditPacks = () =>
   useQuery<{ packs: CreditPack[] }>({
-    queryKey: ['credit-packs'],
+    queryKey: ['credit-packs-v2'],
     queryFn: () => api.get<{ packs: CreditPack[] }>('/pricing/packs').then((r) => r.data),
     staleTime: 60 * 60 * 1000,
   });
@@ -43,9 +45,9 @@ interface CreateOrderResponse {
 }
 
 export const useCreateOrder = () =>
-  useMutation<CreateOrderResponse, Error, string>({
-    mutationFn: (packId) =>
-      api.post<CreateOrderResponse>('/payment/create-order', { packId }).then((r) => r.data),
+  useMutation<CreateOrderResponse, Error, { packId: string; currency: string }>({
+    mutationFn: ({ packId, currency }) =>
+      api.post<CreateOrderResponse>('/payment/create-order', { packId, currency }).then((r) => r.data),
   });
 
 export interface VerifyPaymentResponse {
@@ -70,6 +72,7 @@ export interface PaymentHistoryItem {
   packName: string;
   amountRupees: number;
   currency: string;
+  currencySymbol: string;
   status: string;
   razorpayOrderId?: string;
   razorpayPaymentId?: string;

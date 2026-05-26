@@ -26,18 +26,25 @@ public class PaymentService : IPaymentService
         _logger = logger;
     }
 
-    public async Task<CreateOrderResponse> CreateCreditOrderAsync(int userId, string packId)
+    public async Task<CreateOrderResponse> CreateCreditOrderAsync(int userId, string packId, string currency = "INR")
     {
         var pack = CreditPacks.GetById(packId)
             ?? throw new ArgumentException($"Invalid credit pack: {packId}");
 
+        if (currency != "INR" && currency != "USD")
+            throw new ArgumentException($"Invalid currency: {currency}. Must be INR or USD.");
+
         var keyId = _config["Razorpay:KeyId"] ?? throw new InvalidOperationException("Razorpay KeyId not configured.");
         var keySecret = _config["Razorpay:KeySecret"] ?? throw new InvalidOperationException("Razorpay KeySecret not configured.");
 
+        // Select the appropriate amount and currency for Razorpay order.
+        // AmountInPaise stores the smallest currency unit: paise for INR, cents for USD.
+        var amount = currency == "USD" ? pack.PriceInCents : pack.PriceInPaise;
+
         var orderPayload = new
         {
-            amount = pack.PriceInPaise,
-            currency = "INR",
+            amount,
+            currency,
             receipt = $"credits_{userId}_{packId}_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}",
             notes = new { userId = userId.ToString(), packId }
         };
@@ -66,7 +73,8 @@ public class PaymentService : IPaymentService
             UserId = userId,
             RazorpayOrderId = orderId,
             PackId = packId,
-            AmountInPaise = pack.PriceInPaise,
+            AmountInPaise = amount,
+            Currency = currency,
             BasicCreditsAdded = pack.BasicCredits,
             PremiumCreditsAdded = pack.PremiumCredits,
             CreatedAt = DateTime.UtcNow
@@ -74,13 +82,13 @@ public class PaymentService : IPaymentService
         _db.Payments.Add(payment);
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Razorpay order {OrderId} created for user {UserId}, pack {Pack}", orderId, userId, packId);
+        _logger.LogInformation("Razorpay order {OrderId} created for user {UserId}, pack {Pack}, currency {Currency}", orderId, userId, packId, currency);
 
         return new CreateOrderResponse
         {
             OrderId = orderId,
-            Amount = pack.PriceInPaise,
-            Currency = "INR",
+            Amount = amount,
+            Currency = currency,
             RazorpayKeyId = keyId,
             PackId = pack.Id,
             PackName = pack.Name
@@ -323,6 +331,7 @@ public class PaymentService : IPaymentService
             // gets removed in the future so old rows still render something readable.
             var pack = CreditPacks.GetById(p.PackId);
             var bonus = p.FoundingMemberBonusApplied;
+            var currencySymbol = p.Currency == "USD" ? "$" : "₹";
             return new PaymentHistoryItem
             {
                 Id = p.Id,
@@ -330,6 +339,7 @@ public class PaymentService : IPaymentService
                 PackName = pack?.Name ?? p.PackId,
                 AmountRupees = p.AmountInPaise / 100m,
                 Currency = p.Currency,
+                CurrencySymbol = currencySymbol,
                 Status = p.Status,
                 RazorpayOrderId = p.RazorpayOrderId,
                 RazorpayPaymentId = p.RazorpayPaymentId,
