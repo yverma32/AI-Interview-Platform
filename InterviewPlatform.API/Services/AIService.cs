@@ -88,7 +88,9 @@ public class AIService : IAIService
         if (string.IsNullOrWhiteSpace(assistantContent))
             throw new InvalidOperationException("AI returned an empty response.");
 
-        _logger.LogDebug("AI raw response: {Content}", assistantContent);
+        // Deliberately NOT logging the raw AI response — it contains the candidate's answer
+        // wrapped in feedback and could include resume snippets via the FocusTopics path.
+        // Surface parsed structured fields below if a specific value is suspect, never the blob.
 
         var parsed = JsonSerializer.Deserialize<AIInterviewResponse>(assistantContent,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });

@@ -187,8 +187,10 @@ export default function LandingPage() {
         </div>
         <div className="footer-links">
           <Link to="/pricing">Pricing</Link>
-          <Link to="/login">Sign In</Link>
-          <Link to="/register">Sign Up</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
+          <Link to="/refund">Refund</Link>
+          <Link to="/contact">Contact</Link>
         </div>
       </footer>
     </div>

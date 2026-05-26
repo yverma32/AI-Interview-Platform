@@ -2,12 +2,16 @@ using InterviewPlatform.API.Data;
 using InterviewPlatform.API.Models.DTOs;
 using InterviewPlatform.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace InterviewPlatform.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+// Public endpoints — apply the "api" rate-limit (60/min/IP) so an attacker can't hammer
+// the founding-status counter or the pack catalog to drive up Postgres connection pressure.
+[EnableRateLimiting("api")]
 public class PricingController : ControllerBase
 {
     private readonly AppDbContext _db;

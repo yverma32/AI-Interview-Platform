@@ -15,6 +15,7 @@ import QuestionBankPage from './pages/QuestionBankPage';
 import MyProgressPage from './pages/MyProgressPage';
 import PricingPage from './pages/PricingPage';
 import AccountPage from './pages/AccountPage';
+import PolicyPage from './pages/PolicyPage';
 
 function App() {
   return (
@@ -91,6 +92,11 @@ function App() {
             }
           />
           <Route path="/pricing" element={<PricingPage />} />
+          {/* Policy/legal pages — public, required by Razorpay merchant terms + India DPDP Act */}
+          <Route path="/privacy" element={<PolicyPage kind="privacy" />} />
+          <Route path="/terms" element={<PolicyPage kind="terms" />} />
+          <Route path="/refund" element={<PolicyPage kind="refund" />} />
+          <Route path="/contact" element={<PolicyPage kind="contact" />} />
           <Route
             path="/account"
             element={

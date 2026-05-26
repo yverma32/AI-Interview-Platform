@@ -345,9 +345,11 @@ OpenAI__ApiKey=<your existing key>
 OpenAI__InterviewModel=gpt-4o
 OpenAI__BulkModel=gpt-4o-mini
 OpenAI__RealtimeModel=gpt-realtime
-Razorpay__KeyId=rzp_test_Stge103I2Xn5Gu
-Razorpay__KeySecret=LsPiFH5AvhRFmIAdMWLXtLaS
-Razorpay__WebhookSecret=j45xW_wJrYajmTg
+Razorpay__KeyId=<your_razorpay_key_id>
+Razorpay__KeySecret=<your_razorpay_key_secret>
+Razorpay__WebhookSecret=<your_razorpay_webhook_secret>
+# Get test keys from https://dashboard.razorpay.com/app/website-app-settings/api-keys
+# Webhook secret is set when you register a webhook at https://dashboard.razorpay.com/app/webhooks
 Cookies__CrossSite=true
 Cors__AllowedOrigins__0=https://<your-vercel-domain>.vercel.app
 The ${{Postgres.PGHOST}} syntax is Railway's variable referencing — Railway substitutes them at deploy time. Note SSL Mode=Require — Railway Postgres requires TLS.

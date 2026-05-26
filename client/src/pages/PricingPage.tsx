@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Check, Diamond, Star, MessageCircle, Mic, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -296,10 +296,19 @@ export default function PricingPage() {
           </div>
           <div className="faq-item">
             <h4><Mic size={16} aria-hidden style={{ verticalAlign: 'middle', marginRight: 6 }} /> Can I get a refund?</h4>
-            <p>Credits are non-refundable once purchased. Reach out if you hit a technical issue.</p>
+            <p>Credits are non-refundable once purchased. See our <Link to="/refund">Refund Policy</Link> for the full rules.</p>
           </div>
         </div>
       </section>
+
+      {/* Policy links — required by Razorpay merchant terms so they're visible right next
+          to the purchase CTA, not buried under multiple clicks. */}
+      <nav className="pricing-policy-footer" aria-label="Policies">
+        <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
+        <Link to="/refund">Refund</Link>
+        <Link to="/contact">Contact</Link>
+      </nav>
     </div>
   );
 }

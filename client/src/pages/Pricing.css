@@ -455,3 +455,26 @@
     gap: 10px;
   }
 }
+
+/* ── Policy links footer ─────────────────────────────────────────────── */
+.pricing-policy-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle, var(--border-base));
+}
+
+.pricing-policy-footer a {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.pricing-policy-footer a:hover {
+  color: var(--text-primary);
+}
