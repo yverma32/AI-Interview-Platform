@@ -110,15 +110,25 @@ public class PaymentService : IPaymentService
         if (payment == null)
             return new VerifyPaymentResponse { Success = false, Message = "Payment record not found." };
 
-        // Idempotency: if already processed, return current balance without double-crediting.
+        // Idempotency: if already processed (most commonly because the Razorpay webhook crediting
+        // arrived first), return the recorded result. We pull the bonus flag from the Payment row
+        // so the frontend still fires the founding-member celebration UI even when the webhook
+        // path beat us to crediting.
         if (payment.Status == "Paid")
         {
             var existing = await _db.Users.FindAsync(userId);
+            var bonusBasic = payment.FoundingMemberBonusApplied ? payment.BasicCreditsAdded * 2 : payment.BasicCreditsAdded;
+            var bonusPremium = payment.FoundingMemberBonusApplied ? payment.PremiumCreditsAdded * 2 : payment.PremiumCreditsAdded;
             return new VerifyPaymentResponse
             {
                 Success = true,
-                Message = "Payment already processed.",
+                Message = payment.FoundingMemberBonusApplied
+                    ? "🎉 Founding member bonus applied! Credits doubled."
+                    : "Payment already processed.",
                 PackId = payment.PackId,
+                BasicCreditsAdded = bonusBasic,
+                PremiumCreditsAdded = bonusPremium,
+                FoundingMemberBonusApplied = payment.FoundingMemberBonusApplied,
                 Credits = new CreditBalanceDto
                 {
                     BasicCredits = existing?.BasicCreditsBalance ?? 0,
@@ -188,6 +198,7 @@ public class PaymentService : IPaymentService
         }
 
         user.IsFoundingMember = true;
+        payment.FoundingMemberBonusApplied = true; // persisted so /verify's idempotent path can recover it
         return (payment.BasicCreditsAdded * 2, payment.PremiumCreditsAdded * 2, true);
     }
 
