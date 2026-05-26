@@ -309,6 +309,42 @@ public class PaymentService : IPaymentService
         return true;
     }
 
+    public async Task<List<PaymentHistoryItem>> GetPaymentHistoryAsync(int userId)
+    {
+        var rows = await _db.Payments
+            .Where(p => p.UserId == userId)
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(100) // hard cap so a runaway user can't drag the page down
+            .ToListAsync();
+
+        return rows.Select(p =>
+        {
+            // Resolve the pack name from the static catalog; fall back to the raw id if a pack
+            // gets removed in the future so old rows still render something readable.
+            var pack = CreditPacks.GetById(p.PackId);
+            var bonus = p.FoundingMemberBonusApplied;
+            return new PaymentHistoryItem
+            {
+                Id = p.Id,
+                PackId = p.PackId,
+                PackName = pack?.Name ?? p.PackId,
+                AmountRupees = p.AmountInPaise / 100m,
+                Currency = p.Currency,
+                Status = p.Status,
+                RazorpayOrderId = p.RazorpayOrderId,
+                RazorpayPaymentId = p.RazorpayPaymentId,
+                // BasicCreditsAdded on the row is the pack baseline. Multiply for display when
+                // the bonus actually applied so the user sees what they received, not what the
+                // pack normally gives.
+                BasicCreditsReceived = bonus ? p.BasicCreditsAdded * 2 : p.BasicCreditsAdded,
+                PremiumCreditsReceived = bonus ? p.PremiumCreditsAdded * 2 : p.PremiumCreditsAdded,
+                FoundingMemberBonusApplied = bonus,
+                CreatedAt = p.CreatedAt,
+                PaidAt = p.PaidAt,
+            };
+        }).ToList();
+    }
+
     private static string ComputeHmacSha256(string data, string key)
     {
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(key));

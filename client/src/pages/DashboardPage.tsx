@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Target, Bot, BookOpen, BarChart3, Gem, Hand } from 'lucide-react';
+import { Target, Bot, BookOpen, BarChart3, Gem, Hand, Receipt } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCredits } from '../hooks/useCredits';
 import CreditBalanceBadge from '../components/CreditBalanceBadge';
@@ -110,6 +110,15 @@ export default function DashboardPage() {
             <p>Top up basic or premium credits. Credits never expire — use them at your own pace.</p>
             <button className="btn-primary" onClick={() => navigate('/pricing')}>
               View Packs
+            </button>
+          </div>
+
+          <div className="action-card">
+            <div className="action-icon"><Receipt size={24} aria-hidden /></div>
+            <h3>Account & Billing</h3>
+            <p>Profile details, credit balance, and the full history of your purchases.</p>
+            <button className="btn-primary" onClick={() => navigate('/account')}>
+              View Account
             </button>
           </div>
         </section>

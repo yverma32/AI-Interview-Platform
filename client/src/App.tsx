@@ -14,6 +14,7 @@ import OnboardingAssessmentPage from './pages/OnboardingAssessmentPage';
 import QuestionBankPage from './pages/QuestionBankPage';
 import MyProgressPage from './pages/MyProgressPage';
 import PricingPage from './pages/PricingPage';
+import AccountPage from './pages/AccountPage';
 
 function App() {
   return (
@@ -90,6 +91,14 @@ function App() {
             }
           />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <AccountPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

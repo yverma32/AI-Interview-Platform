@@ -47,6 +47,14 @@ public class PaymentController : ControllerBase
         return result.Success ? Ok(result) : BadRequest(result);
     }
 
+    /// <summary>Return the authenticated user's payment history, newest first.</summary>
+    [HttpGet("history")]
+    public async Task<IActionResult> History()
+    {
+        var items = await _paymentService.GetPaymentHistoryAsync(GetUserId());
+        return Ok(items);
+    }
+
     /// <summary>
     /// Razorpay server-to-server webhook. Public (no auth, no CSRF) — authenticated solely via the
     /// X-Razorpay-Signature header which Razorpay computes from the raw body + the WebhookSecret.

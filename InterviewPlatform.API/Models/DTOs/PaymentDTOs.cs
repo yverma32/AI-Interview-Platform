@@ -54,3 +54,26 @@ public class FoundingStatusDto
     public int SpotsRemaining { get; set; }
     public bool Active => SpotsRemaining > 0;
 }
+
+/// <summary>
+/// One row of the user's billing history. Includes everything a user might need for support
+/// (RazorpayPaymentId), for accounting (amount + date), or for understanding what they got
+/// (credits with bonus flag). Only completed and abandoned payments are surfaced — we hide
+/// stillborn Razorpay orders that never had a checkout opened.
+/// </summary>
+public class PaymentHistoryItem
+{
+    public int Id { get; set; }
+    public string PackId { get; set; } = string.Empty;
+    public string PackName { get; set; } = string.Empty;
+    public decimal AmountRupees { get; set; }
+    public string Currency { get; set; } = "INR";
+    public string Status { get; set; } = string.Empty;
+    public string? RazorpayOrderId { get; set; }
+    public string? RazorpayPaymentId { get; set; }
+    public int BasicCreditsReceived { get; set; }
+    public int PremiumCreditsReceived { get; set; }
+    public bool FoundingMemberBonusApplied { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? PaidAt { get; set; }
+}

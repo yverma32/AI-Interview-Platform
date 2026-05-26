@@ -64,6 +64,29 @@ export interface FoundingStatus {
   active: boolean;
 }
 
+export interface PaymentHistoryItem {
+  id: number;
+  packId: string;
+  packName: string;
+  amountRupees: number;
+  currency: string;
+  status: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  basicCreditsReceived: number;
+  premiumCreditsReceived: number;
+  foundingMemberBonusApplied: boolean;
+  createdAt: string;
+  paidAt?: string;
+}
+
+export const usePaymentHistory = () =>
+  useQuery<PaymentHistoryItem[]>({
+    queryKey: ['payment-history'],
+    queryFn: () => api.get<PaymentHistoryItem[]>('/payment/history').then((r) => r.data),
+    staleTime: 60_000,
+  });
+
 export const useFoundingStatus = () =>
   useQuery<FoundingStatus>({
     queryKey: ['founding-status'],

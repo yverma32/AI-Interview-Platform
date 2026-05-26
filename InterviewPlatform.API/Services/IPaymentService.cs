@@ -16,4 +16,7 @@ public interface IPaymentService
     /// via the client /verify path).
     /// </summary>
     Task<bool> HandleWebhookAsync(string rawBody, string signatureHeader);
+
+    /// <summary>Return the user's payment history, newest first.</summary>
+    Task<List<PaymentHistoryItem>> GetPaymentHistoryAsync(int userId);
 }
