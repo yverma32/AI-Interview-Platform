@@ -1,4 +1,5 @@
 import { Link, Navigate } from 'react-router-dom';
+import SeoHead from '../components/SeoHead';
 import {
   Target, MessageCircle, Mic, Diamond, Star,
   Brain, BookOpen, BarChart3, FileText,
@@ -20,6 +21,10 @@ export default function LandingPage() {
 
   return (
     <div className="landing">
+      <SeoHead
+        canonical="/"
+        description="Practice technical interviews with an AI voice interviewer. Real-time scoring, weak-topic analytics, 5 personas. Free to start — no credit card needed."
+      />
       {/* ── Top nav ─────────────────────────────────────────────────── */}
       <header className="landing-nav">
         <Link to="/" className="landing-brand">

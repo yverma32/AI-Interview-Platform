@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck, FileText, Receipt, Mail } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import SeoHead from '../components/SeoHead';
 import './Policy.css';
 
 /**
@@ -30,8 +31,16 @@ export default function PolicyPage({ kind }: Props) {
 
   const meta = METADATA[kind];
 
+  const SEO_DESCRIPTIONS: Record<PolicyKind, string> = {
+    privacy: 'Privacy Policy for InterviewReady — how we collect, use, and protect your data.',
+    terms: 'Terms of Service for InterviewReady — rules and conditions for using the platform.',
+    refund: 'Refund Policy for InterviewReady — credit purchase terms and refund conditions.',
+    contact: 'Contact InterviewReady — get in touch with support.',
+  };
+
   return (
     <div className="policy-page">
+      <SeoHead title={meta.title} description={SEO_DESCRIPTIONS[kind]} canonical={`/${kind}`} noIndex />
       <header className="policy-header">
         <button className="policy-back" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
           <ArrowLeft size={16} aria-hidden />

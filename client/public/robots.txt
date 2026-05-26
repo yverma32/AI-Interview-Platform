@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /interview/
+Disallow: /onboarding
+Disallow: /progress
+Disallow: /account
+Disallow: /question-bank
+
+Sitemap: https://interviewready.in/sitemap.xml

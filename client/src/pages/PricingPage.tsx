@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check, Diamond, Star, MessageCircle, Mic, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import SeoHead from '../components/SeoHead';
 import {
   useCredits, useCreditPacks, useCreateOrder, useVerifyPayment, useFoundingStatus,
   type CreditPack,
@@ -167,6 +168,11 @@ export default function PricingPage() {
 
   return (
     <div className="pricing-page">
+      <SeoHead
+        title="Pricing"
+        description="Buy interview credits — ₹199 to ₹2999. Text and voice AI mock interviews, credits never expire. First 50 buyers get double credits."
+        canonical="/pricing"
+      />
       <header className="pricing-header">
         <button className="btn-back" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
           ← {isAuthenticated ? 'Back to Dashboard' : 'Back to Home'}
