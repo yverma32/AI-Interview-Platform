@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE_NAME = 'InterviewReady';
-const SITE_URL = 'https://interviewready.in';
+const SITE_URL = 'https://prepfinity.vercel.app';
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 
 interface SeoHeadProps {

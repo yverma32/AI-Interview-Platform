@@ -7,4 +7,4 @@ Disallow: /progress
 Disallow: /account
 Disallow: /question-bank
 
-Sitemap: https://interviewready.in/sitemap.xml
+Sitemap: https://prepfinity.vercel.app/sitemap.xml
