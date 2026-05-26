@@ -7,10 +7,7 @@
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="7" fill="#0B0F24"/>
-  <!-- Target icon: outer ring, mid ring, bullseye -->
   <circle cx="16" cy="16" r="10" stroke="url(#g)" stroke-width="2.2" fill="none"/>
   <circle cx="16" cy="16" r="6" stroke="url(#g)" stroke-width="2" fill="none"/>
   <circle cx="16" cy="16" r="2.4" fill="url(#g)"/>
 </svg>
-</content>
-</invoke>
