@@ -105,6 +105,49 @@
   margin-bottom: var(--space-6);
 }
 
+/* Promo variant — clickable, gradient-tinted, gently pulses to draw the eye. */
+.hero-badge--promo {
+  padding: 8px 18px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--neon-cyan, #00F0FF) 22%, transparent),
+    color-mix(in srgb, var(--neon-purple, #B026FF) 22%, transparent),
+    color-mix(in srgb, var(--neon-magenta, #FF2BD6) 22%, transparent));
+  border: 1px solid color-mix(in srgb, var(--neon-purple, #B026FF) 55%, transparent);
+  color: var(--text-primary);
+  text-decoration: none;
+  box-shadow:
+    0 0 0 0 color-mix(in srgb, var(--neon-magenta, #FF2BD6) 40%, transparent),
+    var(--shadow-md);
+  animation: promo-pulse 2.4s ease-in-out infinite;
+  transition: transform 0.18s ease;
+}
+
+.hero-badge--promo:hover {
+  transform: translateY(-1px);
+  animation-play-state: paused;
+}
+
+.hero-badge--promo svg { color: var(--neon-magenta, #FF2BD6); }
+.hero-badge--promo strong { font-weight: var(--font-semibold); }
+
+@keyframes promo-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 color-mix(in srgb, var(--neon-magenta, #FF2BD6) 40%, transparent),
+      var(--shadow-md);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px color-mix(in srgb, var(--neon-magenta, #FF2BD6) 0%, transparent),
+      var(--shadow-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge--promo { animation: none; }
+}
+
 .hero-title {
   font-size: clamp(2.2rem, 5vw, 3.6rem);
   font-weight: var(--font-bold);

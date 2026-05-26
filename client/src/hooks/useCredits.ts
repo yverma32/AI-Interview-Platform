@@ -68,9 +68,10 @@ export const useFoundingStatus = () =>
   useQuery<FoundingStatus>({
     queryKey: ['founding-status'],
     queryFn: () => api.get<FoundingStatus>('/pricing/founding-status').then((r) => r.data),
-    // Refresh every 60s so the counter feels live as other people redeem during a launch window.
-    refetchInterval: 60_000,
-    staleTime: 30_000,
+    // Refresh every 5 min — we only need to know whether the promo is still active
+    // (spots > 0), not a live count, so frequent polling is wasted bandwidth.
+    refetchInterval: 5 * 60_000,
+    staleTime: 60_000,
   });
 
 export const useVerifyPayment = () => {

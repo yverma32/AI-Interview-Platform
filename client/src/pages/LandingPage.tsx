@@ -2,13 +2,15 @@ import { Link, Navigate } from 'react-router-dom';
 import {
   Target, MessageCircle, Mic, Diamond, Star,
   Brain, BookOpen, BarChart3, FileText,
-  ArrowRight, Sparkles, ShieldCheck, Zap,
+  ArrowRight, Sparkles, ShieldCheck, Zap, Gift,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useFoundingStatus } from '../hooks/useCredits';
 import './Landing.css';
 
 export default function LandingPage() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { data: foundingStatus } = useFoundingStatus();
 
   // If a logged-in user lands here (e.g. typed the root URL), send them to the dashboard.
   // Keeps the landing page exclusively for new/anonymous visitors.
@@ -33,10 +35,20 @@ export default function LandingPage() {
 
       {/* ── Hero ────────────────────────────────────────────────────── */}
       <section className="landing-hero">
-        <div className="hero-badge">
-          <Sparkles size={14} aria-hidden />
-          <span>Built for Indian tech interviews</span>
-        </div>
+        {foundingStatus?.active ? (
+          <Link to="/register" className="hero-badge hero-badge--promo">
+            <Gift size={14} aria-hidden />
+            <span>
+              <strong>Launch offer:</strong> First {foundingStatus.totalSpots} buyers get{' '}
+              <strong>2× credits</strong> on any pack →
+            </span>
+          </Link>
+        ) : (
+          <div className="hero-badge">
+            <Sparkles size={14} aria-hidden />
+            <span>Built for Indian tech interviews</span>
+          </div>
+        )}
         <h1 className="hero-title">
           Practice <span className="grad-text">real interviews</span>.<br />
           Get scored in real time.

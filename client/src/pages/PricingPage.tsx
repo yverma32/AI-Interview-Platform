@@ -182,17 +182,16 @@ export default function PricingPage() {
         )}
       </header>
 
-      {/* Launch promo banner — shows only while spots remain. Drives urgency with a live counter. */}
+      {/* Launch promo banner — shows only while spots remain. We deliberately do NOT show
+          the live spot count: an empty "50 spots left" reads as negative social proof to
+          early visitors. The promo still ends silently once the cap is hit (the banner
+          stops rendering because foundingStatus.active goes false). */}
       {foundingStatus?.active && (
         <div className="founding-banner" role="status">
           <Sparkles size={18} aria-hidden />
           <div className="founding-banner-text">
             <strong>🎯 Founding Member offer:</strong> First {foundingStatus.totalSpots} buyers get{' '}
-            <strong>DOUBLE credits</strong> on any pack.
-          </div>
-          <div className="founding-banner-counter">
-            <span className="founding-banner-count">{foundingStatus.spotsRemaining}</span>
-            <span className="founding-banner-label">spots left</span>
+            <strong>DOUBLE credits</strong> on any pack — limited time.
           </div>
         </div>
       )}
