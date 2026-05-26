@@ -131,8 +131,8 @@ export default function PricingPage() {
   return (
     <div className="pricing-page">
       <header className="pricing-header">
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>
-          ← Back to Dashboard
+        <button className="btn-back" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
+          ← {isAuthenticated ? 'Back to Dashboard' : 'Back to Home'}
         </button>
         <h1>Buy Interview Credits</h1>
         <p className="pricing-subtitle">
