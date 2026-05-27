@@ -128,7 +128,11 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = secure,
             SameSite = sameSite,
-            Path = "/api/auth", // Only sent to auth endpoints
+            // Path = "/" (not "/api/auth") because some mobile browsers — particularly Safari iOS
+            // and Chrome Android in private mode — handle path-scoped cross-site cookies
+            // inconsistently, leading to 401s on mobile while desktop works fine. The cookie is
+            // still HttpOnly so JS can't read it; only refresh code reads it server-side.
+            Path = "/",
             MaxAge = TimeSpan.FromDays(7)
         });
     }
@@ -137,6 +141,9 @@ public class AuthController : ControllerBase
     {
         var (secure, sameSite) = ResolveCookiePolicy(HttpContext, _config);
         Response.Cookies.Delete("access_token", new CookieOptions { Path = "/", Secure = secure, SameSite = sameSite });
+        Response.Cookies.Delete("refresh_token", new CookieOptions { Path = "/", Secure = secure, SameSite = sameSite });
+        // Also clear the legacy /api/auth-scoped cookie for users who logged in before this change,
+        // otherwise their old cookie lingers and could conflict with the new one.
         Response.Cookies.Delete("refresh_token", new CookieOptions { Path = "/api/auth", Secure = secure, SameSite = sameSite });
     }
 
