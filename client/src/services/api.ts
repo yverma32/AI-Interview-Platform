@@ -17,17 +17,33 @@ const api = axios.create({
 // header double-submit pattern silently breaks.
 let cachedCsrfToken: string | undefined;
 
-// In-memory refresh token cache — fallback for mobile browsers where third-party
-// cookies may be blocked even with SameSite=None. On desktop, cookies work fine.
-// On mobile (especially Safari private mode), we send it via X-Refresh-Token header.
-let cachedRefreshToken: string | undefined;
+// Refresh token cache — stored in localStorage for persistence across page reloads.
+// Mobile browsers may kill/suspend the page, so in-memory cache won't survive.
+// localStorage persists the token so the fallback header mechanism works on mobile.
+const REFRESH_TOKEN_KEY = 'interview_refresh_token';
 
 export function storeRefreshToken(token: string) {
-  cachedRefreshToken = token;
+  try {
+    localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  } catch {
+    // localStorage might be unavailable in some contexts (private mode, etc)
+  }
+}
+
+export function getRefreshToken(): string | undefined {
+  try {
+    return localStorage.getItem(REFRESH_TOKEN_KEY) ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export function clearRefreshToken() {
-  cachedRefreshToken = undefined;
+  try {
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+  } catch {
+    // Ignore errors
+  }
 }
 
 /**
@@ -96,14 +112,15 @@ api.interceptors.response.use(
       } catch {
         // Cookie-based refresh failed (mobile with third-party cookie blocking)
         // Try again with the refresh token in header as fallback
-        if (cachedRefreshToken) {
+        const storedToken = getRefreshToken();
+        if (storedToken) {
           try {
             const { data } = await axios.post(
               `${API_BASE_URL}/api/auth/refresh`,
               {},
               {
                 withCredentials: true,
-                headers: { 'X-Refresh-Token': cachedRefreshToken }
+                headers: { 'X-Refresh-Token': storedToken }
               }
             );
 
@@ -117,6 +134,7 @@ api.interceptors.response.use(
           } catch {
             // Both refresh attempts failed — let the caller handle the error gracefully.
             // AuthContext will set user to null and routing will redirect to /login.
+            clearRefreshToken();
           }
         }
       }
