@@ -188,12 +188,18 @@ export default function QuestionBankPage() {
   const handleDownloadPDF = async (withAnswers: boolean) => {
     setShowDownloadMenu(false);
 
+    // Open the window immediately inside the click handler so browsers don't block it as a popup.
+    // We write the content into it after any async work completes.
+    const printWindow = window.open('', '_blank');
+
     // If the user wants answers but we haven't fetched them all yet, fetch the missing ones first.
     // Otherwise the PDF would show "Answer not yet loaded" placeholders, which is worse than waiting.
     let questionsForPdf = questions;
     if (withAnswers) {
       questionsForPdf = await fetchAllMissingAnswers();
     }
+
+    if (!printWindow) return;
 
     const title = `${technology} Interview Questions${topic ? ` — ${topic}` : ''}`;
     const html = `
@@ -246,13 +252,10 @@ export default function QuestionBankPage() {
   `).join('')}
 </body></html>`;
 
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(html);
-      printWindow.document.close();
-      // Allow content to render before triggering print
-      setTimeout(() => printWindow.print(), 300);
-    }
+    printWindow.document.write(html);
+    printWindow.document.close();
+    // Allow content to render before triggering print
+    setTimeout(() => printWindow.print(), 300);
   };
 
   const handleBack = () => {
