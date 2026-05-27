@@ -37,6 +37,7 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Login — sets HttpOnly cookies for access + refresh tokens.
+    /// Also includes refresh token in response body for mobile clients.
     /// </summary>
     [HttpPost("login")]
     [EnableRateLimiting("auth")]
@@ -48,17 +49,29 @@ public class AuthController : ControllerBase
             return Unauthorized(response);
 
         SetAuthCookies(accessToken!, refreshToken!);
+        
+        // Include refresh token in response body so mobile clients can store it for header fallback
+        response.RefreshToken = refreshToken;
+        
         return Ok(response);
     }
 
     /// <summary>
-    /// Refresh — reads refresh token from cookie, rotates both tokens.
+    /// Refresh — reads refresh token from cookie (primary) or X-Refresh-Token header (fallback).
+    /// The header fallback is needed for mobile browsers with strict third-party cookie policies.
     /// </summary>
     [HttpPost("refresh")]
     [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponse>> Refresh()
     {
+        // Try cookie first (works on desktop)
         var refreshToken = Request.Cookies["refresh_token"];
+
+        // Fallback to header for mobile browsers where cookies might be blocked
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            refreshToken = Request.Headers["X-Refresh-Token"].FirstOrDefault();
+        }
 
         if (string.IsNullOrEmpty(refreshToken))
             return Unauthorized(new AuthResponse { Success = false, Message = "No session found. Please sign in." });
@@ -72,6 +85,10 @@ public class AuthController : ControllerBase
         }
 
         SetAuthCookies(newAccessToken!, newRefreshToken!);
+        
+        // Include refresh token in response body so mobile clients can store it for next request
+        response.RefreshToken = newRefreshToken;
+        
         return Ok(response);
     }
 

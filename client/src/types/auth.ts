@@ -13,6 +13,7 @@ export interface AuthResponse {
   success: boolean;
   user?: User;
   message?: string;
+  refreshToken?: string;
 }
 
 export interface LoginRequest {

@@ -17,6 +17,19 @@ const api = axios.create({
 // header double-submit pattern silently breaks.
 let cachedCsrfToken: string | undefined;
 
+// In-memory refresh token cache — fallback for mobile browsers where third-party
+// cookies may be blocked even with SameSite=None. On desktop, cookies work fine.
+// On mobile (especially Safari private mode), we send it via X-Refresh-Token header.
+let cachedRefreshToken: string | undefined;
+
+export function storeRefreshToken(token: string) {
+  cachedRefreshToken = token;
+}
+
+export function clearRefreshToken() {
+  cachedRefreshToken = undefined;
+}
+
 /**
  * Invalidate the cached CSRF token. Call this after auth state changes (login, logout)
  * so the next state-changing request re-fetches a fresh token bound to the new user.
@@ -55,7 +68,7 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Response interceptor — auto-refresh on 401 using cookie-based refresh
+// Response interceptor — auto-refresh on 401 using cookie-based refresh with header fallback
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -65,7 +78,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Refresh endpoint reads refresh_token from HttpOnly cookie automatically
+        // First attempt: try refresh with cookie (works on desktop)
         const { data } = await axios.post(
           `${API_BASE_URL}/api/auth/refresh`,
           {},
@@ -73,12 +86,39 @@ api.interceptors.response.use(
         );
 
         if (data.success) {
+          // Update cached refresh token for next time (rotation)
+          if (data.refreshToken) {
+            storeRefreshToken(data.refreshToken);
+          }
           // Cookies are set by the server — just retry the original request
           return api(originalRequest);
         }
       } catch {
-        // Refresh failed — let the caller handle the error gracefully.
-        // AuthContext will set user to null and routing will redirect to /login.
+        // Cookie-based refresh failed (mobile with third-party cookie blocking)
+        // Try again with the refresh token in header as fallback
+        if (cachedRefreshToken) {
+          try {
+            const { data } = await axios.post(
+              `${API_BASE_URL}/api/auth/refresh`,
+              {},
+              {
+                withCredentials: true,
+                headers: { 'X-Refresh-Token': cachedRefreshToken }
+              }
+            );
+
+            if (data.success) {
+              // Store the new refresh token and retry
+              if (data.refreshToken) {
+                storeRefreshToken(data.refreshToken);
+              }
+              return api(originalRequest);
+            }
+          } catch {
+            // Both refresh attempts failed — let the caller handle the error gracefully.
+            // AuthContext will set user to null and routing will redirect to /login.
+          }
+        }
       }
     }
 

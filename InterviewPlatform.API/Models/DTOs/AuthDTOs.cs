@@ -35,12 +35,14 @@ public class LoginRequest
 
 /// <summary>
 /// Auth response sent in the body. Tokens are set as HttpOnly cookies instead.
+/// RefreshToken is included for mobile clients that may have trouble with third-party cookies.
 /// </summary>
 public class AuthResponse
 {
     public bool Success { get; set; }
     public UserProfile? User { get; set; }
     public string? Message { get; set; }
+    public string? RefreshToken { get; set; }
 }
 
 public class UserProfile
