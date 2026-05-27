@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Atom, Type, Heart, Circle, Coffee, Snail, FileType2, Database, Layers,
@@ -57,6 +57,31 @@ export default function QuestionBankPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const downloadRef = useRef<HTMLDivElement>(null);
+
+  // Close the download popover on outside click or Escape — standard menu UX.
+  // Only attaches listeners while the menu is open so we don't add work on every render.
+  useEffect(() => {
+    if (!showDownloadMenu) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node | null;
+      if (target && downloadRef.current && !downloadRef.current.contains(target)) {
+        setShowDownloadMenu(false);
+      }
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowDownloadMenu(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [showDownloadMenu]);
 
   /**
    * Apply a batch of answers from the API onto our local question list, matched by id.
