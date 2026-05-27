@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import type { User } from '../types/auth';
 import { authService } from '../services/authService';
 import { analytics } from '../services/analytics';
+import { resetCsrfToken } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -72,6 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await authService.login({ email, password });
       if (response.success && response.user) {
         setUser(response.user);
+        // Drop any anonymous CSRF token cached before login; the next request will fetch
+        // a fresh one signed for this user's id so the API middleware validates it.
+        resetCsrfToken();
         return { success: true };
       }
       return { success: false, message: response.message || 'Invalid email or password.' };
@@ -109,6 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authService.logout();
     } finally {
       setUser(null);
+      // The previous user's signed CSRF token is now bound to an id that won't match the
+      // new (anonymous) session — clear it so we re-fetch on next state-changing request.
+      resetCsrfToken();
     }
   };
 

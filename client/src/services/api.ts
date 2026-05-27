@@ -10,13 +10,20 @@ const api = axios.create({
   withCredentials: true, // Send HttpOnly cookies with every request
 });
 
-// In-memory CSRF token cache. We can't reliably read the XSRF-TOKEN cookie via
-// document.cookie in cross-site deployments (cookie is set on the API origin, JS
-// runs on the frontend origin). So we ask the API for the token, store the value
-// returned in the response body, and replay it as the X-XSRF-TOKEN header. The
-// browser still sends the cookie back to the API automatically, so server-side
-// validation (cookie vs header) keeps working.
+// In-memory CSRF token cache. The token from /api/csrf/token is signed by the server
+// with the JWT secret and bound to the user's id, so the middleware can validate it
+// statelessly without reading any cookie. This matters on mobile Safari and Chrome
+// Android private mode where third-party cookies get dropped and the old cookie-vs-
+// header double-submit pattern silently breaks.
 let cachedCsrfToken: string | undefined;
+
+/**
+ * Invalidate the cached CSRF token. Call this after auth state changes (login, logout)
+ * so the next state-changing request re-fetches a fresh token bound to the new user.
+ */
+export function resetCsrfToken() {
+  cachedCsrfToken = undefined;
+}
 
 async function fetchCsrfTokenInternal(): Promise<string | undefined> {
   try {

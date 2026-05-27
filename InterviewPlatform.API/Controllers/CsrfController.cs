@@ -1,11 +1,22 @@
+using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
+using InterviewPlatform.API.Middleware;
 
 namespace InterviewPlatform.API.Controllers;
 
 /// <summary>
-/// Issues a CSRF token cookie. The frontend reads this cookie and sends it
-/// back in the X-XSRF-TOKEN header on state-changing requests.
+/// Issues a CSRF token for the current user. The frontend caches the token in JS memory and
+/// replays it as the X-XSRF-TOKEN header on every state-changing request.
+///
+/// Token shape depends on auth state:
+///   - Authenticated: HMAC-signed "<userId>|<expiry>|<nonce>" so the middleware can validate
+///     without reading any cookie. This is the path that fixes mobile-Safari/cross-site setups
+///     where third-party cookies get dropped.
+///   - Anonymous: a random opaque blob also written to the XSRF-TOKEN cookie (legacy double-
+///     submit). Anonymous state-changing endpoints (login, register, refresh) are CSRF-exempt
+///     anyway, but we still issue this so the existing fetchCsrfTokenInternal() call returns
+///     something usable for users who haven't logged in yet.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -23,10 +34,26 @@ public class CsrfController : ControllerBase
     [HttpGet("token")]
     public IActionResult GetToken()
     {
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var jwtSecret = _config["Jwt:Secret"];
 
-        // Mirror AuthController's cookie policy so CSRF + auth cookies behave consistently
-        // across same-site (Strict) and cross-site (Vercel ⇄ Railway: None+Secure) deployments.
+        string token;
+        if (!string.IsNullOrEmpty(userId) && !string.IsNullOrWhiteSpace(jwtSecret))
+        {
+            // Authenticated user: issue a signed token bound to their userId. Validated
+            // statelessly by CsrfMiddleware — no cookie needed.
+            token = CsrfMiddleware.IssueSignedToken(userId, jwtSecret, TimeSpan.FromHours(2));
+        }
+        else
+        {
+            // Anonymous: random opaque token. Set as cookie for legacy double-submit fallback;
+            // CSRF-exempt endpoints (login/register/refresh) don't validate it anyway.
+            token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        }
+
+        // Mirror AuthController's cookie policy so CSRF + auth cookies behave consistently.
+        // The cookie is now optional (the signed token doesn't need it) but we keep writing it
+        // so old clients still working on the double-submit path don't break.
         var crossSite = _config.GetValue<bool>("Cookies:CrossSite");
         var isDev = _env.IsDevelopment();
         var secure = !isDev;
@@ -36,19 +63,13 @@ public class CsrfController : ControllerBase
 
         Response.Cookies.Append("XSRF-TOKEN", token, new CookieOptions
         {
-            HttpOnly = false, // Must be readable by JS to copy into the X-XSRF-TOKEN header
+            HttpOnly = false,
             Secure = secure,
             SameSite = sameSite,
             Path = "/",
             MaxAge = TimeSpan.FromHours(2)
         });
 
-        // Also return the token in the response body. Cross-site deployments (Vercel⇄Railway)
-        // can't read the cookie from JS because document.cookie only exposes cookies for the
-        // current page's origin. The frontend reads this body, holds the token in memory, and
-        // sends it as X-XSRF-TOKEN on every state-changing request. The cookie still gets sent
-        // to the API automatically by the browser, so the middleware's cookie-vs-header
-        // comparison still works on the server side.
         return Ok(new { success = true, token });
     }
 }
