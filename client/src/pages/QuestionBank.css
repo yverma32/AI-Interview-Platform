@@ -239,6 +239,12 @@
   -webkit-backdrop-filter: blur(var(--blur-md));
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
+  /* The download popover lives inside this header. Both the header and the question cards
+     in the sibling list have backdrop-filter, which makes both create stacking contexts.
+     Without an explicit z-index here, document order wins and the list paints over the
+     header's popover. Lifting the whole header above the list fixes the overlap. */
+  position: relative;
+  z-index: 50;
 }
 
 .qb-questions-info h2 {
