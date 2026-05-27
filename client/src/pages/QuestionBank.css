@@ -259,7 +259,13 @@
   position: relative;
 }
 
-.qb-download-wrapper { position: relative; }
+.qb-download-wrapper {
+  position: relative;
+  /* The popover lives inside this wrapper but visually overlaps the question cards below.
+     Question cards have backdrop-filter, which creates a new stacking context — a child z-index
+     can't escape it. Raising the wrapper itself ensures the menu paints above sibling cards. */
+  z-index: 50;
+}
 
 .qb-download-btn,
 .qb-fetch-all-btn,
