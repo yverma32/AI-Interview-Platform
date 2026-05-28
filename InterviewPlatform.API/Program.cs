@@ -124,16 +124,24 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Read JWT from HttpOnly cookie instead of Authorization header
+    // Read JWT from HttpOnly cookie first; fall back to Authorization: Bearer header.
+    // The header fallback is required for iOS Safari (and Chrome on iOS) where ITP blocks
+    // third-party cookies entirely — the cookie is set on login but never sent on subsequent
+    // cross-site requests (Vercel frontend → Railway API), causing 401s on every protected route.
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
         {
             var accessToken = context.Request.Cookies["access_token"];
-            if (!string.IsNullOrEmpty(accessToken))
+            if (string.IsNullOrEmpty(accessToken))
             {
-                context.Token = accessToken;
+                // ITP or cookie-blocking: try the Authorization header as fallback.
+                var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                if (authHeader?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
+                    accessToken = authHeader["Bearer ".Length..].Trim();
             }
+            if (!string.IsNullOrEmpty(accessToken))
+                context.Token = accessToken;
             return Task.CompletedTask;
         }
     };

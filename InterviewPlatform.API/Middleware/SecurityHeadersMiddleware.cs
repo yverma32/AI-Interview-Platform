@@ -22,8 +22,10 @@ public class SecurityHeadersMiddleware
         context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
         // Referrer policy
         context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-        // Permissions policy
-        context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+        // Permissions policy — disallow camera/geolocation; microphone omitted so the
+        // browser doesn't inherit a deny rule that could block mic access on the frontend
+        // when proxied or same-origin (iOS Safari is particularly strict about this).
+        context.Response.Headers["Permissions-Policy"] = "camera=(), geolocation=()";
         // Remove server header
         context.Response.Headers.Remove("Server");
         // Content Security Policy (API only)

@@ -7,7 +7,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Send HttpOnly cookies with every request
+  withCredentials: true, // Send HttpOnly cookies with every request (works on desktop)
 });
 
 // In-memory CSRF token cache. The token from /api/csrf/token is signed by the server
@@ -17,17 +17,44 @@ const api = axios.create({
 // header double-submit pattern silently breaks.
 let cachedCsrfToken: string | undefined;
 
-// Refresh token cache — stored in localStorage for persistence across page reloads.
-// Mobile browsers may kill/suspend the page, so in-memory cache won't survive.
-// localStorage persists the token so the fallback header mechanism works on mobile.
+// ── Token storage ─────────────────────────────────────────────────────────────
+// iOS Safari (and Chrome on iOS) ITP blocks cross-site cookies entirely, even
+// with SameSite=None; Secure. The server sets HttpOnly cookies on login, but they
+// are never sent on subsequent cross-origin requests (Vercel → Railway). To work
+// around this, the server also returns tokens in the response body; we store them
+// in localStorage and attach them as headers on every request.
+//
+// localStorage persists across page reloads and background tab kills — important
+// because iOS aggressively suspends pages and the user would otherwise be logged out
+// every time they switch apps.
+
+const ACCESS_TOKEN_KEY = 'interview_access_token';
 const REFRESH_TOKEN_KEY = 'interview_refresh_token';
+
+export function storeAccessToken(token: string) {
+  try {
+    localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  } catch { /* private mode may block localStorage */ }
+}
+
+export function getAccessToken(): string | undefined {
+  try {
+    return localStorage.getItem(ACCESS_TOKEN_KEY) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function clearAccessToken() {
+  try {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+  } catch { /* ignore */ }
+}
 
 export function storeRefreshToken(token: string) {
   try {
     localStorage.setItem(REFRESH_TOKEN_KEY, token);
-  } catch {
-    // localStorage might be unavailable in some contexts (private mode, etc)
-  }
+  } catch { /* ignore */ }
 }
 
 export function getRefreshToken(): string | undefined {
@@ -41,9 +68,7 @@ export function getRefreshToken(): string | undefined {
 export function clearRefreshToken() {
   try {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
-  } catch {
-    // Ignore errors
-  }
+  } catch { /* ignore */ }
 }
 
 /**
@@ -72,8 +97,15 @@ async function fetchCsrfTokenInternal(): Promise<string | undefined> {
   return match ? decodeURIComponent(match[1]) : undefined;
 }
 
-// Request interceptor — automatically attach CSRF token for state-changing requests.
+// Request interceptor — attach access token as Authorization: Bearer header (iOS ITP fallback)
+// and CSRF token for state-changing requests.
 api.interceptors.request.use(async (config) => {
+  // iOS Safari ITP blocks cross-site cookies; use stored access token as Bearer header instead.
+  const accessToken = getAccessToken();
+  if (accessToken) {
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
   const method = config.method?.toUpperCase();
   if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
     const csrfToken = cachedCsrfToken ?? (await fetchCsrfTokenInternal());
@@ -84,7 +116,7 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Response interceptor — auto-refresh on 401 using cookie-based refresh with header fallback
+// Response interceptor — auto-refresh on 401 using cookie-based refresh with header fallback.
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -95,48 +127,34 @@ api.interceptors.response.use(
 
       try {
         // First attempt: try refresh with cookie (works on desktop)
+        const storedRefreshToken = getRefreshToken();
+        const refreshHeaders: Record<string, string> = {};
+        if (storedRefreshToken) {
+          // Always send stored refresh token as header — the server accepts both cookie and header.
+          refreshHeaders['X-Refresh-Token'] = storedRefreshToken;
+        }
+
         const { data } = await axios.post(
           `${API_BASE_URL}/api/auth/refresh`,
           {},
-          { withCredentials: true }
+          { withCredentials: true, headers: refreshHeaders }
         );
 
         if (data.success) {
-          // Update cached refresh token for next time (rotation)
-          if (data.refreshToken) {
-            storeRefreshToken(data.refreshToken);
+          // Store rotated tokens for next request.
+          if (data.accessToken) storeAccessToken(data.accessToken);
+          if (data.refreshToken) storeRefreshToken(data.refreshToken);
+
+          // Update the Authorization header on the retried request with the new access token.
+          if (data.accessToken) {
+            originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
           }
-          // Cookies are set by the server — just retry the original request
           return api(originalRequest);
         }
       } catch {
-        // Cookie-based refresh failed (mobile with third-party cookie blocking)
-        // Try again with the refresh token in header as fallback
-        const storedToken = getRefreshToken();
-        if (storedToken) {
-          try {
-            const { data } = await axios.post(
-              `${API_BASE_URL}/api/auth/refresh`,
-              {},
-              {
-                withCredentials: true,
-                headers: { 'X-Refresh-Token': storedToken }
-              }
-            );
-
-            if (data.success) {
-              // Store the new refresh token and retry
-              if (data.refreshToken) {
-                storeRefreshToken(data.refreshToken);
-              }
-              return api(originalRequest);
-            }
-          } catch {
-            // Both refresh attempts failed — let the caller handle the error gracefully.
-            // AuthContext will set user to null and routing will redirect to /login.
-            clearRefreshToken();
-          }
-        }
+        // Refresh failed — clear tokens and let the caller handle the 401.
+        clearAccessToken();
+        clearRefreshToken();
       }
     }
 

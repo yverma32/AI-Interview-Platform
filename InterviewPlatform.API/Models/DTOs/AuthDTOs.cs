@@ -34,14 +34,17 @@ public class LoginRequest
 }
 
 /// <summary>
-/// Auth response sent in the body. Tokens are set as HttpOnly cookies instead.
-/// RefreshToken is included for mobile clients that may have trouble with third-party cookies.
+/// Auth response sent in the body. Tokens are also set as HttpOnly cookies for desktop.
+/// AccessToken and RefreshToken are included in the body for mobile clients (iOS Safari, Chrome iOS)
+/// where ITP blocks cross-site cookies — clients store these and send AccessToken as
+/// Authorization: Bearer on every request, RefreshToken as X-Refresh-Token on refresh.
 /// </summary>
 public class AuthResponse
 {
     public bool Success { get; set; }
     public UserProfile? User { get; set; }
     public string? Message { get; set; }
+    public string? AccessToken { get; set; }
     public string? RefreshToken { get; set; }
 }
 

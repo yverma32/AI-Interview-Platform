@@ -559,7 +559,8 @@ export default function RealtimeInterviewRoomPage() {
 
   return (
     <div className="realtime-room">
-      <audio ref={audioElRef} autoPlay />
+      {/* playsInline is required on iOS Safari — without it autoplay is silently blocked */}
+      <audio ref={audioElRef} autoPlay playsInline />
 
       <header className="realtime-header">
         <div>

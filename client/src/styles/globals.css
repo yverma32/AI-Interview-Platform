@@ -21,7 +21,9 @@ html {
 }
 
 body {
+  /* dvh accounts for iOS Safari's retractable browser chrome; 100vh is too tall there */
   min-height: 100vh;
+  min-height: 100dvh;
   min-width: 320px;
   color: var(--text-primary);
   background: var(--bg-gradient) fixed;
@@ -46,6 +48,7 @@ body::before {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   z-index: 1;
 }

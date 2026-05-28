@@ -1,24 +1,20 @@
-import api, { fetchCsrfToken, withCsrf, storeRefreshToken, clearRefreshToken } from './api';
+import api, { fetchCsrfToken, withCsrf, storeAccessToken, clearAccessToken, storeRefreshToken, clearRefreshToken } from './api';
 import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types/auth';
 
 export const authService = {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     // Login is CSRF-exempt on the backend, no token needed
     const { data } = await api.post<AuthResponse>('/auth/login', credentials);
-    // Store refresh token in memory as fallback for mobile browsers with cookie restrictions
-    if (data.refreshToken) {
-      storeRefreshToken(data.refreshToken);
-    }
+    // Store both tokens for the iOS ITP fallback (Authorization: Bearer + X-Refresh-Token headers).
+    if (data.accessToken) storeAccessToken(data.accessToken);
+    if (data.refreshToken) storeRefreshToken(data.refreshToken);
     return data;
   },
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     // Register is CSRF-exempt on the backend
     const { data } = await api.post<AuthResponse>('/auth/register', userData);
-    // Store refresh token in memory as fallback for mobile browsers with cookie restrictions
-    if (data.refreshToken) {
-      storeRefreshToken(data.refreshToken);
-    }
+    if (data.refreshToken) storeRefreshToken(data.refreshToken);
     return data;
   },
 
@@ -29,6 +25,7 @@ export const authService = {
     } catch {
       // Even if the server call fails, clear local state
     } finally {
+      clearAccessToken();
       clearRefreshToken();
     }
   },

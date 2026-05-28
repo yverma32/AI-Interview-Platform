@@ -49,10 +49,13 @@ public class AuthController : ControllerBase
             return Unauthorized(response);
 
         SetAuthCookies(accessToken!, refreshToken!);
-        
-        // Include refresh token in response body so mobile clients can store it for header fallback
+
+        // Include both tokens in the response body so mobile clients (iOS Safari / Chrome iOS)
+        // can store them and use Authorization: Bearer + X-Refresh-Token header fallbacks when
+        // ITP blocks the cross-site cookies on subsequent requests.
+        response.AccessToken = accessToken;
         response.RefreshToken = refreshToken;
-        
+
         return Ok(response);
     }
 
@@ -85,10 +88,11 @@ public class AuthController : ControllerBase
         }
 
         SetAuthCookies(newAccessToken!, newRefreshToken!);
-        
-        // Include refresh token in response body so mobile clients can store it for next request
+
+        // Return both tokens in body for mobile ITP fallback (same as login endpoint).
+        response.AccessToken = newAccessToken;
         response.RefreshToken = newRefreshToken;
-        
+
         return Ok(response);
     }
 

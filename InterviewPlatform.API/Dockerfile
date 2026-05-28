@@ -22,6 +22,10 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 # Default for local `docker run` without -e PORT. Railway injects PORT, which the
 # entrypoint shim reads at runtime and feeds into ASPNETCORE_URLS.
 ENV PORT=8080
+# Frontend (Vercel) and API (Railway) are on different origins, so cookies must be
+# SameSite=None; Secure to survive cross-site requests on iOS Safari + Chrome ITP.
+# This env var maps to Cookies:CrossSite in the .NET config system (__ = section separator).
+ENV COOKIES__CROSSSITE=true
 
 COPY --from=build /app/publish ./
 

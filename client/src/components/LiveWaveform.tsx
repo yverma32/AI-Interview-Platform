@@ -36,6 +36,9 @@ export default function LiveWaveform({ stream, mode }: Props) {
 
     const audioCtx = new AudioContext();
     audioCtxRef.current = audioCtx;
+    // iOS Safari suspends AudioContext until a user gesture has occurred.
+    // resume() is a no-op if already running, safe to call unconditionally.
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
     const source = audioCtx.createMediaStreamSource(stream);
     const analyser = audioCtx.createAnalyser();
     analyser.fftSize = 256;
