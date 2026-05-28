@@ -468,6 +468,42 @@ a:hover {
 }
 
 /* =============================================================================
+   Full-screen loading state — used by ProtectedRoute / GuestRoute
+   ========================================================================== */
+
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  gap: var(--space-4);
+  background: var(--bg-gradient);
+}
+
+.loading-screen .spinner {
+  width: 52px;
+  height: 52px;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--neon-cyan);
+  border-right-color: var(--neon-magenta);
+  border-radius: var(--radius-full);
+  animation: spin 0.75s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), 0 0 40px rgba(255, 43, 214, 0.15);
+}
+
+.loading-screen p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
    Responsive helpers
    ========================================================================== */
 
