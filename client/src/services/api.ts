@@ -81,9 +81,17 @@ export function resetCsrfToken() {
 
 async function fetchCsrfTokenInternal(): Promise<string | undefined> {
   try {
+    // On iOS Safari, ITP blocks the access_token cookie so the CSRF endpoint would
+    // see an anonymous request and return an unsigned opaque token. The signed token
+    // (which the CSRF middleware validates statelessly) is only issued for authenticated
+    // users, so we must pass the stored access token as Authorization: Bearer here too.
+    const headers: Record<string, string> = {};
+    const storedToken = getAccessToken();
+    if (storedToken) headers['Authorization'] = `Bearer ${storedToken}`;
+
     const { data } = await axios.get<{ success: boolean; token?: string }>(
       `${API_BASE_URL}/api/csrf/token`,
-      { withCredentials: true },
+      { withCredentials: true, headers },
     );
     if (data?.token) {
       cachedCsrfToken = data.token;
