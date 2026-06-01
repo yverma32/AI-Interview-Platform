@@ -113,27 +113,38 @@ async function main() {
     throw new Error('OPENAI_API_KEY env var is required.');
   }
 
-  // 4. Call OpenAI
+  // 4. Call OpenAI — with one-shot retry if the first draft fails validation.
+  // The retry sends the failing draft back with the specific issues so the model
+  // can correct them; costs ~2x the credit of a single call but salvages most
+  // posts that would otherwise have been thrown away.
   console.log('\nCalling OpenAI...');
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const completion = await openai.chat.completions.create({
-    model: MODEL,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
-    ],
-    temperature: 0.7,
-    max_tokens: 4000,
-  });
 
-  const draft = completion.choices[0]?.message?.content?.trim();
-  if (!draft) throw new Error('OpenAI returned an empty response.');
+  const baseMessages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userPrompt },
+  ];
 
-  // 5. Validate
+  let draft = await callModel(openai, baseMessages);
   console.log('Validating draft...');
-  const validation = validateDraft(draft, topic);
+  let validation = validateDraft(draft, topic);
+
   if (!validation.ok) {
-    console.error('Validation failed:');
+    console.log('First draft failed validation:');
+    for (const issue of validation.issues) console.log(`  - ${issue}`);
+    console.log('\nAsking the model to fix it (one retry)...');
+
+    const fixMessages = [
+      ...baseMessages,
+      { role: 'assistant', content: draft },
+      { role: 'user', content: buildRetryPrompt(validation.issues) },
+    ];
+    draft = await callModel(openai, fixMessages);
+    validation = validateDraft(draft, topic);
+  }
+
+  if (!validation.ok) {
+    console.error('\nDraft failed validation after retry:');
     for (const issue of validation.issues) console.error(`  - ${issue}`);
     throw new Error('Draft failed validation. Not writing file.');
   }
@@ -186,6 +197,20 @@ async function loadRecentPosts(n) {
   return posts;
 }
 
+async function callModel(openai, messages) {
+  const completion = await openai.chat.completions.create({
+    model: MODEL,
+    messages,
+    temperature: 0.7,
+    // Raised from 4000 — gpt-4o was stopping mid-post. 1500 English words ≈
+    // 2000 tokens, plus frontmatter + markdown overhead. 6000 leaves headroom.
+    max_tokens: 6000,
+  });
+  const draft = completion.choices[0]?.message?.content?.trim();
+  if (!draft) throw new Error('OpenAI returned an empty response.');
+  return draft;
+}
+
 function buildUserPrompt(topic, recentPosts) {
   const links = (topic.internalLinks ?? []).map((l) => `https://prepfinity.co${l}`).join(', ');
   const recentSection = recentPosts.length
@@ -205,6 +230,15 @@ function buildUserPrompt(topic, recentPosts) {
     `**Internal links to include:** ${links || 'https://prepfinity.co/register at minimum.'}`,
     `**Today's date:** ${new Date().toISOString().slice(0, 10)}`,
     ``,
+    `## Hard constraints (the post will be auto-rejected if any are missed)`,
+    ``,
+    `- **Word count: 1300-1700 words in the body** (do NOT count the frontmatter). Aim for 1500 — a too-short post fails validation and the draft is thrown away.`,
+    `- **At least 8 H2 headings** (lines starting with "## "). Each H2 = one short section. This is how Google reads the structure.`,
+    `- **Em-dash count: keep it under 6 across the entire file.** Use commas, periods, or parentheses instead. If you find yourself wanting a 7th em-dash, rewrite that sentence.`,
+    `- **Target keyword "${topic.targetKeyword}" must appear once in the first 100 words of the body**, and 2-3 times total in the body. Not more.`,
+    `- **At least 2 internal links to prepfinity.co** (use the ones listed above).`,
+    `- **No banned phrases.** See the style guide. The validator checks for them and rejects the draft if any appear.`,
+    ``,
     `## Voice reference — previous PrepFinity posts`,
     ``,
     `Match this voice. Do not copy structure or content; match cadence, opinion strength, and specificity level.`,
@@ -213,7 +247,23 @@ function buildUserPrompt(topic, recentPosts) {
     ``,
     `## Output format`,
     ``,
-    `Output ONLY the MDX file content. Start with the \`---\` frontmatter line. End with the closing italic CTA. No commentary. No code fences around the file.`,
+    `Output ONLY the MDX file content. Start with the \`---\` frontmatter line. End with the closing italic CTA. No commentary. No code fences around the file. No "Here is your post" preamble.`,
+  ].join('\n');
+}
+
+function buildRetryPrompt(issues) {
+  return [
+    `Your draft failed validation with the following issues:`,
+    ``,
+    ...issues.map((i) => `- ${i}`),
+    ``,
+    `Rewrite the entire post to fix every issue listed above. Keep the parts that were working — the title, structure, target keyword placement, and voice are fine if they passed.`,
+    ``,
+    `**Most common fix for "Word count below 1300":** every section needs 2-3 more concrete sentences. Add a specific example, a real interview question, a number, or a counterexample to each H2 section. Do not pad with filler sentences.`,
+    ``,
+    `**Most common fix for "Too many em-dashes":** replace em-dashes with commas, periods, or parentheses. A sentence like "The answer is simple — practice more" becomes "The answer is simple. Practice more."`,
+    ``,
+    `Output ONLY the corrected MDX file. No commentary.`,
   ].join('\n');
 }
 
@@ -244,13 +294,15 @@ function validateDraft(draft, topic) {
     if (lower.includes(phrase)) issues.push(`Contains banned phrase: "${phrase}".`);
   }
 
-  // Em-dash count cap
+  // Em-dash count cap. Real human prose hits 5-6 em-dashes in 1500 words;
+  // capping at 4 pushed the model into awkward phrasing. 6 keeps AI-smell
+  // out without being unrealistic.
   const emDashes = (draft.match(/—/g) ?? []).length;
-  if (emDashes > 4) issues.push(`Too many em-dashes (${emDashes}). Cap is 4 including frontmatter.`);
+  if (emDashes > 6) issues.push(`Too many em-dashes (${emDashes}). Cap is 6 across the whole file.`);
 
   // Heading count
   const h2Count = (body.match(/^## /gm) ?? []).length;
-  if (h2Count < 6) issues.push(`Only ${h2Count} H2 headings. Need at least 6.`);
+  if (h2Count < 8) issues.push(`Only ${h2Count} H2 headings. Need at least 8.`);
   if (h2Count > 14) issues.push(`Too many H2 headings (${h2Count}). Cap at 14.`);
 
   // Target keyword presence (case-insensitive, body only)
