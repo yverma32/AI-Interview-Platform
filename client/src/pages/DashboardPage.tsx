@@ -27,7 +27,7 @@ export default function DashboardPage() {
       <header className="dashboard-header">
         <div className="dashboard-brand">
           <Target className="brand-icon" size={22} aria-hidden />
-          <h1>AI Interview Simulator</h1>
+          <h1>PrepFinity</h1>
         </div>
         <div className="dashboard-user">
           <CreditBalanceBadge basicCredits={basicCredits} premiumCredits={premiumCredits} showBuyButton />

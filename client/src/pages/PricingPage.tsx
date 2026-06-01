@@ -99,7 +99,7 @@ export default function PricingPage() {
         key: order.razorpayKeyId,
         amount: order.amount,
         currency: order.currency,
-        name: 'InterviewReady',
+        name: 'PrepFinity',
         description: order.packName,
         order_id: order.orderId,
         handler: async (response: RazorpayResponse) => {
@@ -169,8 +169,8 @@ export default function PricingPage() {
   return (
     <div className="pricing-page">
       <SeoHead
-        title="Pricing"
-        description="Buy interview credits — ₹199 to ₹2999. Text and voice AI mock interviews, credits never expire. First 50 buyers get double credits."
+        title="Pricing — AI Mock Interview Credits"
+        description="Affordable AI mock interview pricing from ₹199. Buy text and voice interview credits that never expire. Pay with UPI, cards, or wallets via Razorpay. First 50 buyers get 2× credits."
         canonical="/pricing"
       />
       <header className="pricing-header">

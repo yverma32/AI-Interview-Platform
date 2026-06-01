@@ -78,7 +78,7 @@ export default function LoginPage() {
 
   return (
     <div className="auth-container">
-      <SeoHead title="Sign In" description="Sign in to InterviewReady and continue your AI mock interview practice." canonical="/login" noIndex />
+      <SeoHead title="Sign In" description="Sign in to PrepFinity and continue your AI mock interview practice." canonical="/login" noIndex />
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo"><Target size={32} aria-hidden /></div>
