@@ -15,11 +15,12 @@ export interface PostModule {
   default: ComponentType;
 }
 
-// Eagerly import every MDX file in this directory at build time. The `frontmatter`
-// named export comes from remark-mdx-frontmatter (configured in vite.config.ts).
-// Eager loading is required so vite-react-ssg can statically enumerate posts via
+// Eagerly import every MDX file in this directory and the auto/ subdirectory
+// (where the drafting agent lands new posts). The `frontmatter` named export
+// comes from remark-mdx-frontmatter (configured in vite.config.ts). Eager
+// loading is required so vite-react-ssg can statically enumerate posts via
 // `getStaticPaths` and pre-render every slug to HTML.
-const modules = import.meta.glob<PostModule>('./*.mdx', { eager: true });
+const modules = import.meta.glob<PostModule>(['./*.mdx', './auto/*.mdx'], { eager: true });
 
 export const posts: PostModule[] = Object.values(modules)
   // Newest first.
