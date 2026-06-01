@@ -1,7 +1,7 @@
 name: Blog Draft (3x weekly)
 
 # Runs Mon / Wed / Fri at 03:30 UTC (= 09:00 IST).
-# Set OPENAI_API_KEY in repo Settings → Secrets and variables → Actions.
+# Set ANTHROPIC_API_KEY in repo Settings → Secrets and variables → Actions.
 # Manual runs are allowed via workflow_dispatch (use this to test).
 on:
   schedule:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Run the prompt-only dry-run (no OpenAI call, no PR).'
+        description: 'Run the prompt-only dry-run (no Claude call, no PR).'
         required: false
         default: 'false'
 
@@ -50,7 +50,7 @@ jobs:
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run == 'true') }}
         working-directory: scripts
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node generate-blog-post.mjs
 
       - name: Configure git
