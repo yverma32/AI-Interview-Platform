@@ -10,6 +10,9 @@ import GuestRoute from './components/GuestRoute';
 import LandingPage from './pages/LandingPage';
 import PricingPage from './pages/PricingPage';
 import PolicyPage from './pages/PolicyPage';
+import BlogIndexPage from './pages/BlogIndexPage';
+import BlogPostPage from './pages/BlogPostPage';
+import { getAllSlugs } from './content/blog/posts';
 
 // Auth-gated and interactive pages — lazy-loaded. The pre-renderer cannot render
 // these (they need auth state / browser APIs) so they ship as code-split chunks
@@ -39,6 +42,16 @@ export const routes: RouteRecord[] = [
       { path: 'terms', element: <PolicyPage kind="terms" /> },
       { path: 'refund', element: <PolicyPage kind="refund" /> },
       { path: 'contact', element: <PolicyPage kind="contact" /> },
+
+      // ── Blog (also pre-rendered) ──────────────────────────────────
+      { path: 'blog', element: <BlogIndexPage /> },
+      {
+        path: 'blog/:slug',
+        element: <BlogPostPage />,
+        // Tell vite-react-ssg which blog slugs to pre-render. Each one becomes
+        // its own static HTML file at dist/blog/<slug>.html.
+        getStaticPaths: () => getAllSlugs().map((slug) => `blog/${slug}`),
+      },
 
       // ── Auth pages (public but not pre-rendered — needs client-side guard) ──
       { path: 'login', element: <GuestRoute><LoginPage /></GuestRoute> },
