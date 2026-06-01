@@ -158,9 +158,20 @@ export default function PricingPage() {
 
   const packs = packsData?.packs ?? [];
 
+  // Head tags need to render in both states so pre-rendering captures them
+  // (during SSG, packsLoading is always true and the early return runs first).
+  const head = (
+    <SeoHead
+      title="Pricing — AI Mock Interview Credits"
+      description="Affordable AI mock interview pricing from ₹199. Buy text and voice interview credits that never expire. Pay with UPI, cards, or wallets via Razorpay. First 50 buyers get 2× credits."
+      canonical="/pricing"
+    />
+  );
+
   if (packsLoading) {
     return (
       <div className="pricing-page">
+        {head}
         <div className="pricing-loading">Loading credit packs...</div>
       </div>
     );
@@ -168,11 +179,7 @@ export default function PricingPage() {
 
   return (
     <div className="pricing-page">
-      <SeoHead
-        title="Pricing — AI Mock Interview Credits"
-        description="Affordable AI mock interview pricing from ₹199. Buy text and voice interview credits that never expire. Pay with UPI, cards, or wallets via Razorpay. First 50 buyers get 2× credits."
-        canonical="/pricing"
-      />
+      {head}
       <header className="pricing-header">
         <button className="btn-back" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
           ← {isAuthenticated ? 'Back to Dashboard' : 'Back to Home'}
