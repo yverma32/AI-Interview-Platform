@@ -2,7 +2,7 @@
 /**
  * Blog post drafting agent.
  *
- * Reads content/topics.json, pops the next unused topic, calls OpenAI to draft
+ * Reads content/topics.json, pops the next unused topic, calls Claude to draft
  * a 1300–1700 word MDX post, validates the output against the style guide's
  * anti-AI-smell rules, and writes it to client/src/content/blog/auto/.
  *
@@ -10,13 +10,19 @@
  *   node scripts/generate-blog-post.mjs            # generate one draft
  *   node scripts/generate-blog-post.mjs --dry-run  # prompt only, no API call
  *
- * Env: OPENAI_API_KEY (required for live runs)
+ * Env: ANTHROPIC_API_KEY (required for live runs)
+ *
+ * Why Claude over GPT-4o: we tried GPT-4o first. It consistently produced
+ * 500–900 word drafts no matter how loudly the prompt demanded 1300+. That
+ * is a documented GPT-4o trait (RLHF-trained for concision) and not a prompt
+ * problem. Claude Sonnet hits target word counts reliably on long-form and
+ * produces noticeably less AI-smelly prose, which matters for SEO.
  */
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -25,7 +31,9 @@ const STYLE_GUIDE_PATH = path.join(__dirname, 'lib/style-guide.md');
 const BLOG_DIR = path.join(ROOT, 'client/src/content/blog');
 const AUTO_DIR = path.join(BLOG_DIR, 'auto');
 
-const MODEL = process.env.BLOG_AGENT_MODEL ?? 'gpt-4o';
+// Default to Sonnet 4.6 — best long-form quality at $3/M input, $15/M output.
+// A 1500-word post costs ~$0.10 input + ~$0.05 output ≈ $0.15 per draft.
+const MODEL = process.env.BLOG_AGENT_MODEL ?? 'claude-sonnet-4-6';
 const RECENT_POSTS_FOR_CONTEXT = 3;
 
 // ── Banned phrases — taken from style-guide.md. Hard-fail if any appear. ──────
@@ -101,7 +109,7 @@ async function main() {
   const userPrompt = buildUserPrompt(topic, recentPosts);
 
   if (isDryRun) {
-    console.log('\n── DRY RUN: not calling OpenAI. Prompts below. ──\n');
+    console.log('\n── DRY RUN: not calling Claude. Prompts below. ──\n');
     console.log('--- SYSTEM PROMPT (first 500 chars) ---');
     console.log(systemPrompt.slice(0, 500) + '...');
     console.log('\n--- USER PROMPT ---');
@@ -109,23 +117,22 @@ async function main() {
     return;
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY env var is required.');
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY env var is required.');
   }
 
-  // 4. Call OpenAI — with one-shot retry if the first draft fails validation.
-  // The retry sends the failing draft back with the specific issues so the model
-  // can correct them; costs ~2x the credit of a single call but salvages most
-  // posts that would otherwise have been thrown away.
-  console.log('\nCalling OpenAI...');
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  // 4. Call Claude — with one-shot retry if the first draft fails validation.
+  // The retry sends the failing draft back with the specific issues so the
+  // model can correct them; costs ~2x the credit of a single call but
+  // salvages most posts that would otherwise have been thrown away.
+  console.log('\nCalling Claude...');
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const baseMessages = [
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: userPrompt },
-  ];
+  // Anthropic's system prompt is a top-level field, not a message role.
+  // messages[] only contains user/assistant turns.
+  const baseMessages = [{ role: 'user', content: userPrompt }];
 
-  let draft = await callModel(openai, baseMessages);
+  let draft = await callModel(anthropic, systemPrompt, baseMessages);
   console.log('Validating draft...');
   let validation = validateDraft(draft, topic);
 
@@ -139,7 +146,7 @@ async function main() {
       { role: 'assistant', content: draft },
       { role: 'user', content: buildRetryPrompt(validation.issues) },
     ];
-    draft = await callModel(openai, fixMessages);
+    draft = await callModel(anthropic, systemPrompt, fixMessages);
     validation = validateDraft(draft, topic);
   }
 
@@ -197,17 +204,21 @@ async function loadRecentPosts(n) {
   return posts;
 }
 
-async function callModel(openai, messages) {
-  const completion = await openai.chat.completions.create({
+async function callModel(anthropic, systemPrompt, messages) {
+  const response = await anthropic.messages.create({
     model: MODEL,
+    system: systemPrompt,
     messages,
     temperature: 0.7,
-    // Raised from 4000 — gpt-4o was stopping mid-post. 1500 English words ≈
-    // 2000 tokens, plus frontmatter + markdown overhead. 6000 leaves headroom.
+    // 1500 English words ≈ 2000 tokens, plus markdown + frontmatter overhead.
+    // 6000 leaves comfortable headroom and is well under Sonnet's 8192 max.
     max_tokens: 6000,
   });
-  const draft = completion.choices[0]?.message?.content?.trim();
-  if (!draft) throw new Error('OpenAI returned an empty response.');
+  // Anthropic returns content as an array of blocks; for text-only output
+  // the first block holds the full response.
+  const block = response.content[0];
+  const draft = block && block.type === 'text' ? block.text.trim() : '';
+  if (!draft) throw new Error('Claude returned an empty response.');
   return draft;
 }
 

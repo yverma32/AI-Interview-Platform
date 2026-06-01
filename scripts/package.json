@@ -9,6 +9,6 @@
     "blog:draft:dry": "node generate-blog-post.mjs --dry-run"
   },
   "dependencies": {
-    "openai": "^4.77.0"
+    "@anthropic-ai/sdk": "^0.100.1"
   }
 }
