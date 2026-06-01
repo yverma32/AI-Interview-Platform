@@ -10,6 +10,10 @@ export function useGeoLocation(): { currency: 'INR' | 'USD'; isLoading: boolean 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Effects don't run under SSR but guard anyway in case this hook is called from
+    // a code path that does any pre-render-side state seeding.
+    if (typeof window === 'undefined') return;
+
     // Check sessionStorage first — avoid repeated geo calls within the same session
     const cached = sessionStorage.getItem('geo_currency');
     if (cached === 'INR' || cached === 'USD') {

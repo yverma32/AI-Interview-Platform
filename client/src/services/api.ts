@@ -101,6 +101,7 @@ async function fetchCsrfTokenInternal(): Promise<string | undefined> {
     /* fall through, request will fail with 403 and surface a user-facing error */
   }
   // Fall back to cookie read for same-site deployments where document.cookie sees it.
+  if (typeof document === 'undefined') return undefined;
   const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
   return match ? decodeURIComponent(match[1]) : undefined;
 }

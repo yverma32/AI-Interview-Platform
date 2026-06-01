@@ -32,6 +32,7 @@ export default function LandingPage() {
           <span>PrepFinity</span>
         </Link>
         <nav className="landing-nav-links">
+          <Link to="/blog" className="nav-link">Blog</Link>
           <Link to="/pricing" className="nav-link">Pricing</Link>
           <Link to="/login" className="nav-link">Sign In</Link>
           <Link to="/register" className="nav-cta">Get Started</Link>
@@ -191,6 +192,7 @@ export default function LandingPage() {
           <span>PrepFinity</span>
         </div>
         <div className="footer-links">
+          <Link to="/blog">Blog</Link>
           <Link to="/pricing">Pricing</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/terms">Terms</Link>

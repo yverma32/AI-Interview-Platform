@@ -7,6 +7,8 @@ import posthog from 'posthog-js';
 let initialized = false;
 
 export function initAnalytics() {
+  // PostHog touches window/document during init; skip entirely under SSR / prerender.
+  if (typeof window === 'undefined') return;
   if (initialized) return;
   const key = import.meta.env.VITE_POSTHOG_KEY;
   if (!key) {

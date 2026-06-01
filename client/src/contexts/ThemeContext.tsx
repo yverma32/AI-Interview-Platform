@@ -27,8 +27,17 @@ function readStoredMode(): ThemeMode {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>(readStoredMode);
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(readSystemPreference);
+  // SSR-safe defaults — the prerender renders dark (matches our `data-theme=dark` default in CSS).
+  // On the client, the post-mount effect below syncs to the actual stored / system preference.
+  const [mode, setModeState] = useState<ThemeMode>('system');
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('dark');
+
+  // Sync to real browser state once mounted. Splitting this from useState initializers keeps
+  // the first server-rendered HTML identical to the first client render → no hydration mismatch.
+  useEffect(() => {
+    setModeState(readStoredMode());
+    setSystemTheme(readSystemPreference());
+  }, []);
 
   // Listen for OS-level theme changes so "system" mode stays in sync.
   useEffect(() => {
@@ -53,6 +62,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setMode = useCallback((next: ThemeMode) => {
     setModeState(next);
+    if (typeof window === 'undefined') return;
     if (next === 'system') localStorage.removeItem(STORAGE_KEY);
     else localStorage.setItem(STORAGE_KEY, next);
   }, []);

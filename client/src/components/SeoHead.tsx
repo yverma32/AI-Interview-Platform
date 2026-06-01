@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { Head } from 'vite-react-ssg';
 
 const SITE_NAME = 'PrepFinity';
 const SITE_TAGLINE = 'AI Mock Interview Practice';
@@ -31,7 +31,7 @@ export default function SeoHead({
   const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : SITE_URL;
 
   return (
-    <Helmet>
+    <Head>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalUrl} />
@@ -50,6 +50,6 @@ export default function SeoHead({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-    </Helmet>
+    </Head>
   );
 }
