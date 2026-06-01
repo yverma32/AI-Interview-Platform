@@ -19,7 +19,7 @@ export type PolicyKind = 'privacy' | 'terms' | 'refund' | 'contact';
 const EFFECTIVE_DATE = '26 May 2026';
 const CONTACT_EMAIL = 'yverma32@gmail.com';
 const BRAND_OWNER = 'Yash Verma'; // operating as an individual / sole proprietor
-const PRODUCT_NAME = 'AI Interview Simulator';
+const PRODUCT_NAME = 'PrepFinity';
 
 interface Props {
   kind: PolicyKind;
@@ -32,10 +32,10 @@ export default function PolicyPage({ kind }: Props) {
   const meta = METADATA[kind];
 
   const SEO_DESCRIPTIONS: Record<PolicyKind, string> = {
-    privacy: 'Privacy Policy for InterviewReady — how we collect, use, and protect your data.',
-    terms: 'Terms of Service for InterviewReady — rules and conditions for using the platform.',
-    refund: 'Refund Policy for InterviewReady — credit purchase terms and refund conditions.',
-    contact: 'Contact InterviewReady — get in touch with support.',
+    privacy: 'Privacy Policy for PrepFinity — how we collect, use, and protect your data.',
+    terms: 'Terms of Service for PrepFinity — rules and conditions for using the platform.',
+    refund: 'Refund Policy for PrepFinity — credit purchase terms and refund conditions.',
+    contact: 'Contact PrepFinity — get in touch with support.',
   };
 
   return (
@@ -56,6 +56,8 @@ export default function PolicyPage({ kind }: Props) {
       <article className="policy-content">{CONTENT[kind]()}</article>
 
       <nav className="policy-footer-nav" aria-label="Other policies">
+        <Link to="/">Home</Link>
+        <Link to="/pricing">Pricing</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
         <Link to="/refund">Refund</Link>

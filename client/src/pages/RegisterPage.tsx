@@ -214,7 +214,7 @@ export default function RegisterPage() {
       <div className="auth-card auth-card-wide">
         <div className="auth-header">
           <div className="auth-logo"><Target size={32} aria-hidden /></div>
-          <h1>Join AI Interview Simulator</h1>
+          <h1>Join PrepFinity</h1>
           <p>Create your account and start preparing</p>
         </div>
 

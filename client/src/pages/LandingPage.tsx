@@ -23,13 +23,13 @@ export default function LandingPage() {
     <div className="landing">
       <SeoHead
         canonical="/"
-        description="Practice technical interviews with an AI voice interviewer. Real-time scoring, weak-topic analytics, 5 personas. Free to start — no credit card needed."
+        description="Practice real technical interviews with an AI voice or text interviewer. Real-time scoring, weak-topic analytics, company-specific tracks (TCS, Infosys, Razorpay, Google). Free to start — no credit card needed."
       />
       {/* ── Top nav ─────────────────────────────────────────────────── */}
       <header className="landing-nav">
         <Link to="/" className="landing-brand">
           <Target size={22} aria-hidden />
-          <span>AI Interview Simulator</span>
+          <span>PrepFinity</span>
         </Link>
         <nav className="landing-nav-links">
           <Link to="/pricing" className="nav-link">Pricing</Link>
@@ -188,7 +188,7 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <div className="footer-brand">
           <Target size={16} aria-hidden />
-          <span>AI Interview Simulator</span>
+          <span>PrepFinity</span>
         </div>
         <div className="footer-links">
           <Link to="/pricing">Pricing</Link>

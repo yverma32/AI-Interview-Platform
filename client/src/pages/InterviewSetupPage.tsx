@@ -198,7 +198,7 @@ export default function InterviewSetupPage() {
 
         <div className="setup-header">
           <div className="setup-icon"><Target size={36} aria-hidden /></div>
-          <h1>AI Interview Simulator</h1>
+          <h1>PrepFinity</h1>
           <p>Practice with an AI-powered technical interviewer that adapts to your level</p>
         </div>
 
