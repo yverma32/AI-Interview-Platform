@@ -56,6 +56,8 @@ export default function PolicyPage({ kind }: Props) {
       <article className="policy-content">{CONTENT[kind]()}</article>
 
       <nav className="policy-footer-nav" aria-label="Other policies">
+        <Link to="/">Home</Link>
+        <Link to="/pricing">Pricing</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
         <Link to="/refund">Refund</Link>

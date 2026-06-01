@@ -315,6 +315,7 @@ export default function PricingPage() {
       {/* Policy links — required by Razorpay merchant terms so they're visible right next
           to the purchase CTA, not buried under multiple clicks. */}
       <nav className="pricing-policy-footer" aria-label="Policies">
+        <Link to="/">Home</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
         <Link to="/refund">Refund</Link>
