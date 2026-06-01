@@ -1,6 +1,14 @@
-# AI Interview Platform
+# PrepFinity — AI Interview Platform
+
+> 🌐 **Live at [prepfinity.co](https://prepfinity.co)** — practice technical interviews with an AI interviewer. Voice or text, real-time scoring, weak-topic analytics. Free to start.
 
 A full-stack web application that conducts voice-driven, AI-powered mock technical interviews. Candidates pick a technology and experience level, then talk to an AI interviewer ("Alex") in real time — speech-to-text, GPT-evaluated answers, scoring, weak-topic analytics, and a tiered subscription model with Razorpay payments.
+
+## Read More
+
+- [How to prepare for the TCS technical interview process in 2026](https://prepfinity.co/blog/tcs-technical-interview-process-step-by-step)
+- [Top 10 mistakes in AI mock interviews and how to fix them](https://prepfinity.co/blog/top-10-ai-mock-interview-mistakes)
+- [All PrepFinity blog posts](https://prepfinity.co/blog)
 
 ---
 
