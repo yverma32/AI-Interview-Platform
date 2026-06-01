@@ -1,0 +1,7 @@
+# Auto-drafted blog posts land here from scripts/generate-blog-post.mjs.
+#
+# These are AI-drafted and SHOULD be reviewed before merge. After editing,
+# you can either:
+#   (a) leave the file here — fine for non-revised drafts you trust
+#   (b) move it up to client/src/content/blog/ — signals "human-reviewed"
+#       in the file tree (visual indicator only; both folders publish)

@@ -29,6 +29,7 @@ InterviewPlatform.API/appsettings.Development.json
 client/node_modules/
 client/dist/
 client/dist-ssr/
+scripts/node_modules/
 *.log
 *.local
 

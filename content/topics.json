@@ -1,0 +1,117 @@
+{
+  "_comment": "Queue of blog topics for the drafting agent. The agent pops the next topic where used=false, generates a draft, and marks it used=true. Add new topics by appending to the end of the array. Order matters — top of the unused list gets drafted first.",
+  "_format": {
+    "title": "Working title — the agent may refine the final title to fit 50–60 chars and the target keyword.",
+    "targetKeyword": "The single long-tail query this post is meant to rank for. Use Google autocomplete or a free tool to validate it.",
+    "angle": "One sentence describing the unique take. Helps prevent generic posts.",
+    "internalLinks": "Optional list of other prepfinity.co URLs this post should link to.",
+    "used": "true once the agent has drafted this topic. Don't manually set true; the script updates it."
+  },
+  "topics": [
+    {
+      "title": "TCS technical interview process step by step",
+      "targetKeyword": "TCS technical interview process",
+      "angle": "Walk through every round of the TCS NQT and Smart Hiring tracks with specifics that actually appear in 2026 (not 2018 copies).",
+      "internalLinks": ["/pricing", "/register"],
+      "used": false
+    },
+    {
+      "title": "How to crack a Razorpay backend interview",
+      "targetKeyword": "Razorpay backend interview questions",
+      "angle": "What Razorpay actually asks (idempotency, payment flows, distributed transactions) — not generic backend questions.",
+      "internalLinks": ["/blog/top-10-ai-mock-interview-mistakes", "/register"],
+      "used": false
+    },
+    {
+      "title": "Service-based vs product-based company interviews compared",
+      "targetKeyword": "service based vs product based interview",
+      "angle": "What changes round-by-round: question depth, code expectations, follow-up style. With concrete TCS vs Razorpay examples.",
+      "internalLinks": ["/pricing", "/register"],
+      "used": false
+    },
+    {
+      "title": "Top DSA patterns for SDE-1 fresher interviews",
+      "targetKeyword": "DSA patterns for SDE 1 interview",
+      "angle": "Pattern-based prep beats topic-by-topic prep. Cover the 8 patterns that account for most interview questions, with example problems.",
+      "internalLinks": ["/register", "/blog"],
+      "used": false
+    },
+    {
+      "title": "How to answer 'tell me about yourself' in tech interviews",
+      "targetKeyword": "tell me about yourself software engineer",
+      "angle": "A 4-part structure that works for freshers AND 5-year experienced. With three example answers at different experience levels.",
+      "internalLinks": ["/register", "/blog/top-10-ai-mock-interview-mistakes"],
+      "used": false
+    },
+    {
+      "title": "System design interview prep for 2-5 years experience",
+      "targetKeyword": "system design interview 2 years experience",
+      "angle": "What FAANG-India and Razorpay-tier startups actually expect at this level (vs senior expectations). Concrete examples.",
+      "internalLinks": ["/pricing", "/register"],
+      "used": false
+    },
+    {
+      "title": "How to prepare for an Infosys interview",
+      "targetKeyword": "Infosys interview preparation",
+      "angle": "Specifics of the Infosys process (HackerRank round, technical, HR) with what each round is actually checking for.",
+      "internalLinks": ["/register", "/blog"],
+      "used": false
+    },
+    {
+      "title": "Free AI tools for interview preparation in India",
+      "targetKeyword": "free AI interview prep India",
+      "angle": "Honest review of what works and what doesn't (yes, including a fair take on PrepFinity vs LeetCode AI vs InterviewBit).",
+      "internalLinks": ["/pricing", "/register"],
+      "used": false
+    },
+    {
+      "title": "Behavioural interview questions for software engineers",
+      "targetKeyword": "behavioural interview questions software engineer",
+      "angle": "The 12 questions that come up in 80% of HR rounds at MAANG and Indian startups, with STAR-format answer templates.",
+      "internalLinks": ["/register", "/blog/top-10-ai-mock-interview-mistakes"],
+      "used": false
+    },
+    {
+      "title": "How to negotiate salary at a service company in India",
+      "targetKeyword": "salary negotiation service company India",
+      "angle": "Bands, bench risk, joining bonus realities. Specific scripts for the HR round at TCS, Infosys, Wipro.",
+      "internalLinks": ["/blog", "/register"],
+      "used": false
+    },
+    {
+      "title": "Voice mock interview practice vs writing answers",
+      "targetKeyword": "voice mock interview practice",
+      "angle": "Why writing answers feels productive but doesn't fix the freeze you get in a real verbal interview. With drills that fix it.",
+      "internalLinks": ["/pricing", "/register"],
+      "used": false
+    },
+    {
+      "title": "Common mistakes in HR round interviews for freshers",
+      "targetKeyword": "HR round interview mistakes fresher",
+      "angle": "The 10 specific things freshers say in HR rounds that immediately tank their candidacy, with what to say instead.",
+      "internalLinks": ["/register", "/blog/top-10-ai-mock-interview-mistakes"],
+      "used": false
+    },
+    {
+      "title": "How to prepare for a Google India SWE interview",
+      "targetKeyword": "Google India SWE interview preparation",
+      "angle": "Realistic 8-week prep plan for Google's L3/L4 process — what to skip, what to over-prepare, what to do in week 7.",
+      "internalLinks": ["/pricing", "/register"],
+      "used": false
+    },
+    {
+      "title": "What to do in the 24 hours before a technical interview",
+      "targetKeyword": "before technical interview checklist",
+      "angle": "Sleep, food, mental rehearsal, no last-minute studying. A concrete hour-by-hour checklist with reasoning for each item.",
+      "internalLinks": ["/register", "/blog/top-10-ai-mock-interview-mistakes"],
+      "used": false
+    },
+    {
+      "title": "Resume tips for Indian software engineers with 0-3 years experience",
+      "targetKeyword": "software engineer resume India fresher",
+      "angle": "What recruiters at TCS, Razorpay, and Google actually skim for in the first 7 seconds. Specific examples of bad vs good bullets.",
+      "internalLinks": ["/register", "/blog"],
+      "used": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "prepfinity-scripts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Tooling scripts (blog drafting agent, etc.) — not shipped to the browser or backend.",
+  "scripts": {
+    "blog:draft": "node generate-blog-post.mjs",
+    "blog:draft:dry": "node generate-blog-post.mjs --dry-run"
+  },
+  "dependencies": {
+    "openai": "^4.77.0"
+  }
+}
