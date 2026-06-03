@@ -28,7 +28,9 @@
         "/blog/top-10-ai-mock-interview-mistakes",
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-03T05:12:11.720Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-03-razorpay-backend-interview-questions.mdx"
     },
     {
       "title": "Service-based vs product-based company interviews compared",
