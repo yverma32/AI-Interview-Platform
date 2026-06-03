@@ -1,0 +1,87 @@
+---
+title: "Razorpay Backend Interview Questions: What Actually Gets Asked"
+description: "Razorpay backend interviews go deep on idempotency, payment flows, and distributed systems. Here's what actually gets asked and how to prepare."
+date: "2026-06-03"
+slug: "razorpay-backend-interview-questions"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "razorpay", "backend-interviews"]
+---
+
+Most candidates walk into a Razorpay backend interview having revised system design from a YouTube playlist and LeetCode mediums all week. Then the interviewer asks: "How would you guarantee exactly-once payment processing across a retry storm?" The candidate freezes. That question isn't on any generic prep list, but it's squarely in the territory of Razorpay backend interview questions that show up in real rounds. This post covers what Razorpay actually tests, why it's different from a standard backend interview, and how to prepare for the specific problems their engineers care about.
+
+## Razorpay interviews are product-shaped, not platform-shaped
+
+Google and Microsoft interviews test abstract problem-solving. Razorpay interviews test whether you understand the domain their engineers live in every day: money movement, payment reliability, and financial correctness.
+
+That distinction matters for how you prep. A candidate who has memorized the top 150 LeetCode problems but has never thought about what happens when a payment webhook fires twice will struggle. A candidate who has thought carefully about idempotency, retries, and reconciliation will feel at home even if their raw DSA is average.
+
+Razorpay's backend team is building infrastructure that processes thousands of crores in transactions daily. They want engineers who think about failure modes first, not last. If your mental model of a payment is "request goes in, money moves, response comes out," you need to expand it before the interview.
+
+## The idempotency question is almost guaranteed
+
+If there is one concept you must own before walking into a Razorpay backend round, it is idempotency. Interviewers ask about it directly ("how do you make a payment API idempotent?") and indirectly ("what happens if the client retries a charge request after a timeout?").
+
+The answer they want is not "use a unique request ID." That's the starting point. They want to see you trace the full lifecycle: the client sends an idempotency key, the server stores the key with the result before responding, retries return the cached result without re-executing the charge, and the key expires after a safe window (typically 24 hours for payment APIs).
+
+You should also be able to talk about what happens when the server crashes after processing but before returning a response. That's the hard case. Know it cold. A good follow-up to prepare for: "How do you distinguish between a duplicate request and a legitimately new request for the same amount from the same user?"
+
+## Distributed transactions come up in the system design round
+
+Razorpay's system design round is not "design Twitter." Expect a prompt closer to "design a payout system that transfers money from a merchant's Razorpay balance to their bank account, reliably, at scale."
+
+That prompt forces a conversation about distributed transactions. You cannot use a single database ACID transaction when the money movement involves your internal ledger, an NEFT/IMPS call to a bank, and a webhook to the merchant, all across separate services.
+
+The patterns they expect you to know: the Saga pattern (choreography vs. orchestration), the outbox pattern for reliable event publishing, and two-phase commit (and why you'd avoid it in practice). If you can explain why 2PC is a liability in a high-throughput payment system and what you'd use instead, you're ahead of most candidates. Bonus points if you can sketch the compensating transaction logic for a failed payout mid-saga.
+
+## Webhook reliability is a real interview topic, not a footnote
+
+Razorpay sends webhooks to merchants when payment status changes. Making that reliable at scale is a genuine engineering problem, and interviewers use it to test your understanding of async systems.
+
+Be ready to discuss at-least-once vs. exactly-once delivery, exponential backoff with jitter for retries, dead-letter queues for failed deliveries, and idempotency on the merchant's side. You should also know how Razorpay signs webhooks (HMAC-SHA256) and why that matters for security. It has come up in technical rounds, often as a follow-up after the candidate finishes the main design.
+
+The wrong answer is "just use a message queue and retry." The right answer traces the failure modes at each step and explains how you'd detect and recover from each one. Specifically: what happens if the merchant's server returns a 200 but never actually processes the event?
+
+## Database design questions focus on financial correctness
+
+Razorpay backend interviews include SQL and schema design questions, but they're not about normalizing a blog post database. They test financial correctness.
+
+Common angles: how do you model a double-entry ledger? How do you prevent a race condition when two concurrent requests try to debit the same wallet? How do you run a reconciliation job that finds transactions where your internal state disagrees with the bank's statement?
+
+For the race condition question, know the difference between optimistic locking (version columns, compare-and-swap) and pessimistic locking (SELECT FOR UPDATE), and when each is appropriate. In a payment context, pessimistic locking is often the safer default even if it's slower. Be ready to write the actual SQL. Interviewers at Razorpay have asked candidates to write a SELECT FOR UPDATE query on the spot and then explain what happens under high concurrency.
+
+## The "walk me through a bug you fixed" question is a filter, not a warmup
+
+Almost every Razorpay interview includes a behavioral question about a real production problem you've debugged. It sounds easy. It's where a lot of candidates lose points.
+
+The interviewers are not looking for a story with a happy ending. They're looking for how you reason under uncertainty. What signals did you look at first? What hypotheses did you form? Where were you wrong? How did you narrow it down?
+
+If your most interesting production bug is from a side project with 12 users, that's fine, but be specific. "We were seeing intermittent 500s on the payment confirmation endpoint, and it turned out our idempotency key check had a race condition under concurrent retries" is more credible than "we had a performance issue." Before your interview, write down three production incidents in detail and practice explaining them out loud. Running a few voice-based mock sessions the night before helps close the gap between how you think you'll tell the story and how you actually tell it under pressure. We cover exactly why that gap is bigger than candidates expect in [our post on the most common AI mock interview mistakes](https://prepfinity.co/blog/top-10-ai-mock-interview-mistakes).
+
+## The coding round is medium difficulty, but the follow-ups are hard
+
+Razorpay's coding round is not trying to trick you with graph theory puzzles. Expect medium-difficulty problems: sliding window, hash maps, basic tree traversal. The first problem is usually solvable in 20 minutes if you're warmed up.
+
+The second part of the round is where it gets real. After you solve the problem, the interviewer will add constraints. "Now make it thread-safe." "Now assume the input doesn't fit in memory." "Now handle the case where the external API call can fail." These follow-ups are where they assess whether you're a candidate who codes or a candidate who engineers.
+
+Practice this explicitly. After solving any LeetCode problem, spend five minutes asking yourself what the next constraint would be in a production system. One useful exercise: take any problem involving a counter or a balance, and ask yourself how you'd make it correct under concurrent writes. That habit will serve you better than solving 50 more problems cold.
+
+## Razorpay backend interview questions test your opinion on trade-offs
+
+One pattern that surprises candidates: Razorpay interviewers often ask questions with no single right answer, then wait to see if you'll commit to a position.
+
+"Would you use Kafka or a database-backed queue for this use case?" They want your actual reasoning, not a hedge. "It depends" is the beginning of an answer, not the whole answer. State what you'd choose given specific constraints (message volume, ordering requirements, operational complexity), explain the trade-off you're accepting, and hold your ground if they push back, unless they give you new information that genuinely changes the calculus.
+
+Engineers who can't commit to a design decision under mild pressure are a liability on a team building financial infrastructure. The interview is testing exactly that. A good answer sounds like: "Given that we need strict ordering per merchant and our volume is under 10,000 events per second, I'd use a Postgres-backed outbox over Kafka here, because it eliminates a distributed dependency and ordering is easier to reason about."
+
+## How to structure your last two weeks of prep
+
+Week one: cover the concepts. Idempotency, Saga pattern, outbox pattern, double-entry ledger design, optimistic vs. pessimistic locking. Read the actual Razorpay engineering blog. They've published posts on their payment retry infrastructure and reconciliation systems that are more useful than any generic prep guide.
+
+Week two: practice under pressure. Do two timed coding sessions per day. Run at least three voice-based mock interviews where you explain your system design out loud, not just on paper. The first session will feel fine. The second will show you exactly where your explanation breaks down, usually on the failure-handling section of the design.
+
+On the night before the interview, do one final voice round focused purely on your behavioral answers. You'll find at least one story you've been telling wrong, or one that's missing a key detail that makes it credible. Fix it the night before, not in the room.
+
+[Start your prep with 3 free mock interviews on PrepFinity](https://prepfinity.co/register). The sessions are calibrated for product-company interviews, and the follow-up questions go exactly where a Razorpay interviewer would push.
+
+*Want to try the most candid AI interviewer in the market? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
