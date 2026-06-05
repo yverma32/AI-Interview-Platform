@@ -40,7 +40,9 @@
         "/pricing",
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-05T05:00:42.263Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-05-service-based-vs-product-based-interview.mdx"
     },
     {
       "title": "Top DSA patterns for SDE-1 fresher interviews",
