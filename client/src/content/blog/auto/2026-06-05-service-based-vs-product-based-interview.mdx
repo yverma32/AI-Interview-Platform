@@ -1,0 +1,99 @@
+---
+title: "Service Based vs Product Based Interview: Round by Round"
+description: "Service based vs product based interview differ more than you think. Here's what changes round by round, with real TCS and Razorpay examples to prep from."
+date: "2026-06-05"
+slug: "service-based-vs-product-based-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "service-based", "product-based"]
+---
+
+The service based vs product based interview gap is wider than most candidates expect, and it's not just about DSA difficulty. The entire interview contract is different. TCS wants to know if you can follow a process reliably. Razorpay wants to know if you can think under pressure and defend your decisions. Preparing for one using the other's playbook is how candidates with strong fundamentals still get rejected.
+
+Here's what actually changes, round by round.
+
+## The aptitude round is where service companies filter most candidates
+
+TCS Smart Hiring, Infosys InfyTQ, Wipro NLTH — these platforms eliminate 60–70% of applicants before any human sees a resume. The tests cover quantitative aptitude, logical reasoning, verbal ability, and a basic coding section. The coding problems are typically easy-to-medium on a HackerEarth scale: string manipulation, basic sorting, pattern problems.
+
+Product companies rarely run this kind of mass aptitude screen. Razorpay, Swiggy, and Zepto use a focused online coding test instead, usually two or three problems in 90 minutes. The difficulty is medium-to-hard. One problem will have an obvious brute-force solution and a non-obvious optimal one. They're watching whether you find the optimal path or just get the test cases to pass.
+
+If you're applying to both tracks simultaneously, don't let service company aptitude prep crowd out your DSA work. They need different time allocations. A reasonable split: four days of aptitude drills per week for service company prep, and three days of medium-to-hard LeetCode for product company prep. Running them in parallel without a schedule means the easier aptitude work quietly takes over.
+
+## The first technical round asks the same topics but expects different depth
+
+Both tracks will ask about OOP, data structures, DBMS, and OS fundamentals. The difference is how far the interviewer goes.
+
+At TCS or Cognizant, a first technical round question on OOP might be: "What is polymorphism? Give an example." A correct, textbook answer passes. The interviewer moves on.
+
+At Razorpay or PhonePe, the same topic starts the same way and then continues. "Okay, how does runtime polymorphism work at the memory level?" "If you override a method in a subclass, what happens to the vtable?" "Walk me through a situation where you used this in production code." Three follow-ups in, a candidate who memorized definitions is stuck.
+
+The fix is to prepare every concept two levels deep. Know the definition. Know how it works under the hood. Know one real situation where you used it or saw it fail. For DBMS, that means knowing not just what an index is, but why a query planner might ignore your index and how you'd diagnose that.
+
+## Coding rounds at product companies test how you think, not just what you produce
+
+Service company coding rounds are often evaluated on correctness and basic code quality. Get the output right, write readable code, and you're through.
+
+Product company coding rounds are evaluated on your process. At Swiggy or CRED, the interviewer will interrupt you mid-solution. "Why did you choose a HashMap here?" "What's the space complexity of this approach?" "Can you do it without that extra array?" They're not being difficult. They want to see if you understand what you wrote.
+
+This means you need to practice narrating your thinking out loud. Most candidates code in silence during mock sessions because it feels faster. In a real product company round, silence reads as uncertainty. Practice explaining each decision as you make it: "I'm using a sliding window here because the constraint says the array is sorted, so I don't need to revisit elements." One concrete habit that helps: after writing each block of code in practice, stop and say out loud what it does and why you wrote it that way.
+
+PrepFinity's AI interviewer interrupts with follow-up questions mid-solution by default. If you've been practicing on a platform that just scores your final code, you're not ready for this format. [Start a free session](https://prepfinity.co/register) to see how different it feels when the interviewer pushes back in real time.
+
+## The service based vs product based interview split is most visible in the HR round
+
+This is where the tracks diverge most sharply in what they actually want.
+
+Service company HR rounds are mostly compliance checks. "Are you okay with relocation?" "What's your notice period?" "Do you have any bond obligations?" The interviewer has a checklist. Give clean, direct answers. Don't oversell yourself. Don't bring up salary negotiation unless asked. At TCS, the HR round is often 15 minutes and follows a fixed script.
+
+Product company HR rounds are behavioral screens with real stakes. At Flipkart or Amazon India, the HR round isn't a formality. They're checking culture fit, ownership mindset, and how you handle ambiguity. "Tell me about a time you disagreed with your manager." "Describe a project that failed and what you did about it." These questions have no correct textbook answer. They're probing for pattern of behavior.
+
+Prepare three to five strong stories from your actual experience before any product company interview. Each story should have a specific problem, a specific action you took, and a measurable result. "We reduced API latency from 800ms to 120ms" is a result. "We improved performance significantly" is not.
+
+## Managerial rounds exist at product companies and most candidates ignore them
+
+Many candidates preparing for product companies focus entirely on DSA and system design, then walk into a managerial round unprepared. This round exists at Razorpay, Zepto, and most Series B and above startups. The hiring manager is asking one question in many different ways: will this person make my team better or harder to manage?
+
+Expect questions about how you handle conflict, how you prioritize when everything is urgent, and what you do when you don't know the answer. They will also probe your resume harder than any technical interviewer. "This project you listed — what was your specific contribution versus the team's?" "Why did you make this architectural choice? Would you do it differently now?"
+
+Don't memorize answers. Prepare by actually revisiting your past work critically. Know where you made good calls and where you made bad ones. Candidates who say "I wouldn't change anything" in a managerial round almost always lose points. The interviewer is looking for self-awareness, not perfection.
+
+## System design rounds appear much earlier at product companies than candidates expect
+
+At TCS or Infosys, system design questions are rare at the entry level and surface only for senior roles. At product companies, even a 2–3 year experience candidate can face a system design round. "Design a URL shortener." "Design the notification service for an app like Swiggy." "How would you build a rate limiter for a payments API?"
+
+The evaluator isn't expecting a perfect architecture. They want to see that you can scope a problem, identify trade-offs, and make reasonable decisions with incomplete information. The biggest mistake candidates make is jumping to solutions before clarifying requirements. Spend the first three minutes asking questions: "How many users? Read-heavy or write-heavy? Do we need real-time consistency or is eventual consistency acceptable?"
+
+If you've never done a structured system design mock, your first attempt will feel chaotic. Two or three practice sessions change this significantly. [PrepFinity's pricing page](https://prepfinity.co/pricing) has options if you want to run focused system design rounds without committing to a full plan.
+
+## The follow-up style is the fastest way to diagnose which track you're in
+
+Here's a quick diagnostic. In your last mock or real interview, did the interviewer follow up more than twice on any single answer?
+
+If no, you were in a service company track. Questions move fast, breadth matters more than depth, and the goal is to clear a threshold on each topic. The TCS technical round typically covers eight to ten topics in 30 minutes for exactly this reason.
+
+If yes, you were in a product company track. One question can become a ten-minute conversation. Depth matters more than breadth, and the goal is to show how you think. A Razorpay interviewer once spent 20 minutes on a single HashMap question, going from definition to implementation to memory layout to a real debugging scenario.
+
+Knowing which track you're in changes how you prep. Service track: cover more topics, practice speed, get clean on fundamentals. Product track: go deep on fewer topics, practice defending decisions, build strong project stories.
+
+## Salary expectations and negotiation work differently across both tracks
+
+Service companies at the entry level have fixed or near-fixed compensation bands. TCS, Infosys, and Wipro will offer freshers a package in the ₹3.5–7 LPA range, and the room to negotiate is narrow. The offer letter comes with a bond period in many cases. Read it before signing. A two-year bond at ₹4 LPA is a different decision than a two-year bond at ₹7 LPA.
+
+Product companies have wider bands and expect negotiation. A mid-level engineer at Razorpay or PhonePe might see offers ranging from ₹18 LPA to ₹35 LPA depending on negotiation and competing offers. "I have another offer at X" is a legitimate negotiation tool here. At a service company, it rarely moves the number.
+
+Know which track you're in before you get to the offer stage. Negotiating hard at a service company wastes goodwill. Not negotiating at a product company leaves real money on the table.
+
+## The prep strategy that works for both tracks without doubling your effort
+
+You don't need two completely separate prep plans. You need a base layer that serves both, with a short track-specific layer on top.
+
+Base layer (3–4 weeks): DSA fundamentals up to medium difficulty, OOP and system concepts two levels deep, three to five strong behavioral stories from real experience.
+
+Service track layer (1 week): Aptitude practice on HackerEarth or similar, speed drills on easy coding problems, clean answers on HR compliance questions.
+
+Product track layer (1–2 weeks): Medium-to-hard DSA with narration practice, one system design mock per day, managerial round story rehearsal.
+
+Most candidates spend all their time on the base layer and skip the track-specific work. That's why the actual interview feels nothing like their practice. The track-specific layer takes less time than the base layer, but it's what determines whether your preparation converts into an offer.
+
+*Want to practice both tracks with an AI that pushes back the way real interviewers do? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
