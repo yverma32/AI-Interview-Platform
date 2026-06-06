@@ -39,43 +39,129 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      {/* ── Hero ────────────────────────────────────────────────────── */}
+      {/* ── Hero (two-column: copy on left, live-interview mockup on right) ─ */}
       <section className="landing-hero">
-        {foundingStatus?.active ? (
-          <Link to="/register" className="hero-badge hero-badge--promo">
-            <Gift size={14} aria-hidden />
-            <span>
-              <strong>Launch offer:</strong> First {foundingStatus.totalSpots} buyers get{' '}
-              <strong>2× credits</strong> on any pack →
-            </span>
-          </Link>
-        ) : (
-          <div className="hero-badge">
-            <Sparkles size={14} aria-hidden />
-            <span>Built for Indian tech interviews</span>
+        <div className="hero-grid">
+          {/* ── Left column: copy + CTAs ─────────────────────────────── */}
+          <div className="hero-copy">
+            {foundingStatus?.active ? (
+              <Link to="/register" className="hero-badge hero-badge--promo">
+                <Gift size={14} aria-hidden />
+                <span>
+                  <strong>Launch offer:</strong> First {foundingStatus.totalSpots} buyers get{' '}
+                  <strong>2× credits</strong> on any pack →
+                </span>
+              </Link>
+            ) : (
+              <div className="hero-badge">
+                <Sparkles size={14} aria-hidden />
+                <span>AI mock interviews for engineers, worldwide</span>
+              </div>
+            )}
+
+            <h1 className="hero-title">
+              Practice the interviews{' '}
+              <span className="grad-text">you&apos;ll actually face</span>.
+            </h1>
+
+            <p className="hero-sub">
+              AI mock interviews for top companies — FAANG, Razorpay, Stripe, Swiggy, TCS, and more.
+              Voice or text. Real-time scoring. Built by people who&apos;ve been on both sides of the table.
+            </p>
+
+            <div className="hero-actions">
+              <Link to="/register" className="btn btn-primary btn-lg hero-cta-primary">
+                Start Free — 3 Interviews
+                <ArrowRight size={18} aria-hidden />
+              </Link>
+              <Link to="/pricing" className="btn btn-ghost btn-lg hero-cta-secondary">
+                View Pricing
+              </Link>
+            </div>
+
+            <ul className="hero-trust">
+              <li>
+                <ShieldCheck size={14} aria-hidden />
+                <span>No credit card</span>
+              </li>
+              <li>
+                <Sparkles size={14} aria-hidden />
+                <span>3 free interviews</span>
+              </li>
+              <li>
+                <Diamond size={14} aria-hidden />
+                <span>Credits never expire</span>
+              </li>
+            </ul>
           </div>
-        )}
-        <h1 className="hero-title">
-          Practice <span className="grad-text">real interviews</span>.<br />
-          Get scored in real time.
-        </h1>
-        <p className="hero-sub">
-          A voice-and-text AI interviewer that asks the questions your dream company
-          actually asks. Five personas. Five rounds. Detailed feedback after every session.
-        </p>
-        <div className="hero-actions">
-          <Link to="/register" className="btn btn-primary btn-lg">
-            Start Free — 3 Interviews
-            <ArrowRight size={18} aria-hidden />
-          </Link>
-          <Link to="/pricing" className="btn btn-ghost btn-lg">
-            View Pricing
-          </Link>
+
+          {/* ── Right column: live interview mockup (pure CSS/SVG, no images) ─ */}
+          <div className="hero-mockup-wrap" aria-hidden>
+            <div className="hero-mockup">
+              {/* Subtle floating orbs in card background */}
+              <span className="hero-mockup-orb hero-mockup-orb--cyan" />
+              <span className="hero-mockup-orb hero-mockup-orb--magenta" />
+
+              {/* Card header: persona + LIVE indicator */}
+              <div className="hero-mockup-header">
+                <div className="hero-mockup-persona">
+                  <span className="hero-persona-avatar">A</span>
+                  <div className="hero-persona-meta">
+                    <div className="hero-persona-name">Alex</div>
+                    <div className="hero-persona-sub">DSA Round · FAANG track</div>
+                  </div>
+                </div>
+                <span className="hero-mockup-live">
+                  <span className="hero-mockup-live-dot" />
+                  LIVE
+                </span>
+              </div>
+
+              {/* AI question bubble */}
+              <div className="hero-mockup-bubble">
+                <span className="hero-mockup-bubble-tag">Alex is asking</span>
+                <p>
+                  Given an array of n integers, find the longest subarray such that
+                  all elements are unique. Walk me through your approach.
+                </p>
+              </div>
+
+              {/* Live voice waveform */}
+              <div className="hero-mockup-wave" role="presentation">
+                {Array.from({ length: 22 }).map((_, i) => (
+                  <span key={i} className={`hero-mockup-bar hero-mockup-bar-${i % 6}`} />
+                ))}
+              </div>
+
+              {/* User's transcription, with blinking caret */}
+              <div className="hero-mockup-transcript">
+                <span className="hero-mockup-transcript-label">You</span>
+                <p>
+                  Okay, so I&apos;m thinking sliding window with a hash set to track seen
+                  characters<span className="hero-mockup-caret" />
+                </p>
+              </div>
+
+              {/* Live score panel */}
+              <div className="hero-mockup-score">
+                <div className="hero-mockup-score-row">
+                  <span className="hero-mockup-score-label">Score so far</span>
+                  <span className="hero-mockup-score-value">
+                    8.6<span className="hero-mockup-score-max"> / 10</span>
+                  </span>
+                </div>
+                <div className="hero-mockup-score-track">
+                  <span className="hero-mockup-score-fill" />
+                </div>
+                <div className="hero-mockup-score-tags">
+                  <span>Time complexity</span>
+                  <span>Edge cases</span>
+                  <span>Communication</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="hero-fineprint">
-          <ShieldCheck size={14} aria-hidden />
-          No credit card. 2 Basic + 1 Premium credits free on signup. Credits never expire.
-        </p>
       </section>
 
       {/* ── Two-mode comparison ─────────────────────────────────────── */}
