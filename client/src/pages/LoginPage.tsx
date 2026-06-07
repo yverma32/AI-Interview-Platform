@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Target, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { Target, AlertTriangle, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import SeoHead from '../components/SeoHead';
 import './Auth.css';
@@ -79,6 +79,15 @@ export default function LoginPage() {
   return (
     <div className="auth-container">
       <SeoHead title="Sign In" description="Sign in to PrepFinity and continue your AI mock interview practice." canonical="/login" noIndex />
+      <button
+        type="button"
+        className="auth-back"
+        onClick={() => navigate('/')}
+        aria-label="Back to Home"
+      >
+        <ArrowLeft size={14} aria-hidden />
+        <span>Back to Home</span>
+      </button>
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo"><Target size={32} aria-hidden /></div>

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { Target, AlertTriangle, Eye, EyeOff, Check, FileText, SkipForward } from 'lucide-react';
+import { Target, AlertTriangle, Eye, EyeOff, Check, FileText, SkipForward, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import SeoHead from '../components/SeoHead';
 import ResumeUpload from '../components/ResumeUpload';
@@ -211,6 +211,15 @@ export default function RegisterPage() {
   return (
     <div className="auth-container">
       <SeoHead title="Create Account" description="Sign up free and get 2 Basic + 1 Premium interview credit instantly. No credit card needed." canonical="/register" noIndex />
+      <button
+        type="button"
+        className="auth-back"
+        onClick={() => navigate('/')}
+        aria-label="Back to Home"
+      >
+        <ArrowLeft size={14} aria-hidden />
+        <span>Back to Home</span>
+      </button>
       <div className="auth-card auth-card-wide">
         <div className="auth-header">
           <div className="auth-logo"><Target size={32} aria-hidden /></div>
