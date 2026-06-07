@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, Diamond, Star, MessageCircle, Mic, Sparkles } from 'lucide-react';
+import {
+  Check, Diamond, Star, MessageCircle, Sparkles, Gift,
+  ShieldCheck, ArrowRight, ArrowLeft, BookOpen, Target,
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import SeoHead from '../components/SeoHead';
 import {
@@ -178,38 +181,69 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="pricing-page">
+    <div className="pricing-page pricing-page--neo">
       {head}
+
+      {/* Ambient glow backdrop — matches the landing aesthetic */}
+      <div className="pricing-bg" aria-hidden>
+        <div className="pricing-bg-orb pricing-bg-orb--cyan" />
+        <div className="pricing-bg-orb pricing-bg-orb--magenta" />
+      </div>
+
+      {/* Pinned top-left back affordance — sits outside the centered header
+          so it reads as page navigation, not body content. */}
+      <button
+        className="pricing-back"
+        onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}
+        aria-label={isAuthenticated ? 'Back to Dashboard' : 'Back to Home'}
+      >
+        <ArrowLeft size={14} aria-hidden />
+        <span>{isAuthenticated ? 'Back to Dashboard' : 'Back to Home'}</span>
+      </button>
+
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <header className="pricing-header">
-        <button className="btn-back" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
-          ← {isAuthenticated ? 'Back to Dashboard' : 'Back to Home'}
-        </button>
-        <h1>Buy Interview Credits</h1>
+        <div className="pricing-eyebrow">
+          <span className="pricing-eyebrow-tick">&#9656;</span>
+          PRICING
+        </div>
+
+        <h1 className="pricing-h1">
+          Credits never expire.{' '}
+          <span className="grad-text">Use them at your pace.</span>
+        </h1>
         <p className="pricing-subtitle">
-          Credits never expire. Use them at your own pace.
+          No subscriptions. Buy packs of interviews — keep them forever. UPI, cards, wallets via Razorpay.
         </p>
+
         {isAuthenticated && credits && (
-          <div style={{ marginTop: 16, display: 'inline-block' }}>
+          <div className="pricing-balance-wrap">
             <CreditBalanceBadge basicCredits={credits.basicCredits} premiumCredits={credits.premiumCredits} />
           </div>
         )}
+
         {!isAuthenticated && (
-          <div className="free-tier-banner" role="status">
-            Sign up free — get <strong>2 Basic + 1 Premium</strong> credit instantly. No card needed.
+          <div className="pricing-free-banner" role="status">
+            <ShieldCheck size={15} aria-hidden />
+            <span>
+              Sign up free — get <strong>2 Basic + 1 Premium</strong> credit instantly. No card needed.
+            </span>
           </div>
         )}
       </header>
 
-      {/* Launch promo banner — shows only while spots remain. We deliberately do NOT show
-          the live spot count: an empty "50 spots left" reads as negative social proof to
-          early visitors. The promo still ends silently once the cap is hit (the banner
-          stops rendering because foundingStatus.active goes false). */}
+      {/* ── Founding member promo ──────────────────────────────────── */}
       {foundingStatus?.active && (
-        <div className="founding-banner" role="status">
-          <Sparkles size={18} aria-hidden />
+        <div className="founding-banner founding-banner--neo" role="status">
+          <span className="founding-banner-icon">
+            <Gift size={16} aria-hidden />
+          </span>
           <div className="founding-banner-text">
-            <strong>🎯 Founding Member offer:</strong> First {foundingStatus.totalSpots} buyers get{' '}
-            <strong>DOUBLE credits</strong> on any pack — limited time.
+            <strong>Founding Member offer</strong>
+            <span>
+              First {foundingStatus.totalSpots} buyers get{' '}
+              <strong>2× credits</strong> on any pack — limited time.
+            </span>
           </div>
         </div>
       )}
@@ -228,106 +262,308 @@ export default function PricingPage() {
         onClose={() => setFoundingModal((p) => ({ ...p, open: false }))}
       />
 
-      <section className="pricing-grid">
+      {/* ── Pricing grid ───────────────────────────────────────────── */}
+      <section className="pricing-grid pricing-grid--neo">
         {packs.map((pack) => (
-          <div
+          <article
             key={pack.id}
-            className={`pricing-card ${pack.highlight ? 'pricing-card--featured' : ''}`}
+            className={`plan-card ${pack.highlight ? 'plan-card--featured' : ''}`}
           >
-            {pack.highlight && <div className="featured-badge">Most Popular</div>}
-            <h2 className="plan-name">{pack.name}</h2>
-            <div className="plan-price">
-              <span className="price-currency">{currencySymbol}</span>
-              <span className="price-amount">{getPrice(pack)}</span>
-            </div>
-            <div className="plan-interviews">
-              <div className="credit-line">
-                <Diamond size={14} aria-hidden /> <strong>{pack.basicCredits}</strong> Basic
+            {pack.highlight && (
+              <div className="plan-featured-badge">
+                <Sparkles size={11} aria-hidden />
+                Most Popular
               </div>
-              <div className="credit-line">
-                <Star size={14} aria-hidden /> <strong>{pack.premiumCredits > 0 ? pack.premiumCredits : '—'}</strong> Premium
+            )}
+
+            <div className="plan-card-head">
+              <h2 className="plan-name">{pack.name}</h2>
+              <div className="plan-price">
+                <span className="plan-price-currency">{currencySymbol}</span>
+                <span className="plan-price-amount">{getPrice(pack)}</span>
               </div>
             </div>
+
+            <div className="plan-credits">
+              <div className="plan-credit-line plan-credit-line--basic">
+                <Diamond size={14} aria-hidden />
+                <strong>{pack.basicCredits}</strong>
+                <span>Basic interview{pack.basicCredits === 1 ? '' : 's'}</span>
+              </div>
+              <div className={`plan-credit-line plan-credit-line--premium ${pack.premiumCredits === 0 ? 'is-empty' : ''}`}>
+                <Star size={14} aria-hidden />
+                <strong>{pack.premiumCredits > 0 ? pack.premiumCredits : '—'}</strong>
+                <span>{pack.premiumCredits > 0 ? `Premium interview${pack.premiumCredits === 1 ? '' : 's'}` : 'No Premium'}</span>
+              </div>
+            </div>
+
             <ul className="plan-features">
               <li>
-                <Check className="feature-check" size={14} aria-hidden />
-                {pack.description}
+                <Check className="plan-check" size={13} aria-hidden />
+                <span>{pack.description}</span>
               </li>
               <li>
-                <Check className="feature-check" size={14} aria-hidden />
-                Credits never expire
+                <Check className="plan-check" size={13} aria-hidden />
+                <span>Credits never expire</span>
               </li>
               <li>
-                <Check className="feature-check" size={14} aria-hidden />
-                Detailed scoring & feedback
+                <Check className="plan-check" size={13} aria-hidden />
+                <span>Detailed scoring &amp; feedback report</span>
               </li>
             </ul>
+
             <button
-              className={`btn-plan ${pack.highlight ? 'btn-plan--featured' : ''}`}
+              className={`plan-cta ${pack.highlight ? 'plan-cta--featured' : ''}`}
               disabled={processingPack !== null}
               onClick={() => handleBuy(pack)}
             >
-              {processingPack === pack.id ? 'Processing...' : `Buy for ${currencySymbol}${getPrice(pack)}`}
+              {processingPack === pack.id
+                ? 'Processing…'
+                : `Buy for ${currencySymbol}${getPrice(pack)}`}
+              {processingPack !== pack.id && <ArrowRight size={14} aria-hidden />}
             </button>
-          </div>
+          </article>
         ))}
       </section>
 
-      <section className="cost-transparency">
-        <h2>What's the difference?</h2>
-        <div className="cost-breakdown-card mode-compare">
-          <div className="mode-col">
-            <h3><Diamond size={18} aria-hidden /> Basic Interview</h3>
-            <ul>
-              <li>Text questions on screen</li>
-              <li>Type or speak (voice-to-text) to answer</li>
-              <li>GPT-4o-mini scoring & feedback</li>
-              <li>Great for daily practice</li>
-            </ul>
+      {/* ── Basic vs Premium comparison ────────────────────────────── */}
+      <section className="mode-compare-section">
+        <div className="mode-compare-header">
+          <div className="mode-compare-eyebrow">
+            <BookOpen size={14} aria-hidden />
+            <span>What you actually get</span>
           </div>
-          <div className="mode-col">
-            <h3><Star size={18} aria-hidden /> Premium Interview</h3>
-            <ul>
-              <li>AI speaks questions aloud</li>
-              <li>Voice-only conversation, human-quality</li>
-              <li>OpenAI Realtime API, low latency</li>
-              <li>Real interview simulation</li>
+          <h2 className="mode-compare-title">
+            Basic vs Premium — <span className="grad-text">the real difference.</span>
+          </h2>
+        </div>
+
+        <div className="mode-compare-grid">
+          <article className="mode-compare-card">
+            <header className="mode-compare-card-head">
+              <span className="mode-compare-avatar mode-compare-avatar--cyan">A</span>
+              <div>
+                <div className="mode-compare-mode">Basic</div>
+                <div className="mode-compare-mode-sub">Text-mode interview · with Alex</div>
+              </div>
+              <span className="mode-compare-tag mode-compare-tag--cyan">
+                <Diamond size={11} aria-hidden /> 1 credit
+              </span>
+            </header>
+            <ul className="mode-compare-list">
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>Text questions on screen, type or dictate your answer</span>
+              </li>
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>GPT-4o scoring with per-question feedback</span>
+              </li>
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>Submit at your own pace — no live timer pressure</span>
+              </li>
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>Great for daily reps, commutes, or when you can&apos;t talk</span>
+              </li>
             </ul>
-          </div>
+          </article>
+
+          <article className="mode-compare-card mode-compare-card--premium">
+            <header className="mode-compare-card-head">
+              <span className="mode-compare-avatar mode-compare-avatar--magenta">P</span>
+              <div>
+                <div className="mode-compare-mode">Premium</div>
+                <div className="mode-compare-mode-sub">Voice-mode interview · with Priya</div>
+              </div>
+              <span className="mode-compare-tag mode-compare-tag--magenta">
+                <Star size={11} aria-hidden /> 1 credit
+              </span>
+            </header>
+            <ul className="mode-compare-list">
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>AI speaks questions aloud — full voice conversation</span>
+              </li>
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>OpenAI Realtime API, low-latency, can be interrupted</span>
+              </li>
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>Follow-ups feel like a real human interviewer</span>
+              </li>
+              <li>
+                <Check size={13} className="plan-check" aria-hidden />
+                <span>The closest thing to a real screening round, before the real one</span>
+              </li>
+            </ul>
+          </article>
         </div>
       </section>
 
-      <section className="pricing-faq">
-        <h2>Frequently Asked Questions</h2>
-        <div className="faq-grid">
-          <div className="faq-item">
-            <h4><MessageCircle size={16} aria-hidden style={{ verticalAlign: 'middle', marginRight: 6 }} /> Do credits expire?</h4>
-            <p>No — credits never expire. Use them at your own pace.</p>
+      {/* ── Pricing FAQ (accordion) ────────────────────────────────── */}
+      <section className="pricing-faq-section">
+        <div className="pricing-faq-header">
+          <div className="pricing-faq-eyebrow">
+            <MessageCircle size={14} aria-hidden />
+            <span>Pricing questions</span>
           </div>
-          <div className="faq-item">
-            <h4>Can I mix Basic and Premium?</h4>
-            <p>Yes — you choose the mode before each interview. Buy the pack that matches how you want to practice.</p>
-          </div>
-          <div className="faq-item">
-            <h4>What if I run out mid-interview?</h4>
-            <p>Credits are deducted only when an interview starts, never mid-session. You'll always finish what you started.</p>
-          </div>
-          <div className="faq-item">
-            <h4><Mic size={16} aria-hidden style={{ verticalAlign: 'middle', marginRight: 6 }} /> Can I get a refund?</h4>
-            <p>Credits are non-refundable once purchased. See our <Link to="/refund">Refund Policy</Link> for the full rules.</p>
-          </div>
+          <h2 className="pricing-faq-title">
+            What buyers ask <span className="grad-text">before checking out.</span>
+          </h2>
+        </div>
+
+        <div className="pricing-faq-list">
+          <details className="pricing-faq-item">
+            <summary>
+              <span>Do credits really never expire?</span>
+              <span className="pricing-faq-chevron" aria-hidden>+</span>
+            </summary>
+            <div className="pricing-faq-body">
+              <p>
+                Yes. No subscription, no monthly cycle, no &ldquo;use it or lose it.&rdquo;
+                Buy a pack today, take a 6-month break, come back, the credits are still there.
+                We deduct only when an interview actually starts.
+              </p>
+            </div>
+          </details>
+
+          <details className="pricing-faq-item">
+            <summary>
+              <span>Can I mix Basic and Premium in one pack?</span>
+              <span className="pricing-faq-chevron" aria-hidden>+</span>
+            </summary>
+            <div className="pricing-faq-body">
+              <p>
+                The Premium Pack and Pro Pack include both kinds of credits — buy
+                those if you want a mix. Starter and Basic packs are text-only. You
+                choose the mode at the start of each session.
+              </p>
+            </div>
+          </details>
+
+          <details className="pricing-faq-item">
+            <summary>
+              <span>What payment methods work?</span>
+              <span className="pricing-faq-chevron" aria-hidden>+</span>
+            </summary>
+            <div className="pricing-faq-body">
+              <p>
+                All Razorpay-supported methods: UPI (PhonePe, Google Pay, Paytm),
+                credit cards, debit cards, net banking, and most wallets. International
+                cards also work — we&apos;ll switch the currency to USD automatically
+                based on your location.
+              </p>
+            </div>
+          </details>
+
+          <details className="pricing-faq-item">
+            <summary>
+              <span>What if I run out mid-interview?</span>
+              <span className="pricing-faq-chevron" aria-hidden>+</span>
+            </summary>
+            <div className="pricing-faq-body">
+              <p>
+                You won&apos;t. The credit is deducted when the interview <em>starts</em>,
+                never mid-session. Whatever round you began, you finish — even if it&apos;s
+                your last credit.
+              </p>
+            </div>
+          </details>
+
+          <details className="pricing-faq-item">
+            <summary>
+              <span>Do I need a credit card to sign up?</span>
+              <span className="pricing-faq-chevron" aria-hidden>+</span>
+            </summary>
+            <div className="pricing-faq-body">
+              <p>
+                No. Sign up is free — you get 2 Basic + 1 Premium credit on the house,
+                no card asked. Run all three interviews. Only enter payment details if
+                you decide to buy more.
+              </p>
+            </div>
+          </details>
+
+          <details className="pricing-faq-item">
+            <summary>
+              <span>Can I get a refund or invoice?</span>
+              <span className="pricing-faq-chevron" aria-hidden>+</span>
+            </summary>
+            <div className="pricing-faq-body">
+              <p>
+                Credits are non-refundable once purchased — see the{' '}
+                <Link to="/refund">Refund Policy</Link> for the full rules. If you need a
+                GST invoice for reimbursement, email us via the{' '}
+                <Link to="/contact">contact page</Link> with your order ID and we&apos;ll
+                generate one.
+              </p>
+            </div>
+          </details>
         </div>
       </section>
 
-      {/* Policy links — required by Razorpay merchant terms so they're visible right next
-          to the purchase CTA, not buried under multiple clicks. */}
-      <nav className="pricing-policy-footer" aria-label="Policies">
-        <Link to="/">Home</Link>
-        <Link to="/privacy">Privacy</Link>
-        <Link to="/terms">Terms</Link>
-        <Link to="/refund">Refund</Link>
-        <Link to="/contact">Contact</Link>
-      </nav>
+      {/* ── Footer — same multi-column footer as landing ───────────── */}
+      <footer className="landing-footer landing-footer--multi">
+        <div className="footer-edge" aria-hidden />
+
+        <div className="footer-grid">
+          <div className="footer-brand-block">
+            <Link to="/" className="footer-brand-mark">
+              <Target size={20} aria-hidden />
+              <span>PrepFinity</span>
+            </Link>
+            <p className="footer-brand-tagline">
+              AI mock interviews for engineers, worldwide. Voice or text.
+              Real-time scoring. Honest reports.
+            </p>
+            <ul className="footer-trust">
+              <li><ShieldCheck size={13} aria-hidden /><span>No card on file</span></li>
+              <li><Sparkles size={13} aria-hidden /><span>3 free interviews on signup</span></li>
+              <li><Diamond size={13} aria-hidden /><span>Credits never expire</span></li>
+            </ul>
+          </div>
+
+          <nav className="footer-col" aria-labelledby="pricing-footer-product">
+            <h3 className="footer-col-title" id="pricing-footer-product">Product</h3>
+            <ul>
+              <li><Link to="/register">Get started</Link></li>
+              <li><Link to="/pricing">Pricing</Link></li>
+              <li><Link to="/login">Sign in</Link></li>
+            </ul>
+          </nav>
+
+          <nav className="footer-col" aria-labelledby="pricing-footer-resources">
+            <h3 className="footer-col-title" id="pricing-footer-resources">Resources</h3>
+            <ul>
+              <li><Link to="/blog">Blog</Link></li>
+              <li><Link to="/blog/top-10-ai-mock-interview-mistakes">Mistakes to avoid</Link></li>
+              <li><Link to="/blog/tcs-technical-interview-process-step-by-step">TCS interview guide</Link></li>
+              <li><Link to="/contact">Contact</Link></li>
+            </ul>
+          </nav>
+
+          <nav className="footer-col" aria-labelledby="pricing-footer-legal">
+            <h3 className="footer-col-title" id="pricing-footer-legal">Legal</h3>
+            <ul>
+              <li><Link to="/privacy">Privacy</Link></li>
+              <li><Link to="/terms">Terms of Service</Link></li>
+              <li><Link to="/refund">Refund Policy</Link></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div className="footer-bottom">
+          <span className="footer-copyright">
+            © {new Date().getFullYear()} PrepFinity. Built for honest interview prep.
+          </span>
+          <span className="footer-meta">
+            Made with care in India · Used worldwide
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }

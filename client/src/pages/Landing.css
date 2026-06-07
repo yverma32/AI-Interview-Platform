@@ -928,3 +928,2128 @@
   .nav-link { display: none; }
   .hero-fineprint { flex-direction: column; gap: 4px; text-align: center; }
 }
+
+/* ── Phase 2: Pipeline section ─────────────────────────────────────── */
+/* Three-column "how it works" — feature rail + setup card + live card.
+   Mirrors the Steo dual-mockup pattern but in our cyberpunk neon palette.
+   Built entirely with styled HTML — no images, no canvas. */
+.pipeline-section {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-20);
+}
+
+.pipeline-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto var(--space-12);
+}
+
+.pipeline-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--neon-cyan) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 28%, transparent);
+  color: var(--neon-cyan);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-5);
+}
+
+.pipeline-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .pipeline-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .pipeline-grid {
+    grid-template-columns: 0.85fr 1fr 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* ── Left rail: feature list with neon dots ──────────────────────── */
+.pipeline-rail {
+  padding: var(--space-6) var(--space-5);
+  background: linear-gradient(160deg,
+    color-mix(in srgb, var(--neon-cyan) 4%, var(--bg-elevated, #0b0b1a)) 0%,
+    color-mix(in srgb, var(--neon-magenta) 3%, var(--bg-elevated, #0b0b1a)) 100%);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+  border-radius: var(--radius-xl);
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  /* On tablet, rail spans full width and goes above the two cards */
+  .pipeline-rail { grid-column: 1 / -1; }
+}
+
+.pipeline-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pipeline-rail-item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+  opacity: 0.7;
+  transition: opacity var(--transition-base), background var(--transition-base);
+}
+
+.pipeline-rail-item.is-active {
+  opacity: 1;
+  background: color-mix(in srgb, var(--neon-cyan) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 24%, transparent);
+}
+
+.pipeline-rail-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+.pipeline-rail-dot--cyan {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 70%, transparent);
+}
+
+.pipeline-rail-dot--magenta {
+  background: var(--neon-magenta);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--neon-magenta) 70%, transparent);
+}
+
+.pipeline-rail-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.pipeline-rail-desc {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* ── Shared card styles ─────────────────────────────────────────── */
+.pipeline-card {
+  position: relative;
+  padding: var(--space-5);
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--neon-cyan) 4%, var(--bg-elevated, #0b0b1a)) 0%,
+    color-mix(in srgb, var(--neon-magenta) 3%, var(--bg-elevated, #0b0b1a)) 100%);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 16%, transparent);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 6%, transparent) inset;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pipeline-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.pipeline-card-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pipeline-step-num {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-primary);
+  color: #0a0a14;
+  font-weight: var(--font-bold);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.pipeline-card-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+/* ── Setup card (left mockup) ─────────────────────────────────── */
+.pipeline-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pipeline-field label {
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pipeline-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pipeline-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.pipeline-chip.is-selected {
+  background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+  border-color: color-mix(in srgb, var(--neon-cyan) 40%, transparent);
+  color: var(--neon-cyan);
+}
+
+.pipeline-chip.is-selected svg { color: var(--neon-cyan); }
+
+.pipeline-chip.is-muted {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.pipeline-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.pipeline-select svg { color: var(--text-tertiary); }
+
+.pipeline-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pipeline-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 8%, transparent);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.pipeline-radio.is-selected {
+  background: color-mix(in srgb, var(--neon-magenta) 12%, transparent);
+  border-color: color-mix(in srgb, var(--neon-magenta) 40%, transparent);
+  color: var(--neon-magenta);
+}
+
+.pipeline-radio.is-selected svg { color: var(--neon-magenta); }
+
+.pipeline-track-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--neon-cyan) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 22%, transparent);
+}
+
+.pipeline-track-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  color: #0a0a14;
+  flex-shrink: 0;
+}
+
+.pipeline-track-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.pipeline-track-companies {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.pipeline-track-check {
+  margin-left: auto;
+  color: var(--neon-cyan);
+  flex-shrink: 0;
+}
+
+.pipeline-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  border: none;
+  color: #0a0a14;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  cursor: default;
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--neon-cyan) 30%, transparent),
+    0 0 40px color-mix(in srgb, var(--neon-magenta) 18%, transparent);
+  margin-top: auto;
+}
+
+/* ── Live card (right mockup) ─────────────────────────────────── */
+.pipeline-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, #ff3b3b 16%, transparent);
+  border: 1px solid color-mix(in srgb, #ff3b3b 35%, transparent);
+  color: #ff7878;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pipeline-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff3b3b;
+  box-shadow: 0 0 6px #ff3b3b;
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+.pipeline-persona {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pipeline-persona-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--neon-magenta), var(--neon-cyan));
+  color: #0a0a14;
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+  flex-shrink: 0;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--neon-magenta) 35%, transparent),
+    0 0 16px color-mix(in srgb, var(--neon-magenta) 30%, transparent);
+}
+
+.pipeline-persona-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.pipeline-persona-sub {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.pipeline-bubble {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--neon-magenta) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-magenta) 22%, transparent);
+}
+
+.pipeline-bubble-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  color: var(--neon-magenta);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.pipeline-bubble p {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Tiny system-design diagram inside the question bubble */
+.pipeline-arch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg-base) 60%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--neon-magenta) 25%, transparent);
+}
+
+.pipeline-arch-box {
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.pipeline-arch-box--accent {
+  background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+  border-color: color-mix(in srgb, var(--neon-cyan) 40%, transparent);
+  color: var(--neon-cyan);
+}
+
+.pipeline-arch-arrow {
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.pipeline-score {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--bg-base) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 12%, transparent);
+  margin-top: auto;
+}
+
+.pipeline-score-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.pipeline-score-label {
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pipeline-score-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pipeline-score-max {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  -webkit-text-fill-color: var(--text-tertiary);
+}
+
+.pipeline-score-track {
+  position: relative;
+  height: 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  margin-bottom: var(--space-2);
+  overflow: hidden;
+}
+
+.pipeline-score-fill {
+  position: absolute;
+  inset: 0 9% 0 0; /* 91% fill */
+  border-radius: 3px;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 50%, transparent);
+}
+
+.pipeline-score-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pipeline-score-tags span {
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--neon-cyan) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 22%, transparent);
+  font-size: 10px;
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.pipeline-caption {
+  text-align: center;
+  margin: var(--space-10) 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Motion-safe: kill the LIVE dot pulse when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-live-dot { animation: none; }
+}
+
+/* ── Phase 3: Personas grid ────────────────────────────────────────── */
+/* Five persona cards in an asymmetric grid (3 + 2 layout on desktop).
+   Each card is a "trading card" feel — avatar, name, signature quote,
+   sample question. Uses cyan/magenta alternation so the grid reads as
+   a panel of distinct voices, not five identical cards. */
+.personas-section {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-20);
+}
+
+.personas-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto var(--space-12);
+}
+
+.personas-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--neon-magenta) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-magenta) 28%, transparent);
+  color: var(--neon-magenta);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-5);
+}
+
+/* ── Carousel container ──────────────────────────────────────────── */
+.personas-carousel {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Stage: all 5 cards stacked at the same position; the active one fades in.
+   Min-height keeps the section from jumping when content lengths differ
+   between personas. */
+.personas-stage {
+  position: relative;
+  min-height: 360px;
+}
+
+@media (min-width: 768px) {
+  .personas-stage { min-height: 320px; }
+}
+
+/* Each card is absolutely positioned over the others; only is-active is visible. */
+.persona-card--carousel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 500ms ease, transform 500ms ease, visibility 0s linear 500ms;
+  pointer-events: none;
+}
+
+.persona-card--carousel.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 600ms ease, transform 600ms ease, visibility 0s;
+  pointer-events: auto;
+}
+
+/* Carousel cards don't need a hover lift — they're the active focus already */
+.persona-card--carousel:hover {
+  transform: translateY(0);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 6%, transparent) inset;
+}
+
+/* ── Manual prev/next arrows (desktop only) ─────────────────────── */
+.personas-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg-base) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 25%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  cursor: pointer;
+  z-index: 5;
+  transition: all var(--transition-fast);
+}
+
+.personas-arrow:hover {
+  border-color: color-mix(in srgb, var(--neon-cyan) 60%, transparent);
+  background: color-mix(in srgb, var(--neon-cyan) 10%, transparent);
+  color: var(--neon-cyan);
+}
+
+.personas-arrow--prev { left: -52px; }
+.personas-arrow--next { right: -52px; }
+
+@media (min-width: 1024px) {
+  .personas-arrow { display: inline-flex; }
+}
+
+/* ── Thumbnail strip below the card ────────────────────────────── */
+.personas-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.personas-thumb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--text-primary) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 8%, transparent);
+  color: var(--text-secondary);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden; /* clip the progress bar at the bottom edge */
+  transition: all var(--transition-fast);
+  min-width: 0;
+}
+
+.personas-thumb:hover {
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  border-color: color-mix(in srgb, var(--text-primary) 14%, transparent);
+}
+
+.personas-thumb.is-active {
+  background: color-mix(in srgb, var(--bg-base) 70%, transparent);
+}
+
+.personas-thumb--cyan.is-active {
+  border-color: color-mix(in srgb, var(--neon-cyan) 50%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--neon-cyan) 22%, transparent);
+}
+
+.personas-thumb--magenta.is-active {
+  border-color: color-mix(in srgb, var(--neon-magenta) 50%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--neon-magenta) 22%, transparent);
+}
+
+.personas-thumb-avatar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0a14;
+  font-weight: var(--font-bold);
+  font-size: var(--text-xs);
+}
+
+.personas-thumb--cyan .personas-thumb-avatar {
+  background: linear-gradient(135deg, var(--neon-cyan), color-mix(in srgb, var(--neon-cyan) 60%, var(--neon-magenta)));
+}
+
+.personas-thumb--magenta .personas-thumb-avatar {
+  background: linear-gradient(135deg, var(--neon-magenta), color-mix(in srgb, var(--neon-magenta) 60%, var(--neon-cyan)));
+}
+
+.personas-thumb-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.personas-thumb-name {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.personas-thumb-round {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Progress bar fills bottom edge of the active thumb. Restarts on click via
+   the React key trick (forces a fresh DOM element so the animation re-fires). */
+.personas-thumb-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--gradient-primary);
+  transform-origin: left center;
+  animation: personas-progress linear forwards;
+}
+
+@keyframes personas-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* On the smallest screens, hide round subtitle in thumbs to save space */
+@media (max-width: 480px) {
+  .personas-thumb-round { display: none; }
+  .personas-thumb { padding: 8px 10px; gap: var(--space-2); }
+}
+
+/* Motion-safe: cards still crossfade but the progress bar + autoplay are
+   gated by JS, and the avatar pulse animations are off */
+@media (prefers-reduced-motion: reduce) {
+  .persona-card--carousel { transition: opacity 0s, transform 0s; }
+  .personas-thumb-progress { animation: none; opacity: 0.4; transform: scaleX(1); }
+}
+
+/* ── Individual card ──────────────────────────────────────────── */
+.persona-card {
+  position: relative;
+  padding: var(--space-5);
+  background: linear-gradient(155deg,
+    color-mix(in srgb, var(--neon-cyan) 4%, var(--bg-elevated, #0b0b1a)) 0%,
+    color-mix(in srgb, var(--neon-magenta) 3%, var(--bg-elevated, #0b0b1a)) 100%);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 6%, transparent) inset;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.persona-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--neon-cyan) 30%, transparent);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 14%, transparent) inset,
+    0 0 30px color-mix(in srgb, var(--neon-cyan) 18%, transparent);
+}
+
+.persona-card[data-persona="priya"]:hover,
+.persona-card[data-persona="ananya"]:hover {
+  border-color: color-mix(in srgb, var(--neon-magenta) 30%, transparent);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--neon-magenta) 14%, transparent) inset,
+    0 0 30px color-mix(in srgb, var(--neon-magenta) 18%, transparent);
+}
+
+.persona-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.persona-card-head > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.persona-avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a0a14;
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+}
+
+.persona-avatar--cyan {
+  background: linear-gradient(135deg, var(--neon-cyan), color-mix(in srgb, var(--neon-cyan) 60%, var(--neon-magenta)));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 35%, transparent),
+    0 0 16px color-mix(in srgb, var(--neon-cyan) 30%, transparent);
+}
+
+.persona-avatar--magenta {
+  background: linear-gradient(135deg, var(--neon-magenta), color-mix(in srgb, var(--neon-magenta) 60%, var(--neon-cyan)));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--neon-magenta) 35%, transparent),
+    0 0 16px color-mix(in srgb, var(--neon-magenta) 30%, transparent);
+}
+
+.persona-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.persona-round {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.persona-tag {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.persona-tag--cyan {
+  background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 40%, transparent);
+  color: var(--neon-cyan);
+}
+
+.persona-tag--magenta {
+  background: color-mix(in srgb, var(--neon-magenta) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-magenta) 40%, transparent);
+  color: var(--neon-magenta);
+}
+
+/* The signature quote — a longer paragraph that makes the persona feel real */
+.persona-quote {
+  position: relative;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: 1.55;
+  font-style: italic;
+  padding-left: var(--space-4);
+}
+
+.persona-quote em { font-style: italic; color: var(--neon-cyan); font-weight: var(--font-semibold); }
+
+.persona-card[data-persona="priya"] .persona-quote em,
+.persona-card[data-persona="ananya"] .persona-quote em {
+  color: var(--neon-magenta);
+}
+
+.persona-quote-mark {
+  position: absolute;
+  left: -2px;
+  top: -6px;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  line-height: 1;
+  color: var(--neon-cyan);
+  opacity: 0.55;
+  font-style: normal;
+}
+
+.persona-card[data-persona="priya"] .persona-quote-mark,
+.persona-card[data-persona="ananya"] .persona-quote-mark {
+  color: var(--neon-magenta);
+}
+
+/* Footer of each card — separates the sample question from the quote */
+.persona-card-foot {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.persona-foot-label {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.persona-sample {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* ── Phase 3c: Holographic personas carousel ────────────────────── */
+/* All 5 cards in 3D space. Active card is center stage; ±1 cards peek from
+   sides; ±2 cards hover at the far edge. Background backdrop shifts color
+   with the active persona's accent. A glitch scanline sweeps across the
+   active card whenever it changes. Engineered to look like a holographic
+   display from a sci-fi terminal. */
+.personas-carousel--holo {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  /* Set up the radial-glow accent variables; data-accent on backdrop picks one */
+  isolation: isolate;
+}
+
+/* Accent backdrop — large radial glow centered behind the active card.
+   Changes color via data-accent. Transitions smoothly during persona switch. */
+.personas-holo-backdrop {
+  position: absolute;
+  inset: -40px -10% 60px -10%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  transition: background 800ms ease, opacity 800ms ease;
+}
+
+.personas-holo-backdrop[data-accent="cyan"] {
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--neon-cyan) 32%, transparent) 0%,
+    color-mix(in srgb, var(--neon-cyan) 10%, transparent) 35%,
+    transparent 70%
+  );
+}
+
+.personas-holo-backdrop[data-accent="magenta"] {
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--neon-magenta) 32%, transparent) 0%,
+    color-mix(in srgb, var(--neon-magenta) 10%, transparent) 35%,
+    transparent 70%
+  );
+}
+
+/* Scanline overlay — subtle horizontal grid that says "this is a display" */
+.personas-holo-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 3px,
+    color-mix(in srgb, var(--neon-cyan) 4%, transparent) 3px,
+    color-mix(in srgb, var(--neon-cyan) 4%, transparent) 4px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+/* Stage: 3D perspective container. min-height keeps things from collapsing
+   on shorter cards. */
+.personas-stage--holo {
+  position: relative;
+  perspective: 1400px;
+  perspective-origin: center;
+  min-height: 420px;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .personas-stage--holo { min-height: 380px; }
+}
+
+/* Each card. They're absolutely centered then transformed by their offset. */
+.persona-card--holo {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(420px, 90%);
+  margin-left: calc(min(420px, 90%) / -2);
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  transition:
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 700ms ease,
+    box-shadow 700ms ease,
+    border-color 700ms ease;
+  will-change: transform, opacity;
+  cursor: pointer;
+}
+
+/* Offset positions — these are the "3D ring of cards" geometry */
+/* Active (offset 0): center stage, full scale, no rotation */
+.persona-card--holo[data-offset="0"] {
+  transform: translate3d(0, 0, 0) scale(1);
+  opacity: 1;
+  z-index: 5;
+  filter: none;
+  pointer-events: auto;
+  cursor: default;
+}
+
+/* +1 (next): right side, scaled down, rotated to face left */
+.persona-card--holo[data-offset="1"] {
+  transform: translate3d(58%, 18px, -160px) scale(0.78) rotateY(-22deg);
+  opacity: 0.55;
+  z-index: 3;
+  filter: blur(0.5px) saturate(0.85);
+}
+
+/* -1 (prev): left side, mirror of +1 */
+.persona-card--holo[data-offset="-1"] {
+  transform: translate3d(-58%, 18px, -160px) scale(0.78) rotateY(22deg);
+  opacity: 0.55;
+  z-index: 3;
+  filter: blur(0.5px) saturate(0.85);
+}
+
+/* +2 (far right): far edge, deep into 3D space */
+.persona-card--holo[data-offset="2"] {
+  transform: translate3d(100%, 42px, -320px) scale(0.58) rotateY(-32deg);
+  opacity: 0.18;
+  z-index: 1;
+  filter: blur(2px) saturate(0.6);
+  pointer-events: none;
+}
+
+/* -2 (far left): mirror of +2 */
+.persona-card--holo[data-offset="-2"] {
+  transform: translate3d(-100%, 42px, -320px) scale(0.58) rotateY(32deg);
+  opacity: 0.18;
+  z-index: 1;
+  filter: blur(2px) saturate(0.6);
+  pointer-events: none;
+}
+
+/* Hover on side cards bumps their opacity slightly to invite clicks */
+.persona-card--holo[data-offset="1"]:hover,
+.persona-card--holo[data-offset="-1"]:hover {
+  opacity: 0.85;
+  filter: none;
+}
+
+/* Strong neon outline on the active card — picks up the accent dynamically */
+.persona-card--holo.is-active {
+  border-color: color-mix(in srgb, var(--neon-cyan) 45%, transparent);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 35%, transparent) inset,
+    0 0 60px color-mix(in srgb, var(--neon-cyan) 30%, transparent),
+    0 0 120px color-mix(in srgb, var(--neon-cyan) 15%, transparent);
+}
+
+.persona-card--holo.is-active[data-persona="priya"],
+.persona-card--holo.is-active[data-persona="ananya"] {
+  border-color: color-mix(in srgb, var(--neon-magenta) 45%, transparent);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--neon-magenta) 35%, transparent) inset,
+    0 0 60px color-mix(in srgb, var(--neon-magenta) 30%, transparent),
+    0 0 120px color-mix(in srgb, var(--neon-magenta) 15%, transparent);
+}
+
+/* Glitch boot scanline — horizontal bright line sweeps across the active card
+   each time it becomes active. Forced fresh DOM via React key so it replays. */
+.persona-card-bootline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--neon-cyan) 70%, transparent) 48%,
+    color-mix(in srgb, var(--neon-cyan) 90%, transparent) 50%,
+    color-mix(in srgb, var(--neon-cyan) 70%, transparent) 52%,
+    transparent 100%
+  );
+  background-size: 100% 30px;
+  background-repeat: no-repeat;
+  background-position: 0 -30px;
+  mix-blend-mode: screen;
+  border-radius: var(--radius-xl);
+  animation: bootline-sweep 700ms ease-out forwards;
+  z-index: 10;
+}
+
+.persona-card--holo[data-persona="priya"] .persona-card-bootline,
+.persona-card--holo[data-persona="ananya"] .persona-card-bootline {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--neon-magenta) 70%, transparent) 48%,
+    color-mix(in srgb, var(--neon-magenta) 90%, transparent) 50%,
+    color-mix(in srgb, var(--neon-magenta) 70%, transparent) 52%,
+    transparent 100%
+  );
+  background-size: 100% 30px;
+  background-repeat: no-repeat;
+  background-position: 0 -30px;
+}
+
+@keyframes bootline-sweep {
+  0%   { background-position: 0 -30px; opacity: 0; }
+  10%  { opacity: 1; }
+  100% { background-position: 0 110%; opacity: 0; }
+}
+
+/* Holo arrows — bigger, positioned just outside the stage */
+.personas-arrow--holo {
+  width: 48px;
+  height: 48px;
+  background: color-mix(in srgb, var(--bg-base) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 35%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--neon-cyan) 18%, transparent);
+}
+
+.personas-arrow--holo:hover {
+  border-color: color-mix(in srgb, var(--neon-cyan) 75%, transparent);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--neon-cyan) 40%, transparent);
+  background: color-mix(in srgb, var(--neon-cyan) 12%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .personas-arrow--holo.personas-arrow--prev { left: -8px; }
+  .personas-arrow--holo.personas-arrow--next { right: -8px; }
+}
+
+/* Mobile: collapse to a simpler stack (no 3D side peeks) since the small
+   viewport doesn't have horizontal room for them */
+@media (max-width: 767px) {
+  .personas-carousel--holo { padding: 0 var(--space-3); }
+  .personas-stage--holo { min-height: 440px; perspective: none; }
+  .persona-card--holo[data-offset="1"],
+  .persona-card--holo[data-offset="-1"],
+  .persona-card--holo[data-offset="2"],
+  .persona-card--holo[data-offset="-2"] {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .personas-holo-scanlines { opacity: 0.3; }
+}
+
+/* Motion-safe: no 3D motion, no boot sweep, no backdrop transition */
+@media (prefers-reduced-motion: reduce) {
+  .persona-card--holo { transition: opacity 0s, transform 0s; }
+  .persona-card--holo[data-offset="1"],
+  .persona-card--holo[data-offset="-1"],
+  .persona-card--holo[data-offset="2"],
+  .persona-card--holo[data-offset="-2"] {
+    opacity: 0;
+  }
+  .persona-card-bootline { display: none; }
+  .personas-holo-backdrop { transition: none; }
+  .personas-holo-scanlines { display: none; }
+}
+
+/* ── Phase 4: Post-interview report mockup ─────────────────────────── */
+/* Three-column "dashboard" mockup. Section reveal is JS-controlled — the
+   `.is-revealed` class is added by an IntersectionObserver. Once revealed,
+   the score arc fills, the sub-score bars slide out, the timeline rows
+   fade in one by one, and the weak-topic bars settle into their values.
+   All animations respect prefers-reduced-motion (forced reveal, no motion). */
+.report-section {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-20);
+  isolation: isolate;
+}
+
+/* Decorative dotted-grid backdrop — adds depth without competing */
+.report-grid-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--neon-cyan) 22%, transparent) 1px, transparent 1.5px);
+  background-size: 26px 26px;
+  background-position: 0 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  opacity: 0.4;
+}
+
+.report-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto var(--space-12);
+}
+
+.report-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--neon-cyan) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 28%, transparent);
+  color: var(--neon-cyan);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-5);
+  font-family: var(--font-mono);
+}
+
+/* ── 3-column dashboard ───────────────────────────────────────── */
+.report-dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 800px) {
+  .report-dashboard { grid-template-columns: repeat(2, 1fr); }
+  .report-card--weak { grid-column: 1 / -1; }
+}
+
+@media (min-width: 1100px) {
+  .report-dashboard {
+    grid-template-columns: 0.95fr 1.1fr 0.95fr;
+    align-items: stretch;
+  }
+  .report-card--weak { grid-column: auto; }
+}
+
+/* Each card shares the same glass shell as Phase 2 cards */
+.report-card {
+  position: relative;
+  padding: var(--space-5);
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--neon-cyan) 4%, var(--bg-elevated, #0b0b1a)) 0%,
+    color-mix(in srgb, var(--neon-magenta) 3%, var(--bg-elevated, #0b0b1a)) 100%);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 16%, transparent);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 6%, transparent) inset;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.report-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.report-card-label {
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.report-card-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* ── Card 1: Score gauge + sub-scores ─────────────────────────── */
+.report-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, #2ecc71 16%, transparent);
+  border: 1px solid color-mix(in srgb, #2ecc71 35%, transparent);
+  color: #6ee7a3;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.05em;
+}
+
+.report-trend-arrow { font-size: 11px; }
+
+.report-gauge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4) 0;
+}
+
+.report-gauge-ring {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.report-gauge-arc {
+  /* Arc stays at fully-empty (314.16 = 2πr at r=50). When `.is-revealed`
+     hits, the offset transitions to the target — 314.16 * (1 - 0.83) = ~53 */
+  transition: stroke-dashoffset 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.is-revealed .report-gauge-arc {
+  stroke-dashoffset: 53.4;
+}
+
+.report-gauge-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.report-gauge-num {
+  font-size: 2.6rem;
+  font-weight: var(--font-bold);
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-gauge-max {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.report-subscores {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.report-subscores li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px 30px;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.report-subscore-label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
+}
+
+.report-subscore-bar {
+  position: relative;
+  height: 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  overflow: hidden;
+}
+
+.report-subscore-fill {
+  position: absolute;
+  inset: 0 100% 0 0;
+  border-radius: 3px;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
+  transition: inset 900ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+}
+
+.is-revealed .report-subscore-fill {
+  inset: 0 calc(100% - var(--target, 0%)) 0 0;
+}
+
+.report-subscore-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  text-align: right;
+}
+
+/* ── Card 2: Per-question timeline ────────────────────────────── */
+.report-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.report-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--text-primary) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 400ms ease, transform 400ms ease, background var(--transition-base);
+}
+
+.is-revealed .report-row { opacity: 1; transform: translateY(0); }
+.is-revealed .report-row:nth-child(1) { transition-delay: 200ms; }
+.is-revealed .report-row:nth-child(2) { transition-delay: 280ms; }
+.is-revealed .report-row:nth-child(3) { transition-delay: 360ms; }
+.is-revealed .report-row:nth-child(4) { transition-delay: 440ms; }
+.is-revealed .report-row:nth-child(5) { transition-delay: 520ms; }
+
+.report-row:hover {
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.report-row.is-active {
+  background: color-mix(in srgb, var(--neon-cyan) 9%, transparent);
+  border-color: color-mix(in srgb, var(--neon-cyan) 30%, transparent);
+}
+
+.report-row.is-active::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--gradient-primary);
+}
+
+.report-row-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.report-row-body { min-width: 0; }
+
+.report-row-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.report-row-meta {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.report-row-score {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.report-row[data-rating="great"] .report-row-score {
+  background: color-mix(in srgb, #2ecc71 14%, transparent);
+  color: #6ee7a3;
+}
+
+.report-row[data-rating="ok"] .report-row-score {
+  background: color-mix(in srgb, var(--neon-amber, #ffb800) 15%, transparent);
+  color: var(--neon-amber, #ffb800);
+}
+
+/* ── Card 3: Weak topics + queue ─────────────────────────────── */
+.report-weak-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.report-weak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.report-weak-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.report-weak-pct {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--neon-amber, #ffb800);
+  font-weight: var(--font-bold);
+}
+
+.report-weak-bar {
+  position: relative;
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  overflow: hidden;
+}
+
+.report-weak-fill {
+  position: absolute;
+  inset: 0 100% 0 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--neon-amber, #ffb800), var(--neon-magenta));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--neon-amber, #ffb800) 35%, transparent);
+  transition: inset 900ms cubic-bezier(0.22, 1, 0.36, 1) 400ms;
+}
+
+.is-revealed .report-weak-fill {
+  inset: 0 calc(100% - var(--target, 0%)) 0 0;
+}
+
+.report-queue {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.report-queue-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  color: var(--neon-cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-3);
+}
+
+.report-queue-card {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--neon-cyan) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 25%, transparent);
+  margin-bottom: var(--space-3);
+}
+
+.report-queue-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.report-queue-meta {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 4px;
+  font-family: var(--font-mono);
+}
+
+.report-queue-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  border: none;
+  color: #0a0a14;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: default;
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--neon-cyan) 30%, transparent),
+    0 0 40px color-mix(in srgb, var(--neon-magenta) 15%, transparent);
+}
+
+/* Motion-safe: skip the staged reveal — JS already forces is-revealed on
+   mount when reduced motion is set, but keep CSS transitions instant too. */
+@media (prefers-reduced-motion: reduce) {
+  .report-gauge-arc,
+  .report-subscore-fill,
+  .report-weak-fill,
+  .report-row {
+    transition: none !important;
+    transition-delay: 0s !important;
+  }
+}
+
+/* ── Legacy mid-page sections hidden ──────────────────────────────── */
+/* Old "Choose how you want to practice", features grid, "How it works",
+   and old final CTA. Kept in JSX for easy restoration but hidden visually. */
+.landing-legacy { display: none !important; }
+
+/* ── Phase 5a: FAQ ─────────────────────────────────────────────── */
+.faq-section {
+  position: relative;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-12);
+}
+
+.faq-header {
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.faq-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--neon-magenta) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-magenta) 28%, transparent);
+  color: var(--neon-magenta);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-5);
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.faq-item {
+  position: relative;
+  padding: 0;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--neon-cyan) 3%, var(--bg-elevated, #0b0b1a)) 0%,
+    color-mix(in srgb, var(--neon-magenta) 2%, var(--bg-elevated, #0b0b1a)) 100%);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 12%, transparent);
+  overflow: hidden;
+  transition: border-color var(--transition-base);
+}
+
+.faq-item[open] {
+  border-color: color-mix(in srgb, var(--neon-cyan) 35%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 14%, transparent) inset,
+    0 0 24px color-mix(in srgb, var(--neon-cyan) 10%, transparent);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 12px var(--space-4);
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  user-select: none;
+  line-height: 1.4;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::marker { content: ''; }
+
+.faq-chevron {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--neon-cyan) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 30%, transparent);
+  color: var(--neon-cyan);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  line-height: 1;
+  transition: transform var(--transition-base);
+}
+
+.faq-item[open] .faq-chevron {
+  transform: rotate(45deg);
+  background: color-mix(in srgb, var(--neon-magenta) 14%, transparent);
+  border-color: color-mix(in srgb, var(--neon-magenta) 40%, transparent);
+  color: var(--neon-magenta);
+}
+
+.faq-body {
+  padding: 0 var(--space-4) var(--space-4);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.faq-body p { margin: 0; font-size: var(--text-sm); }
+.faq-body a { color: var(--neon-cyan); }
+
+@media (max-width: 600px) {
+  .faq-item summary { padding: 10px var(--space-3); gap: var(--space-2); }
+  .faq-body { padding: 0 var(--space-3) var(--space-3); }
+  .faq-chevron { width: 20px; height: 20px; font-size: var(--text-xs); }
+}
+
+/* ── Phase 5b: Final CTA ──────────────────────────────────────── */
+.final-cta-section {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-6) var(--space-20);
+}
+
+/* The panel itself — strongest neon outline on the page */
+.final-cta-panel {
+  position: relative;
+  padding: var(--space-12) var(--space-8);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--neon-cyan) 8%, var(--bg-elevated, #0b0b1a)) 0%,
+    color-mix(in srgb, var(--neon-magenta) 6%, var(--bg-elevated, #0b0b1a)) 100%);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 35%, transparent);
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px color-mix(in srgb, var(--neon-cyan) 12%, transparent) inset,
+    0 0 60px color-mix(in srgb, var(--neon-cyan) 22%, transparent),
+    0 0 140px color-mix(in srgb, var(--neon-magenta) 14%, transparent);
+}
+
+@media (min-width: 768px) {
+  .final-cta-panel { padding: var(--space-16) var(--space-12); }
+}
+
+/* Corner brackets — HUD reticle decoration. Top-left + top-right are cyan,
+   bottom-left + bottom-right are magenta so they read as a dual-color frame. */
+.final-cta-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.final-cta-corner::before,
+.final-cta-corner::after {
+  content: '';
+  position: absolute;
+  border-radius: 2px;
+}
+
+.final-cta-corner::before { /* horizontal stroke */
+  height: 2px;
+  width: 100%;
+}
+
+.final-cta-corner::after { /* vertical stroke */
+  width: 2px;
+  height: 100%;
+}
+
+.final-cta-corner--tl { top: 18px; left: 18px; }
+.final-cta-corner--tl::before,
+.final-cta-corner--tl::after {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+  top: 0; left: 0;
+}
+
+.final-cta-corner--tr { top: 18px; right: 18px; }
+.final-cta-corner--tr::before,
+.final-cta-corner--tr::after {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+  top: 0; right: 0;
+}
+
+.final-cta-corner--bl { bottom: 18px; left: 18px; }
+.final-cta-corner--bl::before,
+.final-cta-corner--bl::after {
+  background: var(--neon-magenta);
+  box-shadow: 0 0 8px var(--neon-magenta);
+  bottom: 0; left: 0;
+}
+
+.final-cta-corner--br { bottom: 18px; right: 18px; }
+.final-cta-corner--br::before,
+.final-cta-corner--br::after {
+  background: var(--neon-magenta);
+  box-shadow: 0 0 8px var(--neon-magenta);
+  bottom: 0; right: 0;
+}
+
+/* Background orbs */
+.final-cta-orb {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  filter: blur(70px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.final-cta-orb--cyan { top: -140px; left: -100px; background: var(--neon-cyan); }
+.final-cta-orb--magenta { bottom: -160px; right: -120px; background: var(--neon-magenta); }
+
+.final-cta-panel > *:not(.final-cta-corner):not(.final-cta-orb) {
+  position: relative;
+  z-index: 1;
+}
+
+.final-cta-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--neon-cyan) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 40%, transparent);
+  color: var(--neon-cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+.final-cta-eyebrow-tick { font-size: 9px; }
+
+.final-cta-title {
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  font-weight: var(--font-bold);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 auto var(--space-5);
+  max-width: 820px;
+}
+
+.final-cta-sub {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0 auto var(--space-8);
+  max-width: 620px;
+}
+
+.final-cta-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.final-cta-primary {
+  box-shadow:
+    var(--shadow-lg),
+    0 0 30px color-mix(in srgb, var(--neon-cyan) 45%, transparent),
+    0 0 70px color-mix(in srgb, var(--neon-magenta) 22%, transparent);
+}
+
+.final-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 44px color-mix(in srgb, var(--neon-cyan) 70%, transparent),
+    0 0 90px color-mix(in srgb, var(--neon-magenta) 38%, transparent);
+}
+
+.final-cta-secondary {
+  background: color-mix(in srgb, var(--bg-base) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neon-cyan) 30%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.final-cta-secondary:hover {
+  background: color-mix(in srgb, var(--neon-cyan) 10%, transparent);
+  border-color: color-mix(in srgb, var(--neon-cyan) 60%, transparent);
+  transform: translateY(-1px);
+}
+
+.final-cta-trust {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.final-cta-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.final-cta-trust svg {
+  color: var(--neon-cyan);
+  flex-shrink: 0;
+}
+
+/* ── Phase 6: Multi-column footer ─────────────────────────────────── */
+/* Override of the old single-row footer. Brand + tagline + trust strip on
+   the left, then three nav columns (Product / Resources / Legal), then a
+   thin bottom bar. */
+.landing-footer--multi {
+  position: relative;
+  max-width: 1280px;
+  margin: var(--space-8) auto 0;
+  padding: var(--space-12) var(--space-6) var(--space-6);
+  display: block; /* overrides .landing-footer's flex layout */
+}
+
+/* Soft edge line across the top of the footer */
+.footer-edge {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--neon-cyan) 35%, transparent) 30%,
+    color-mix(in srgb, var(--neon-magenta) 30%, transparent) 70%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Top grid: brand (left, wider) + 3 nav columns */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+}
+
+@media (min-width: 640px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* Brand block + 3 nav cols → 4 items on mobile-medium: brand spans 2 cols */
+  .footer-brand-block { grid-column: 1 / -1; }
+}
+
+@media (min-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: var(--space-10);
+  }
+  .footer-brand-block { grid-column: auto; }
+}
+
+/* ── Brand block ─────────────────────────────────────────────── */
+.footer-brand-block {
+  max-width: 420px;
+}
+
+.footer-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-4);
+}
+
+.footer-brand-mark svg {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--neon-cyan) 45%, transparent));
+}
+
+.footer-brand-tagline {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.footer-trust {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.footer-trust svg { color: var(--neon-cyan); flex-shrink: 0; }
+
+/* ── Nav columns ─────────────────────────────────────────────── */
+.footer-col-title {
+  margin: 0 0 var(--space-3);
+  font-size: 11px;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-col li a {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-col li a:hover {
+  color: var(--neon-cyan);
+}
+
+/* ── Bottom bar ─────────────────────────────────────────────── */
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-10);
+  padding-top: var(--space-5);
+  border-top: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.footer-copyright {
+  font-weight: var(--font-medium);
+}
+
+.footer-meta {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 600px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-2);
+  }
+}
+
