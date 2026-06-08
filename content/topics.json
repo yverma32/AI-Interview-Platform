@@ -52,7 +52,9 @@
         "/register",
         "/blog"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-08T05:06:06.319Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-08-dsa-patterns-for-sde-1-interview.mdx"
     },
     {
       "title": "How to answer 'tell me about yourself' in tech interviews",
