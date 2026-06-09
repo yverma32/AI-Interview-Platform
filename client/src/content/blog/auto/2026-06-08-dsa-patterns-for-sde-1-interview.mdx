@@ -1,0 +1,103 @@
+---
+title: "DSA Patterns for SDE 1 Interview: 8 That Matter"
+description: "Pattern-based DSA prep beats topic-by-topic grinding for SDE-1 interviews. Here are the 8 patterns that cover most questions, with real examples."
+date: "2026-06-08"
+slug: "dsa-patterns-for-sde-1-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "dsa", "sde-1"]
+---
+
+Most freshers spend three months grinding LeetCode by topic: arrays, then linked lists, then trees, then graphs. They finish 300 problems and still freeze when Swiggy's interviewer asks a question that mixes two concepts. The problem isn't effort. It's the wrong mental model for prep.
+
+The right model is pattern-based. Once you know the DSA patterns for SDE 1 interview rounds, you stop memorizing solutions and start recognizing problem shapes. That recognition is what separates candidates who get offers from candidates who get "we'll get back to you."
+
+These eight patterns cover the overwhelming majority of what you'll face at companies from TCS Smart Hiring to Razorpay's engineering rounds. Learn the pattern, then practice the examples. That's the sequence.
+
+## The Sliding Window Pattern Solves More Than You Think
+
+Sliding window shows up in any problem where you're looking at a contiguous subarray or substring and optimizing some condition. The classic example is "longest substring without repeating characters." But it also covers "maximum sum subarray of size K," "minimum window substring," and variants you'll see at Wipro and Infosys written tests.
+
+The mental trigger: the problem mentions a contiguous range and asks for a maximum, minimum, or count. Two pointers define the window. You expand from the right, shrink from the left when a constraint breaks.
+
+Practice problems: Longest Substring Without Repeating Characters (LeetCode 3), Minimum Size Subarray Sum (LeetCode 209), Fruit Into Baskets (LeetCode 904).
+
+## Two Pointers Reduces O(n²) Problems to O(n)
+
+Two pointers is the pattern you reach for when brute force would be a nested loop on a sorted array or a linked list. "Two sum on a sorted array," "remove duplicates in-place," "container with most water" — all two pointers.
+
+The trigger: sorted input, or a problem where you need to compare elements from opposite ends. One pointer starts at the beginning, one at the end. Move them toward each other based on a condition.
+
+This pattern appears constantly in Cognizant and HCL technical rounds, usually in the form of array manipulation problems that look unique but aren't. Once you've done ten two-pointer problems, you'll spot them in under 30 seconds.
+
+Practice problems: Two Sum II (LeetCode 167), 3Sum (LeetCode 15), Trapping Rain Water (LeetCode 42).
+
+## Fast and Slow Pointers Are Not Just for Linked Lists
+
+Floyd's cycle detection is the textbook use case. But fast and slow pointers also solve "find the middle of a linked list," "find the start of a cycle," and "happy number." The happy number problem looks like a math problem until you realize it's cycle detection on an implicit sequence.
+
+At Zepto and CRED, linked list problems appear in the first technical round more often than candidates expect. Interviewers use them to test whether you think about memory and pointers, not just array indices.
+
+Practice problems: Linked List Cycle (LeetCode 141), Find the Duplicate Number (LeetCode 287), Middle of the Linked List (LeetCode 876).
+
+## Binary Search Goes Far Beyond Sorted Arrays
+
+Most candidates learn binary search as "find a target in a sorted array" and stop there. That's a waste. Binary search applies to any problem where you can define a monotonic condition: if the answer is possible at value X, it's also possible at all values above (or below) X.
+
+"Find the minimum capacity to ship packages within D days" is a binary search problem. "Koko eating bananas" is a binary search problem. These show up in Flipkart and Amazon India SDE-1 rounds and they look nothing like the textbook version.
+
+The trigger: the problem asks for a minimum or maximum value, and you can write a function that checks feasibility for a given value. Binary search on the answer, not the array.
+
+Practice problems: Search in Rotated Sorted Array (LeetCode 33), Koko Eating Bananas (LeetCode 875), Capacity to Ship Packages (LeetCode 1011).
+
+## Tree BFS and DFS Cover Most Tree Interview Questions
+
+Trees come up in almost every SDE-1 interview. The good news: most tree problems are solved with one of two traversals. BFS (level-order using a queue) handles questions about levels, cousins, or right-side views. DFS (recursive or iterative with a stack) handles path sums, subtree checks, and lowest common ancestor.
+
+The mistake candidates make is learning each tree problem in isolation. "Binary Tree Level Order Traversal" and "Binary Tree Right Side View" are the same BFS skeleton with a different output step. Recognize the skeleton, adapt the output.
+
+At Google India and Microsoft India, tree problems often have a follow-up that changes the traversal order or adds a constraint. If you know the pattern cold, you handle follow-ups without freezing.
+
+Practice problems: Binary Tree Level Order Traversal (LeetCode 102), Path Sum II (LeetCode 113), Lowest Common Ancestor (LeetCode 236).
+
+## The DSA Patterns for SDE 1 Interview Rounds Include Backtracking
+
+Backtracking is the pattern for generating all combinations, permutations, or subsets, and for constraint-satisfaction problems like N-Queens or Sudoku. It feels hard because the recursion tree is large. It's actually a single template: choose, explore, unchoose.
+
+For SDE-1 rounds at Indian startups, backtracking usually appears as "generate all subsets," "letter combinations of a phone number," or "word search on a grid." The grid version catches candidates off guard because it looks like a graph problem. It's backtracking with coordinates.
+
+Practice problems: Subsets (LeetCode 78), Combination Sum (LeetCode 39), Word Search (LeetCode 79).
+
+## Dynamic Programming Doesn't Require Memorizing 50 Problems
+
+The reason candidates hate DP is that they try to memorize each problem's solution instead of learning the two underlying patterns: 0/1 knapsack and unbounded knapsack. Most DP problems in SDE-1 interviews are variations of one of these two.
+
+0/1 knapsack: each item can be used once. "Partition equal subset sum," "target sum," "0/1 knapsack" directly.
+
+Unbounded knapsack: items can be reused. "Coin change," "rod cutting," "minimum cost climbing stairs."
+
+Learn those two templates thoroughly. TCS Digital and Infosys Specialist Programmer written tests include DP problems that look intimidating but fit one of these two shapes exactly.
+
+Practice problems: Partition Equal Subset Sum (LeetCode 416), Coin Change (LeetCode 322), Longest Common Subsequence (LeetCode 1143).
+
+## Graphs Are Tested More at Product Companies Than at Service Companies
+
+At TCS and Infosys, graph problems are rare in early rounds. At Razorpay, PhonePe, and Swiggy, they appear regularly. The core toolkit you need: BFS for shortest path in an unweighted graph, DFS for connected components and cycle detection, and Union-Find for dynamic connectivity problems.
+
+"Number of islands" is BFS or DFS on a grid. "Course schedule" is cycle detection in a directed graph. "Accounts merge" is Union-Find. Three patterns, most of the graph questions you'll see.
+
+If you're targeting a product company with a ₹15–25 LPA package, graphs are non-negotiable. If you're targeting a service company at ₹3.5–6 LPA, one solid graph problem in your back pocket is enough to stand out.
+
+Practice problems: Number of Islands (LeetCode 200), Course Schedule (LeetCode 207), Redundant Connection (LeetCode 684).
+
+## How to Actually Use These Patterns in Prep
+
+Don't do all eight at once. Spend one week per pattern. Do 8–10 problems in that pattern, timed. On day six, do two problems back-to-back without looking at the pattern name first — force yourself to identify the pattern from the problem statement alone. That identification step is what the interview actually tests.
+
+After each problem, write one sentence: "This was [pattern] because [trigger condition]." That sentence is worth more than re-reading the solution.
+
+The candidates who crack SDE-1 rounds at Swiggy or Zepto aren't the ones who did the most problems. They're the ones who can look at a new problem and say "this is sliding window" in 20 seconds. Everything after that is implementation.
+
+Explore more prep strategies on the [PrepFinity blog](https://prepfinity.co/blog) — including how to handle behavioral rounds, system design basics for freshers, and what to do in the week before your interview.
+
+*Ready to test whether you can actually identify these patterns under pressure? [Start with 3 free mock interviews](https://prepfinity.co/register) — no credit card needed.*
