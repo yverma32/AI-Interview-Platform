@@ -1,7 +1,7 @@
 {
-  "_comment": "Queue of blog topics for the drafting agent. The agent pops the next topic where used=false, generates a draft, and marks it used=true. Add new topics by appending to the end of the array. Order matters — top of the unused list gets drafted first.",
+  "_comment": "Queue of blog topics for the drafting agent. The agent pops the next topic where used=false, generates a draft, and marks it used=true. Add new topics by appending to the end of the array. Order matters \u2014 top of the unused list gets drafted first.",
   "_format": {
-    "title": "Working title — the agent may refine the final title to fit 50–60 chars and the target keyword.",
+    "title": "Working title \u2014 the agent may refine the final title to fit 50\u201360 chars and the target keyword.",
     "targetKeyword": "The single long-tail query this post is meant to rank for. Use Google autocomplete or a free tool to validate it.",
     "angle": "One sentence describing the unique take. Helps prevent generic posts.",
     "internalLinks": "Optional list of other prepfinity.co URLs this post should link to.",
@@ -23,7 +23,7 @@
     {
       "title": "How to crack a Razorpay backend interview",
       "targetKeyword": "Razorpay backend interview questions",
-      "angle": "What Razorpay actually asks (idempotency, payment flows, distributed transactions) — not generic backend questions.",
+      "angle": "What Razorpay actually asks (idempotency, payment flows, distributed transactions) \u2014 not generic backend questions.",
       "internalLinks": [
         "/blog/top-10-ai-mock-interview-mistakes",
         "/register"
@@ -64,7 +64,10 @@
         "/register",
         "/blog/top-10-ai-mock-interview-mistakes"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-10T10:03:46.076314+00:00",
+      "draftFile": "client/src/content/blog/auto/tell-me-about-yourself-answer-guide.mdx",
+      "note": "Covered by a hand-written post; skipped by the agent to avoid keyword cannibalization."
     },
     {
       "title": "System design interview prep for 2-5 years experience",
@@ -104,7 +107,10 @@
         "/register",
         "/blog/top-10-ai-mock-interview-mistakes"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-10T10:03:46.076552+00:00",
+      "draftFile": "client/src/content/blog/auto/behavioral-interview-questions-and-answers.mdx",
+      "note": "Covered by a hand-written post; skipped by the agent to avoid keyword cannibalization."
     },
     {
       "title": "How to negotiate salary at a service company in India",
@@ -139,7 +145,7 @@
     {
       "title": "How to prepare for a Google India SWE interview",
       "targetKeyword": "Google India SWE interview preparation",
-      "angle": "Realistic 8-week prep plan for Google's L3/L4 process — what to skip, what to over-prepare, what to do in week 7.",
+      "angle": "Realistic 8-week prep plan for Google's L3/L4 process \u2014 what to skip, what to over-prepare, what to do in week 7.",
       "internalLinks": [
         "/pricing",
         "/register"

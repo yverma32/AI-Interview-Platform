@@ -246,7 +246,7 @@ function buildUserPrompt(topic, recentPosts) {
     `- **Word count: 1300-1700 words in the body** (do NOT count the frontmatter). Aim for 1500 — a too-short post fails validation and the draft is thrown away.`,
     `- **At least 8 H2 headings** (lines starting with "## "). Each H2 = one short section. This is how Google reads the structure.`,
     `- **Em-dash count: keep it under 6 across the entire file.** Use commas, periods, or parentheses instead. If you find yourself wanting a 7th em-dash, rewrite that sentence.`,
-    `- **Target keyword "${topic.targetKeyword}" must appear once in the first 100 words of the body**, and 2-3 times total in the body. Not more.`,
+    `- **Target keyword "${topic.targetKeyword}" must appear once in the first 100 words of the body**, and 2-3 times total in the body. Not more. The words must stay contiguous and in that order, but capitalization and punctuation between them are fine (e.g. quoting part of the phrase, or a comma mid-phrase). Do NOT insert other words into the phrase. If the keyword reads like a raw search query, build a sentence around it, e.g. for "tell me about yourself software engineer": the "tell me about yourself" software engineer answer has a formula.`,
     `- **At least 2 internal links to prepfinity.co** (use the ones listed above).`,
     `- **No banned phrases.** See the style guide. The validator checks for them and rejects the draft if any appear.`,
     ``,
@@ -273,6 +273,8 @@ function buildRetryPrompt(issues) {
     `**Most common fix for "Word count below 1300":** every section needs 2-3 more concrete sentences. Add a specific example, a real interview question, a number, or a counterexample to each H2 section. Do not pad with filler sentences.`,
     ``,
     `**Most common fix for "Too many em-dashes":** replace em-dashes with commas, periods, or parentheses. A sentence like "The answer is simple — practice more" becomes "The answer is simple. Practice more."`,
+    ``,
+    `**Most common fix for keyword issues:** write the keyword's words contiguously and in order somewhere in the first 100 words. Punctuation between the words is fine; extra words inside the phrase are not. For a query-style keyword like "tell me about yourself software engineer", a sentence such as: Every "tell me about yourself" software engineer answer follows the same structure. — satisfies the check.`,
     ``,
     `Output ONLY the corrected MDX file. No commentary.`,
   ].join('\n');
@@ -316,15 +318,21 @@ function validateDraft(draft, topic) {
   if (h2Count < 8) issues.push(`Only ${h2Count} H2 headings. Need at least 8.`);
   if (h2Count > 14) issues.push(`Too many H2 headings (${h2Count}). Cap at 14.`);
 
-  // Target keyword presence (case-insensitive, body only)
-  const kw = topic.targetKeyword.toLowerCase();
-  const bodyLower = body.toLowerCase();
-  const kwCount = bodyLower.split(kw).length - 1;
+  // Target keyword presence (body only). Match on punctuation-normalized text:
+  // search-query keywords like `tell me about yourself software engineer` are
+  // not natural English, so the model writes `the "tell me about yourself"
+  // software engineer answer` — same words in order, punctuation in between.
+  // Exact substring matching rejected those drafts (twice each run, since the
+  // retry can't fix it either) and burned the whole run. Words must still be
+  // contiguous and in order.
+  const kw = normalizeForKeywordMatch(topic.targetKeyword);
+  const bodyNorm = normalizeForKeywordMatch(body);
+  const kwCount = bodyNorm.split(kw).length - 1;
   if (kwCount < 1) issues.push(`Target keyword "${topic.targetKeyword}" does not appear in body.`);
   if (kwCount > 5) issues.push(`Target keyword "${topic.targetKeyword}" appears ${kwCount} times — likely stuffing.`);
 
   // First 100 words must contain keyword
-  const first100 = body.split(/\s+/).slice(0, 100).join(' ').toLowerCase();
+  const first100 = normalizeForKeywordMatch(body.split(/\s+/).slice(0, 100).join(' '));
   if (!first100.includes(kw)) {
     issues.push('Target keyword must appear in the first 100 words of the body.');
   }
@@ -335,6 +343,12 @@ function validateDraft(draft, topic) {
   }
 
   return { ok: issues.length === 0, issues };
+}
+
+// Lowercase and collapse all punctuation/whitespace runs to single spaces, so
+// `SDE-1` matches `SDE 1` and quoted phrases match their unquoted keyword.
+function normalizeForKeywordMatch(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
 function extractSlug(draft) {
