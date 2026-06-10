@@ -14,12 +14,44 @@ export default function BlogPostPage() {
 
   const { frontmatter, default: MDXContent } = post;
 
+  const postUrl = `https://prepfinity.co/blog/${frontmatter.slug}`;
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: frontmatter.title,
+      description: frontmatter.description,
+      datePublished: frontmatter.date,
+      dateModified: frontmatter.date,
+      author: { '@type': 'Person', name: frontmatter.author },
+      publisher: {
+        '@type': 'Organization',
+        name: 'PrepFinity',
+        logo: { '@type': 'ImageObject', url: 'https://prepfinity.co/og-image.png' },
+      },
+      image: 'https://prepfinity.co/og-image.png',
+      mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+      keywords: frontmatter.tags?.join(', '),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://prepfinity.co/' },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://prepfinity.co/blog' },
+        { '@type': 'ListItem', position: 3, name: frontmatter.title, item: postUrl },
+      ],
+    },
+  ];
+
   return (
     <div className="blog-page blog-post">
       <SeoHead
         title={frontmatter.title}
         description={frontmatter.description}
         canonical={`/blog/${frontmatter.slug}`}
+        type="article"
+        jsonLd={jsonLd}
       />
 
       <header className="blog-nav">

@@ -90,6 +90,108 @@ const PERSONAS: Persona[] = [
 
 const PERSONA_INTERVAL_MS = 5500;
 
+const SOFTWARE_APP_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'PrepFinity',
+  alternateName: 'PrepFinity AI Interview Platform',
+  applicationCategory: 'EducationApplication',
+  operatingSystem: 'Web',
+  description:
+    'AI-powered mock interview platform with voice and text interviews, real-time scoring, and weak-topic analytics for technical interview prep.',
+  url: 'https://prepfinity.co',
+  image: 'https://prepfinity.co/og-image.png',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'INR',
+    description: 'Free to start — 2 Basic + 1 Premium credit on signup',
+  },
+  featureList: [
+    'Voice and text AI interviews',
+    'Real-time scoring and feedback',
+    'Weak-topic analytics',
+    '5 interviewer personas',
+    'Resume-aware interviews',
+    'Question bank generator',
+    'Company-specific tracks (TCS, Infosys, Wipro, Razorpay, Google, Microsoft, Amazon)',
+  ],
+};
+
+const ORGANIZATION_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'PrepFinity',
+  url: 'https://prepfinity.co',
+  logo: 'https://prepfinity.co/og-image.png',
+  sameAs: [],
+};
+
+// FAQPage structured data — must mirror the visible FAQ section below
+// (Google requires JSON-LD answers to match on-page content).
+const FAQ_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How is this different from just talking to ChatGPT?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'ChatGPT will give you a single question, accept your answer, and move on. A real interviewer probes — they ask "what if the load doubles," "walk me through the edge cases," "why this approach over that one." PrepFinity is engineered around that follow-up loop. Each persona is tuned to push you the way a senior engineer would, then scores you on how you handled the pressure — not just the final answer.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is the scoring actually accurate?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Scoring is calibrated against rubrics built with engineers who've conducted hundreds of real interviews at FAANG, Razorpay-tier startups, and major service companies. It will not match a specific human interviewer exactly — neither will two humans match each other — but the per-question scores and weak-topic flags are consistent enough to drive real practice decisions.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do the same questions repeat across sessions?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "The AI is prompted to avoid topics it has asked you in past sessions. You'll see fresh question variants almost every time. If you're using Focus Mode on a specific weak topic, you'll see questions on that topic by design — but the framings will rotate.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does the voice interview actually feel like?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "It runs on OpenAI's Realtime API. The latency is conversational — the AI will interrupt if you go off track and let you interrupt back. The voices for each persona are deliberately different. It is noticeably less robotic than text-to-speech you've heard elsewhere. The trade-off: voice sessions use Premium credits.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What happens after the free credits run out?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Nothing automatic. No card on file, no surprise charges. You can keep using whatever's left of your free credits as long as you want; they don't expire. When you're ready for more, packs start at ₹199 and you only buy what you need.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is this only for Indian companies?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. The platform works for any technical interview in English. The company tracks (Service / Startup / FAANG) cover both Indian and global companies — Google, Microsoft, Amazon on the FAANG side; Razorpay, Stripe, Swiggy on the Startup side; TCS, Infosys, Wipro on the Service side. Pricing is in INR but card payments work internationally via Razorpay.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Will it work on my phone?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Both text and voice interviews work on iOS and Android via the browser. For voice on iOS, use Safari (Chrome on iOS has some audio quirks). Headphones strongly recommended for voice sessions.',
+      },
+    },
+  ],
+};
+
 /* Small count-up hook used by the Phase 4 score gauge. Animates from 0 to
    the target value over `durationMs` once `start` flips to true. */
 function useCountUp(target: number, start: boolean, durationMs = 1100, decimals = 1) {
@@ -214,6 +316,7 @@ export default function LandingPage() {
       <SeoHead
         canonical="/"
         description="Practice real technical interviews with an AI voice or text interviewer. Real-time scoring, weak-topic analytics, company-specific tracks (TCS, Infosys, Razorpay, Google). Free to start — no credit card needed."
+        jsonLd={[SOFTWARE_APP_JSON_LD, ORGANIZATION_JSON_LD, FAQ_JSON_LD]}
       />
       {/* ── Top nav ─────────────────────────────────────────────────── */}
       <header className="landing-nav">
@@ -250,8 +353,8 @@ export default function LandingPage() {
             )}
 
             <h1 className="hero-title">
-              Practice the interviews{' '}
-              <span className="grad-text">you&apos;ll actually face</span>.
+              AI mock interviews{' '}
+              <span className="grad-text">that feel like the real thing</span>.
             </h1>
 
             <p className="hero-sub">

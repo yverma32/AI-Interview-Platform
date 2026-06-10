@@ -40,7 +40,9 @@ export default function PolicyPage({ kind }: Props) {
 
   return (
     <div className="policy-page">
-      <SeoHead title={meta.title} description={SEO_DESCRIPTIONS[kind]} canonical={`/${kind}`} noIndex />
+      {/* Contact stays indexable — it's in the sitemap and a trust signal for Google;
+          legal boilerplate pages stay out of the index. */}
+      <SeoHead title={meta.title} description={SEO_DESCRIPTIONS[kind]} canonical={`/${kind}`} noIndex={kind !== 'contact'} />
       <header className="policy-header">
         <button className="policy-back" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}>
           <ArrowLeft size={16} aria-hidden />

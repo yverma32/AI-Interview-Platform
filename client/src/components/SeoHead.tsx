@@ -18,6 +18,10 @@ interface SeoHeadProps {
   image?: string;
   /** Set true on auth, account, and legal pages to keep them out of Google's index. */
   noIndex?: boolean;
+  /** og:type — set to "article" on blog posts so crawlers/shares treat them as articles. */
+  type?: 'website' | 'article';
+  /** JSON-LD object(s) rendered as <script type="application/ld+json"> in <head>. */
+  jsonLd?: object | object[];
 }
 
 export default function SeoHead({
@@ -26,6 +30,8 @@ export default function SeoHead({
   canonical,
   image = DEFAULT_IMAGE,
   noIndex = false,
+  type = 'website',
+  jsonLd,
 }: SeoHeadProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — ${SITE_TAGLINE}`;
   const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : SITE_URL;
@@ -38,7 +44,7 @@ export default function SeoHead({
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph */}
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={type} />
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
@@ -50,6 +56,14 @@ export default function SeoHead({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+
+      {/* Structured data */}
+      {jsonLd &&
+        (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((obj, i) => (
+          <script key={i} type="application/ld+json">
+            {JSON.stringify(obj)}
+          </script>
+        ))}
     </Head>
   );
 }
