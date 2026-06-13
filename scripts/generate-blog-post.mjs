@@ -246,7 +246,7 @@ function buildUserPrompt(topic, recentPosts) {
     `- **Word count: 1300-1700 words in the body** (do NOT count the frontmatter). Aim for 1500 — a too-short post fails validation and the draft is thrown away.`,
     `- **At least 8 H2 headings** (lines starting with "## "). Each H2 = one short section. This is how Google reads the structure.`,
     `- **Em-dash count: keep it under 6 across the entire file.** Use commas, periods, or parentheses instead. If you find yourself wanting a 7th em-dash, rewrite that sentence.`,
-    `- **Target keyword "${topic.targetKeyword}" must appear once in the first 100 words of the body**, and 2-3 times total in the body. Not more. The words must stay contiguous and in that order, but capitalization and punctuation between them are fine (e.g. quoting part of the phrase, or a comma mid-phrase). Do NOT insert other words into the phrase. If the keyword reads like a raw search query, build a sentence around it, e.g. for "tell me about yourself software engineer": the "tell me about yourself" software engineer answer has a formula.`,
+    `- **Target keyword "${topic.targetKeyword}" must appear once in the first 100 words of the body**, and 2-3 times total in the body. Not more. The keyword's words must appear in that order, but they may be pluralized and may have one or two small connecting words between them (e.g. "system design interviews with 2 years of experience" satisfies "system design interview 2 years experience"). Keep it natural — if the keyword reads like a raw search query, build a real sentence around it rather than dropping the query in verbatim.`,
     `- **At least 2 internal links to prepfinity.co** (use the ones listed above).`,
     `- **No banned phrases.** See the style guide. The validator checks for them and rejects the draft if any appear.`,
     ``,
@@ -274,7 +274,7 @@ function buildRetryPrompt(issues) {
     ``,
     `**Most common fix for "Too many em-dashes":** replace em-dashes with commas, periods, or parentheses. A sentence like "The answer is simple — practice more" becomes "The answer is simple. Practice more."`,
     ``,
-    `**Most common fix for keyword issues:** write the keyword's words contiguously and in order somewhere in the first 100 words. Punctuation between the words is fine; extra words inside the phrase are not. For a query-style keyword like "tell me about yourself software engineer", a sentence such as: Every "tell me about yourself" software engineer answer follows the same structure. — satisfies the check.`,
+    `**Most common fix for keyword issues:** write the keyword's words in order somewhere in the first 100 words. The words may be pluralized and may have one or two small connecting words between them, but keep them close together and in order. For "system design interview 2 years experience", a sentence such as: A system design interview at 2 years of experience looks different from a senior loop. — satisfies the check.`,
     ``,
     `Output ONLY the corrected MDX file. No commentary.`,
   ].join('\n');
@@ -318,22 +318,26 @@ function validateDraft(draft, topic) {
   if (h2Count < 8) issues.push(`Only ${h2Count} H2 headings. Need at least 8.`);
   if (h2Count > 14) issues.push(`Too many H2 headings (${h2Count}). Cap at 14.`);
 
-  // Target keyword presence (body only). Match on punctuation-normalized text:
-  // search-query keywords like `tell me about yourself software engineer` are
-  // not natural English, so the model writes `the "tell me about yourself"
-  // software engineer answer` — same words in order, punctuation in between.
-  // Exact substring matching rejected those drafts (twice each run, since the
-  // retry can't fix it either) and burned the whole run. Words must still be
-  // contiguous and in order.
-  const kw = normalizeForKeywordMatch(topic.targetKeyword);
-  const bodyNorm = normalizeForKeywordMatch(body);
-  const kwCount = bodyNorm.split(kw).length - 1;
+  // Target keyword presence (body only). Match the keyword's words in order,
+  // tolerating: punctuation between words (`SDE-1` ≈ `SDE 1`), light inflection
+  // on each word (plural/possessive `interview` ≈ `interviews`/`interview's`),
+  // and a couple of filler words between keyword words. Query-style keywords
+  // like `system design interview 2 years experience` are not natural English,
+  // so the model writes `system design interviews with 2 years of experience` —
+  // same words in order with `with`/`of` between them. Strict contiguous
+  // substring matching rejected those drafts on both the first try and the
+  // retry, burning the whole scheduled run.
+  const kwWords = normalizeForKeywordMatch(topic.targetKeyword).split(' ').filter(Boolean);
+  const bodyWords = normalizeForKeywordMatch(body).split(' ').filter(Boolean);
+  const kwCount = countKeywordMatches(bodyWords, kwWords);
   if (kwCount < 1) issues.push(`Target keyword "${topic.targetKeyword}" does not appear in body.`);
   if (kwCount > 5) issues.push(`Target keyword "${topic.targetKeyword}" appears ${kwCount} times — likely stuffing.`);
 
   // First 100 words must contain keyword
-  const first100 = normalizeForKeywordMatch(body.split(/\s+/).slice(0, 100).join(' '));
-  if (!first100.includes(kw)) {
+  const first100Words = normalizeForKeywordMatch(body.split(/\s+/).slice(0, 100).join(' '))
+    .split(' ')
+    .filter(Boolean);
+  if (countKeywordMatches(first100Words, kwWords) < 1) {
     issues.push('Target keyword must appear in the first 100 words of the body.');
   }
 
@@ -349,6 +353,41 @@ function validateDraft(draft, topic) {
 // `SDE-1` matches `SDE 1` and quoted phrases match their unquoted keyword.
 function normalizeForKeywordMatch(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+// Strip a trailing plural/possessive so `interviews`/`interview's` match
+// `interview`. Words ≤3 chars are left alone (avoid mangling `is`, `2s`, etc).
+function stemWord(w) {
+  if (w.length > 4 && w.endsWith('es')) return w.slice(0, -2);
+  if (w.length > 3 && w.endsWith('s')) return w.slice(0, -1);
+  return w;
+}
+
+// Count occurrences of the keyword's words appearing in order within `words`,
+// allowing up to MAX_GAP filler words between consecutive keyword words and
+// light inflection on each word. Matches are non-overlapping.
+function countKeywordMatches(words, kwWords) {
+  if (kwWords.length === 0) return 0;
+  const MAX_GAP = 2; // filler words allowed between two keyword words
+  const stems = words.map(stemWord);
+  const kwStems = kwWords.map(stemWord);
+  let count = 0;
+  let i = 0;
+  while (i < stems.length) {
+    if (stems[i] !== kwStems[0]) { i++; continue; }
+    let pos = i;
+    let matched = true;
+    for (let k = 1; k < kwStems.length; k++) {
+      let next = -1;
+      for (let j = pos + 1; j <= pos + 1 + MAX_GAP && j < stems.length; j++) {
+        if (stems[j] === kwStems[k]) { next = j; break; }
+      }
+      if (next === -1) { matched = false; break; }
+      pos = next;
+    }
+    if (matched) { count++; i = pos + 1; } else { i++; }
+  }
+  return count;
 }
 
 function extractSlug(draft) {
