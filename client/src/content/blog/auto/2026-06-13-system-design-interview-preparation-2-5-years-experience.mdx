@@ -1,0 +1,98 @@
+---
+title: "System Design Interview Preparation for 2–5 Years Experience"
+description: "What FAANG-India and Razorpay-tier startups actually expect from 2–5 year engineers in system design rounds — and how to prepare for exactly that bar."
+date: "2026-06-13"
+slug: "system-design-interview-preparation-2-5-years-experience"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "system-design", "mid-level"]
+---
+
+Most engineers with two to five years of experience walk into a system design round trying to impress like a senior. They draw microservices diagrams for a URL shortener. They mention Kafka before the interviewer has even finished the problem statement. Then they wonder why they didn't clear the Swiggy SDE-2 round despite "knowing" system design.
+
+Solid system design interview preparation at this experience level is not about depth of architecture knowledge. It's about knowing exactly what bar you're being held to — and that bar is different from what a seven-year engineer faces. This post is about that gap, with concrete examples from FAANG-India and Razorpay-tier startup rounds.
+
+## The bar at 2–5 years is not "design Twitter"
+
+At the SDE-2 level, interviewers are not expecting you to have architected a distributed database. They want to know if you can take a moderately complex problem, break it into components, make reasonable trade-offs, and communicate your thinking clearly. That's it.
+
+Google India's SDE-2 system design rounds, from what we consistently see in candidate feedback, focus on problems like "design a notification service" or "design a rate limiter." Not "design Google Search." Amazon India SDE-2 rounds often use a variant of "design a cart service" or "design a leaderboard." Razorpay tends toward payment-adjacent scenarios: idempotency, retry logic, webhook delivery guarantees.
+
+If you're spending your prep time memorizing the architecture of Cassandra's ring topology, you're solving for the wrong level.
+
+## Functional requirements first, always
+
+The most common failure mode we see: candidates jump to the architecture diagram within two minutes. No clarifying questions, no scope definition, straight to boxes and arrows.
+
+An interviewer at PhonePe or Microsoft India will stop you. "What scale are we designing for?" If you don't know the answer because you didn't ask, you've already lost points.
+
+Spend the first five minutes doing this:
+- Confirm what the system needs to do (not what it could do)
+- Nail down scale: DAU, reads vs writes, data size
+- Agree on what's in scope and what's explicitly out
+
+This is not a formality. The answers change your design. A notification service for 10,000 users does not need the same architecture as one for 10 million.
+
+## Estimate numbers before drawing anything
+
+Back-of-envelope estimation is the skill that separates candidates who "know system design" from candidates who can actually design systems. At the 2–5 year level, you are expected to do this. At the senior level, you're expected to do it fast and accurately.
+
+Practice this structure: start with DAU, derive QPS, estimate storage per day, then storage per year. For a ride-sharing app like Ola, if you assume 5 million daily active users and each user generates 10 events per trip, you're at roughly 50 million events per day. That's about 580 events per second on average, with peaks maybe 3–5x that. Now you know you need a queue. Now you know a single Postgres instance probably won't hold the write load alone.
+
+Do this before you pick any technology. The numbers tell you what you need.
+
+## Pick boring, proven technology and justify it
+
+This is where mid-level candidates hurt themselves. They want to sound impressive, so they reach for Kafka, Elasticsearch, and Redis in every design. Sometimes those are right. Often they're overkill, and a good interviewer will ask you to justify the choice.
+
+For a Zepto-scale order management system at SDE-2, a well-justified Postgres with read replicas and a simple job queue is a stronger answer than an unjustified Kafka + Flink pipeline. "I'm using Postgres because writes are transactional, we need ACID guarantees for order state changes, and at this scale read replicas handle our query load" is a real answer. "I'm using Kafka because it's scalable" is not.
+
+Know the trade-offs of what you pick. That's the actual test.
+
+## API design is part of the round, not a footnote
+
+At FAANG-India and serious startup rounds, you will be asked to define your APIs. Candidates treat this as a five-second afterthought. It should take ten to fifteen minutes.
+
+Think through: REST vs gRPC (and why). What your request and response bodies look like. How you handle pagination. What error codes you return and what they mean. For a payment API at Razorpay-scale, idempotency keys in the request header are not optional — they're the difference between a correct design and one that double-charges users.
+
+If you can design a clean, thought-through API layer, you signal that you've actually shipped production systems. Most candidates at this level haven't practiced this at all.
+
+## System design interview preparation needs to include failure modes
+
+A common interviewer move at Google India and Amazon India SDE-2 rounds: once you've drawn the happy path, they ask "what happens if this service goes down?" or "how do you handle a database failover?"
+
+Candidates who haven't thought about failure modes freeze here. Candidates who have practiced this answer quickly: circuit breakers, retries with exponential backoff, dead-letter queues, fallback caches.
+
+You don't need to know every distributed systems failure pattern. You need to know the three or four that come up in every system: service unavailability, network partitions, data inconsistency after a crash. For each component you draw, ask yourself "what breaks if this goes down, and what's the mitigation?"
+
+Practice saying this out loud. It sounds different in your head than it does under pressure.
+
+## Deep-dive sections will expose what you actually know
+
+Every system design round at this level ends with a deep-dive on one component. The interviewer picks it, not you. It's usually the most interesting or risky part of your design.
+
+If you designed a feed ranking service and mentioned a cache layer, expect "walk me through your caching strategy." If you designed a payment system and mentioned idempotency, expect "how exactly do you implement that?"
+
+This is where candidates who read blog posts fail and candidates who've actually thought through their designs succeed. You cannot fake the deep-dive. You need to know how your components actually work, not just that they exist.
+
+One practical fix: after every mock design session, pick the component you're least confident in and spend 20 minutes reading about how it actually works. Not "what is Redis" — "how does Redis handle cache eviction under memory pressure."
+
+## What Razorpay-tier startups care about that FAANG doesn't emphasize
+
+FAANG-India rounds are structured. You get a rubric, a fixed time, a predefined problem. Razorpay, Swiggy, CRED, and similar companies run looser rounds where the interviewer is evaluating product sense alongside technical design.
+
+At a Swiggy SDE-2 round, you might be asked "design the Swiggy home feed" and the interviewer will care about: what data you show, how you personalize it, how you handle the restaurant going offline mid-session. There's a product layer to the question. Candidates who treat it as a pure infrastructure problem miss half the evaluation.
+
+For these rounds, spend 30 minutes on the company's product before the interview. Use the app. Think about what's technically interesting about what they've built. It shows, and interviewers notice.
+
+## Practice talking, not just drawing
+
+System design is an oral exam with a whiteboard. Most candidates practice by reading articles and watching YouTube walkthroughs. That's passive. The skill being tested is your ability to think out loud, structure your reasoning in real time, and respond to pushback.
+
+Do at least five full timed mock rounds before your interview. Talk through every decision. If you're using [PrepFinity's AI interviewer](https://prepfinity.co/register), the voice mode forces you to articulate trade-offs rather than just nod at a diagram. Two back-to-back mock rounds in a single evening will reveal gaps that reading never will — the second round always exposes what you actually don't know.
+
+Check [PrepFinity's pricing](https://prepfinity.co/pricing) if you want structured system design tracks calibrated to SDE-2 and SDE-3 levels specifically.
+
+The candidates who clear these rounds aren't the ones who know the most architecture patterns. They're the ones who can take a vague problem, ask the right questions, make defensible choices, and explain their thinking without freezing when challenged. That's a practiced skill. Start practicing it out loud.
+
+*Want to try the most candid AI interviewer in the market? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
