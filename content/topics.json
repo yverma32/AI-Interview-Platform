@@ -126,7 +126,9 @@
         "/blog",
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-22T12:43:44.391Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-22-salary-negotiation-service-company-india.mdx"
     },
     {
       "title": "Voice mock interview practice vs writing answers",
