@@ -179,6 +179,917 @@
         "/blog"
       ],
       "used": false
+    },
+    {
+      "title": "Wipro Elite NTH interview process explained",
+      "targetKeyword": "Wipro Elite NTH interview process",
+      "angle": "Break down each Wipro Elite National Talent Hunt round with the cutoffs and question types that actually show up in 2026.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to crack the Accenture interview for freshers",
+      "targetKeyword": "Accenture interview for freshers",
+      "angle": "Map Accenture's cognitive + technical + communication rounds and what each one is really screening for.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Cognizant GenC interview questions and prep",
+      "targetKeyword": "Cognizant GenC interview questions",
+      "angle": "What the GenC, GenC Next, and GenC Elevate tracks ask, and how to tell which one you're being slotted into.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Capgemini interview process and exam pattern",
+      "targetKeyword": "Capgemini interview process",
+      "angle": "Walk the Capgemini pseudo-code round that trips up most freshers, with worked examples.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "HCLTech TechBee and fresher interview guide",
+      "targetKeyword": "HCLTech fresher interview",
+      "angle": "How the HCLTech early-career hiring differs from the big-three service companies and how to prep for it.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Tech Mahindra interview questions for freshers",
+      "targetKeyword": "Tech Mahindra interview questions",
+      "angle": "The aptitude-heavy Tech Mahindra funnel and the technical depth they actually expect from a fresher.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "LTIMindtree interview process step by step",
+      "targetKeyword": "LTIMindtree interview process",
+      "angle": "Each LTIMindtree round in order, with the coding difficulty calibrated to real 2026 candidates.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Persistent Systems interview preparation guide",
+      "targetKeyword": "Persistent Systems interview preparation",
+      "angle": "Why Persistent's technical bar sits above typical service firms and how to clear it.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Mphasis interview questions and rounds",
+      "targetKeyword": "Mphasis interview questions",
+      "angle": "Round-by-round Mphasis breakdown with the SQL and coding topics they favour.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to prepare for an Amazon India SDE interview",
+      "targetKeyword": "Amazon India SDE interview",
+      "angle": "Map Amazon's Leadership Principles to actual STAR answers, plus the DSA bar for SDE-1.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Microsoft India SWE interview preparation guide",
+      "targetKeyword": "Microsoft India SWE interview",
+      "angle": "The Microsoft loop structure and how the 'as appropriate' bar bar-raiser round works.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to crack a Flipkart SDE interview",
+      "targetKeyword": "Flipkart SDE interview",
+      "angle": "Flipkart's machine-coding round is the differentiator — here's how to practice for it specifically.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Swiggy backend interview questions and prep",
+      "targetKeyword": "Swiggy backend interview questions",
+      "angle": "Real Swiggy system design prompts around food-delivery scale, and the data-structure depth expected.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Zomato software engineer interview guide",
+      "targetKeyword": "Zomato software engineer interview",
+      "angle": "What Zomato's product-and-pace culture means for the kind of engineer they screen for.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Paytm interview questions for software engineers",
+      "targetKeyword": "Paytm interview questions",
+      "angle": "Paytm's fintech-flavoured rounds: concurrency, idempotency, and payment-edge cases.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "PhonePe SDE interview preparation guide",
+      "targetKeyword": "PhonePe SDE interview preparation",
+      "angle": "PhonePe's high transaction-volume system design questions and how to reason about them.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to prepare for a Zepto engineering interview",
+      "targetKeyword": "Zepto engineering interview",
+      "angle": "Quick-commerce scale problems Zepto loves to ask, and the speed they expect you to code at.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "CRED software engineer interview questions",
+      "targetKeyword": "CRED software engineer interview",
+      "angle": "CRED's design-and-craft obsession in interviews and what 'attention to detail' looks like in code.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Atlassian India interview process explained",
+      "targetKeyword": "Atlassian India interview process",
+      "angle": "Atlassian's values-led interview and how the systems round differs from FAANG.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to crack a Uber India SDE interview",
+      "targetKeyword": "Uber India SDE interview",
+      "angle": "Uber's location/matching system design prompts and the DSA topics behind them.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Google STEP and APAC internship interview guide",
+      "targetKeyword": "Google STEP internship interview",
+      "angle": "How early-career Google interviews differ from full-time loops, with prep timeline.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Salesforce India interview preparation guide",
+      "targetKeyword": "Salesforce India interview preparation",
+      "angle": "Apex, data modelling, and the platform questions Salesforce asks beyond generic DSA.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to prepare for a Walmart Global Tech interview",
+      "targetKeyword": "Walmart Global Tech interview",
+      "angle": "Walmart's retail-scale system design and the coding bar for IN3 roles.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Adobe India software engineer interview guide",
+      "targetKeyword": "Adobe software engineer interview",
+      "angle": "Adobe's emphasis on fundamentals (OS, OOP, DS) over Leetcode-hard, and how to prep accordingly.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Two pointers technique for coding interviews",
+      "targetKeyword": "two pointers technique interview",
+      "angle": "A pattern-first guide to two pointers with the 6 problem shapes it solves.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Sliding window problems every fresher should know",
+      "targetKeyword": "sliding window problems interview",
+      "angle": "The fixed vs variable window distinction and how to spot which one a problem needs.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Binary search beyond sorted arrays in interviews",
+      "targetKeyword": "binary search interview problems",
+      "angle": "Binary-search-on-answer — the technique that turns 'hard' problems into 20-line solutions.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Dynamic programming patterns for interviews",
+      "targetKeyword": "dynamic programming patterns interview",
+      "angle": "The 5 DP archetypes that cover most interview questions, with a recognition checklist.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Graph algorithms you need for SDE interviews",
+      "targetKeyword": "graph algorithms for interviews",
+      "angle": "BFS, DFS, topological sort, and union-find — when each shows up and how to template them.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to approach tree problems in interviews",
+      "targetKeyword": "tree problems coding interview",
+      "angle": "A recursion-shaped mental model for binary tree questions that removes the guesswork.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Backtracking explained for coding interviews",
+      "targetKeyword": "backtracking coding interview",
+      "angle": "The choose/explore/un-choose template and the four classic problems it unlocks.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Heap and priority queue interview problems",
+      "targetKeyword": "heap priority queue interview",
+      "angle": "When 'k-th something' or 'top-k' signals a heap, with the exact pattern to write.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Hashing and hashmap tricks for interviews",
+      "targetKeyword": "hashmap interview problems",
+      "angle": "Frequency maps, prefix sums with hashmaps, and the off-by-one traps that fail tests.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Bit manipulation interview questions explained",
+      "targetKeyword": "bit manipulation interview questions",
+      "angle": "The handful of bit tricks (XOR pairing, masks, lowest set bit) that interviewers actually ask.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Recursion vs iteration for coding interviews",
+      "targetKeyword": "recursion vs iteration interview",
+      "angle": "How to convert between the two and when interviewers expect the iterative version.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Greedy algorithms in coding interviews",
+      "targetKeyword": "greedy algorithms interview",
+      "angle": "How to prove (or sanity-check) a greedy approach so you don't pick it when DP is required.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Time and space complexity for interviews",
+      "targetKeyword": "time complexity interview questions",
+      "angle": "Big-O without the textbook — how to state and defend complexity out loud in a live interview.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Linked list interview questions and patterns",
+      "targetKeyword": "linked list interview questions",
+      "angle": "Fast/slow pointers, reversal, and the dummy-node trick, with the bugs that fail edge cases.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "System design interview prep for freshers",
+      "targetKeyword": "system design interview for freshers",
+      "angle": "What a fresher is actually expected to know — and what's fair game to say 'I'd learn' about.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to design a URL shortener in an interview",
+      "targetKeyword": "design a URL shortener interview",
+      "angle": "The canonical question, walked through the way an interviewer wants to hear it.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to design a rate limiter in an interview",
+      "targetKeyword": "design a rate limiter interview",
+      "angle": "Token bucket vs sliding window, and the follow-ups that separate strong candidates.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to design a chat application interview answer",
+      "targetKeyword": "design a chat application interview",
+      "angle": "WebSocket fan-out, delivery guarantees, and presence — scoped to a 45-minute round.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to design a news feed system interview",
+      "targetKeyword": "design news feed system interview",
+      "angle": "Push vs pull vs hybrid, and how to handle the celebrity-fanout problem on the whiteboard.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Database scaling concepts for system design interviews",
+      "targetKeyword": "database scaling system design",
+      "angle": "Sharding, replication, and read-replicas explained for the questions interviewers actually ask.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Caching strategies for system design interviews",
+      "targetKeyword": "caching system design interview",
+      "angle": "Cache-aside vs write-through, eviction, and the consistency follow-ups that catch people out.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "CAP theorem explained for interviews",
+      "targetKeyword": "CAP theorem interview",
+      "angle": "How to use CAP to justify a design choice instead of just reciting the definition.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Load balancing concepts for system design interviews",
+      "targetKeyword": "load balancing system design interview",
+      "angle": "L4 vs L7, health checks, and the failover questions that come after the happy path.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Message queues in system design interviews",
+      "targetKeyword": "message queue system design interview",
+      "angle": "When to reach for Kafka vs a simple queue, and how to explain back-pressure clearly.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to design a parking lot (OOP interview)",
+      "targetKeyword": "design parking lot interview",
+      "angle": "The classic LLD/OOP question, with the class diagram interviewers expect.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Low level design interview preparation guide",
+      "targetKeyword": "low level design interview",
+      "angle": "How LLD rounds differ from HLD, plus the SOLID principles applied to a real prompt.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to design an e-commerce system in an interview",
+      "targetKeyword": "design e-commerce system interview",
+      "angle": "Inventory, cart, and order flows at scale, scoped for a single interview round.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Microservices vs monolith in system design interviews",
+      "targetKeyword": "microservices vs monolith interview",
+      "angle": "How to argue either side credibly instead of defaulting to 'microservices good'.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "API design questions in software interviews",
+      "targetKeyword": "API design interview questions",
+      "angle": "REST conventions, idempotency, pagination, and versioning — the parts interviewers probe.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'why should we hire you'",
+      "targetKeyword": "why should we hire you answer",
+      "angle": "A structure that turns a cliché question into a 60-second pitch tied to the role.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'what are your weaknesses'",
+      "targetKeyword": "what are your weaknesses answer",
+      "angle": "The honest-but-strategic framing that doesn't sound rehearsed or fake-humble.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'where do you see yourself in 5 years'",
+      "targetKeyword": "where do you see yourself in 5 years",
+      "angle": "What this question is really testing and how freshers should answer it without lying.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'why do you want to join our company'",
+      "targetKeyword": "why do you want to join our company",
+      "angle": "Company-specific research that signals genuine interest in under two minutes.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to explain a career gap in an interview",
+      "targetKeyword": "explain career gap interview",
+      "angle": "Direct, no-apology framings for study breaks, layoffs, and health gaps.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'tell me about a conflict at work'",
+      "targetKeyword": "tell me about a conflict answer",
+      "angle": "A STAR-shaped answer for freshers who don't have years of work conflicts to draw on.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Salary negotiation tips for freshers in India",
+      "targetKeyword": "salary negotiation freshers India",
+      "angle": "How to negotiate a first offer in the Indian market without losing it.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to handle the 'do you have any questions' moment",
+      "targetKeyword": "questions to ask interviewer",
+      "angle": "Questions that make you look senior, and the ones that quietly hurt you.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'tell me about a failure'",
+      "targetKeyword": "tell me about a failure answer",
+      "angle": "Choosing a failure that shows growth, not a humblebrag in disguise.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Body language tips for online and in-person interviews",
+      "targetKeyword": "interview body language tips",
+      "angle": "Concrete, observable cues — eye line on video calls, hands, pacing — not generic 'be confident'.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to introduce yourself in an HR interview",
+      "targetKeyword": "self introduction HR interview",
+      "angle": "A repeatable 90-second intro template you can adapt per company.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer 'why are you leaving your current job'",
+      "targetKeyword": "why are you leaving your job",
+      "angle": "Framing a switch positively without badmouthing your current employer.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Strengths to mention in a job interview",
+      "targetKeyword": "strengths to mention in interview",
+      "angle": "How to pick strengths that match the JD and back each with one concrete proof.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to answer situational interview questions",
+      "targetKeyword": "situational interview questions answers",
+      "angle": "A framework for hypotheticals ('what would you do if...') that freshers freeze on.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to write a resume with no experience",
+      "targetKeyword": "resume with no experience",
+      "angle": "What to put on a fresher resume when you have projects but no jobs, line by line.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Common resume mistakes that get you rejected",
+      "targetKeyword": "resume mistakes rejected",
+      "angle": "The ATS and human-reviewer mistakes that kill resumes before the interview.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to write project descriptions on your resume",
+      "targetKeyword": "resume project descriptions",
+      "angle": "The impact-first bullet format that makes student projects sound like real work.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "LinkedIn profile tips for software engineers",
+      "targetKeyword": "LinkedIn tips software engineers",
+      "angle": "How recruiters actually search LinkedIn and how to show up in their results.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to get shortlisted for off-campus jobs",
+      "targetKeyword": "get shortlisted off campus",
+      "angle": "The referral + tailored-resume strategy that beats mass-applying.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "GitHub profile tips that impress interviewers",
+      "targetKeyword": "GitHub profile for interviews",
+      "angle": "What interviewers look for in a repo (and what they ignore) when they open your GitHub.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to write a cover letter for tech jobs",
+      "targetKeyword": "cover letter for tech jobs",
+      "angle": "When a cover letter helps in India, and a template that doesn't read as AI-written.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to tailor your resume for each job application",
+      "targetKeyword": "tailor resume for job",
+      "angle": "A 10-minute per-application tailoring routine that beats one generic resume.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to follow up after a job interview",
+      "targetKeyword": "follow up after interview",
+      "angle": "Timing and wording for a follow-up that nudges without being annoying.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to practice for a technical interview alone",
+      "targetKeyword": "practice technical interview alone",
+      "angle": "A solo prep routine using mock interviews when you have no peers to practice with.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Mock interview vs real interview: what's different",
+      "targetKeyword": "mock interview vs real interview",
+      "angle": "Where mock practice transfers to the real thing, and the gaps you still have to close live.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How AI mock interviews improve your communication",
+      "targetKeyword": "AI mock interview communication",
+      "angle": "Why speaking your answers out loud (not typing) is the under-practiced interview skill.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How many hours to prepare for a coding interview",
+      "targetKeyword": "hours to prepare coding interview",
+      "angle": "Realistic prep timelines by starting level, with a weekly hour budget.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to think out loud in a coding interview",
+      "targetKeyword": "think out loud coding interview",
+      "angle": "A narration script that shows your reasoning without rambling.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to recover from a wrong answer in an interview",
+      "targetKeyword": "recover from wrong answer interview",
+      "angle": "What to say the moment you realise you're wrong, so it counts for you not against you.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to prepare for a coding interview in one month",
+      "targetKeyword": "coding interview one month plan",
+      "angle": "A 30-day plan when you're short on time, prioritised by ROI per topic.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Voice interview practice for non-native English speakers",
+      "targetKeyword": "voice interview practice English",
+      "angle": "How to sound clear and confident in English interviews without a perfect accent.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to handle live coding nerves in interviews",
+      "targetKeyword": "live coding nerves interview",
+      "angle": "Why your code breaks under observation and a routine to keep your hands steady.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "OOPs interview questions and answers",
+      "targetKeyword": "OOPs interview questions",
+      "angle": "The four pillars with code examples interviewers actually want, not textbook definitions.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "DBMS interview questions for freshers",
+      "targetKeyword": "DBMS interview questions freshers",
+      "angle": "Normalisation, indexing, transactions — the DBMS topics that come up in every fresher loop.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Operating system interview questions explained",
+      "targetKeyword": "operating system interview questions",
+      "angle": "Processes vs threads, deadlocks, and scheduling, framed the way interviewers ask them.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Computer networks interview questions guide",
+      "targetKeyword": "computer networks interview questions",
+      "angle": "The TCP/IP, DNS, and HTTP questions that recur, with crisp answers you can say aloud.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "SQL interview questions and queries to practice",
+      "targetKeyword": "SQL interview questions",
+      "angle": "The join, group-by, and window-function queries that show up in technical screens.",
+      "internalLinks": [
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Best AI mock interview platforms in India (2026)",
+      "targetKeyword": "best AI mock interview platform India",
+      "angle": "An honest comparison of AI interview tools for the Indian market, where PrepFinity fits, and how to choose.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "AI mock interview vs human mock interview",
+      "targetKeyword": "AI mock interview vs human",
+      "angle": "When an AI interviewer beats a human one (availability, cost, judgement-free reps) and when it doesn't.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How AI mock interviews actually work",
+      "targetKeyword": "how AI mock interviews work",
+      "angle": "What happens under the hood of a voice AI interview — scoring, follow-ups, and real-time feedback.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Free AI interview practice tools compared",
+      "targetKeyword": "free AI interview practice",
+      "angle": "Which free AI interview tools are genuinely useful vs lead-gen walls, and what the free tier should include.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to practice for interviews with AI",
+      "targetKeyword": "practice interviews with AI",
+      "angle": "A concrete weekly routine for using an AI interviewer to fix weak topics fast.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Voice AI interview practice: a complete guide",
+      "targetKeyword": "voice AI interview practice",
+      "angle": "Why practising out loud with a voice AI closes the gap typed prep can't, with a starter plan.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Can AI mock interviews get you a job?",
+      "targetKeyword": "can AI mock interviews help",
+      "angle": "What AI interview practice realistically changes about your outcomes, backed by how interviewers score.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "AI interview feedback: what good feedback looks like",
+      "targetKeyword": "AI interview feedback",
+      "angle": "How to read AI-generated interview feedback and turn weak-topic flags into a study plan.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "Mock interview practice for SDE roles online",
+      "targetKeyword": "online mock interview SDE",
+      "angle": "How to run realistic SDE mock loops online — DSA, system design, and HR — without scheduling a human.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
+    },
+    {
+      "title": "How to simulate a real interview at home",
+      "targetKeyword": "simulate real interview at home",
+      "angle": "Recreating real interview pressure solo, and where an AI interviewer makes that possible.",
+      "internalLinks": [
+        "/pricing",
+        "/register"
+      ],
+      "used": false
     }
   ]
 }
