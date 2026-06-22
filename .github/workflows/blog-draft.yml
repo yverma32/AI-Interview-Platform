@@ -106,8 +106,8 @@ jobs:
             --head "${{ steps.push.outputs.branch }}" \
             --title "[Blog Draft] ${{ steps.generate.outputs.title }}" \
             --body "$(cat <<'EOF'
-          Auto-generated blog draft. **Auto-merge is enabled** — this PR merges
-          itself once any required checks pass. Review after the fact and edit
+          Auto-generated blog draft. **This PR is merged automatically by the
+          workflow** right after it is opened. Review after the fact and edit
           in place on main if needed; the validator the agent runs already
           enforces the hard constraints below.
 
@@ -131,6 +131,11 @@ jobs:
           EOF
           )")
           echo "Opened $PR_URL"
-          # Enable auto-merge (squash). Merges as soon as required checks pass;
-          # if there are no required checks, it merges immediately.
-          gh pr merge "$PR_URL" --auto --squash
+          # Merge immediately (squash). We don't use `gh pr merge --auto`
+          # because GitHub's auto-merge queue requires branch protection with a
+          # required status check on main; main is unprotected, so --auto is
+          # rejected with "Protected branch rules not configured". A direct
+          # squash merge needs no protection and is what "auto-publish" means
+          # here. --delete-branch keeps merged blog/auto/* branches from piling
+          # up (the stale-branch buildup is what wedged this workflow before).
+          gh pr merge "$PR_URL" --squash --delete-branch
