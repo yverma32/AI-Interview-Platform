@@ -89,7 +89,9 @@
         "/register",
         "/blog"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-15T05:15:31.618Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-15-infosys-interview-preparation.mdx"
     },
     {
       "title": "Free AI tools for interview preparation in India",
