@@ -101,7 +101,9 @@
         "/pricing",
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-22T12:40:44.114Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-22-free-ai-interview-prep-india.mdx"
     },
     {
       "title": "Behavioural interview questions for software engineers",
