@@ -138,7 +138,9 @@
         "/pricing",
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-23T04:50:17.216Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-23-voice-mock-interview-practice-vs-writing-answers.mdx"
     },
     {
       "title": "Common mistakes in HR round interviews for freshers",
