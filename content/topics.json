@@ -150,7 +150,9 @@
         "/register",
         "/blog/top-10-ai-mock-interview-mistakes"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-24T04:54:02.584Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-24-hr-round-interview-mistakes-fresher.mdx"
     },
     {
       "title": "How to prepare for a Google India SWE interview",
