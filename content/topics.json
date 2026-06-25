@@ -162,7 +162,9 @@
         "/pricing",
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-25T04:53:58.233Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-25-google-india-swe-interview-preparation.mdx"
     },
     {
       "title": "What to do in the 24 hours before a technical interview",
