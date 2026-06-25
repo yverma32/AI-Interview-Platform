@@ -1,0 +1,99 @@
+---
+title: "Google India SWE Interview Preparation: 8-Week Plan"
+description: "A realistic 8-week Google India SWE interview prep plan for L3/L4 — what to skip, what to over-prepare, and what week 7 should look like."
+date: "2026-06-25"
+slug: "google-india-swe-interview-preparation"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "google-interview", "system-design"]
+---
+
+Most candidates approaching Google India SWE interview preparation spend six weeks on LeetCode, one week panicking about system design, and zero time on behavioral questions. Then they get to the "Googleyness" round and blank on a question about handling ambiguity. The process is predictable. So is the failure mode.
+
+The eight-week plan in this post is built around what the loop actually tests, not around what feels comfortable to practice. It tells you what to skip, what to over-prepare, and why week 7 is the one most people waste. If a recruiter has already reached out, you probably have exactly this window before your first phone screen.
+
+## What the Google India L3/L4 Process Actually Looks Like
+
+Google India's SWE hiring for L3 (fresh grad or 0 to 2 years) and L4 (2 to 5 years) runs through a standard pipeline: a recruiter screen, one or two phone screens with coding questions, and then an onsite loop of four to five rounds. The onsite typically includes two coding rounds, one system design round (more weighted at L4), one "Googleyness and Leadership" round, and sometimes a role-specific round.
+
+The coding rounds are on Google Docs or an internal tool. No IDE, no autocomplete. That is not a minor detail. It changes how you should practice, and candidates who only code in VS Code with IntelliSense find the first phone screen genuinely disorienting.
+
+The timeline from application to offer can run eight to fourteen weeks. Plan accordingly.
+
+## Weeks 1 and 2: Audit Your Gaps Before You Touch LeetCode
+
+Do not open LeetCode on day one. Spend the first two weeks figuring out where you actually stand.
+
+Pick 15 problems across arrays, trees, graphs, dynamic programming, and strings. Five Easy or Medium, five Medium, five Hard. Time yourself strictly. Write down every topic where you needed a hint or ran over 25 minutes. That list is your real prep plan, not a generic topic checklist from a YouTube video.
+
+Most candidates skip this step and spend eight weeks practicing what they are already decent at. Then a sliding window problem shows up in the phone screen and they freeze because they never genuinely drilled it. The audit takes three days. It saves you from six weeks of false confidence.
+
+One practical note: do the audit problems in Google Docs, not an IDE. Start building that muscle from day one.
+
+## Weeks 3 and 4: Build Coding Depth, Not Breadth
+
+Google's coding rounds test pattern recognition under pressure, not memorization. You do not need 300 solved problems. You need 80 problems solved so well you can explain every decision out loud while writing in a blank document.
+
+Focus on these patterns in weeks 3 and 4: two pointers, BFS and DFS, binary search on the answer (not just on sorted arrays), monotonic stack, and union-find. These cover the majority of what appears in Google phone screens for L3 and L4.
+
+For each pattern, solve five problems. Then re-solve each one two days later without looking at your notes. If you cannot reconstruct the logic, you do not own the pattern yet. This re-solve step is the part people skip, and it is the most important part of the whole plan.
+
+A real example of what this sounds like in a phone screen: the interviewer gives you a problem about finding the shortest path in a grid with obstacles. You need to immediately recognize BFS, explain why DFS would not give you the shortest path, and then code it cleanly in Google Docs in under 20 minutes. That fluency comes from re-solving, not from reading solutions.
+
+## Weeks 5 and 6: System Design Is Not Optional at L4
+
+At L3, system design is lighter. At L4, it can make or break your loop. Either way, two full weeks is the minimum.
+
+The mistake candidates make is reading system design content passively. Reading about how to design a URL shortener is not the same as talking through it out loud for 45 minutes while someone pushes back on your choices.
+
+In weeks 5 and 6, pick one system design problem per day. Spend 45 minutes designing it out loud. Actually speak, do not just think. Cover capacity estimation, data model, API design, component breakdown, and failure modes. Record yourself if you can. Play it back. You will immediately hear where you are hand-waving instead of reasoning.
+
+Common Google India system design topics at L4: distributed key-value stores, search indexing pipelines, notification systems, and rate limiters. Practice these with the same rigor you apply to coding. A weak system design round at L4 is very hard to compensate for, even with two strong coding scores.
+
+## The Behavioral Round Catches More Candidates Than Coding Does
+
+Google calls it "Googleyness and Leadership." Candidates treat it as a formality. It is not.
+
+This round is evaluated separately during the debrief committee. A weak Googleyness rating can veto a strong coding performance. Prepare eight to ten STAR stories from your actual work. Cover: a time you disagreed with a decision and what you did, a project where requirements changed mid-way, a time you worked with incomplete information, and a time you failed and what you learned.
+
+Each story should run 90 seconds, not 30. The stories need to be specific enough that the interviewer could ask a follow-up about any detail and you would have an answer ready.
+
+"I worked on a backend service that handled payments" is not specific. "I owned the retry logic for a UPI payment service processing about 40,000 transactions per hour, and we had to redesign it after a cascade failure during a sale event" is specific. That second version gives the interviewer something real to probe, and it shows you can communicate technical context clearly.
+
+## Week 7: Stop Adding New Material and Start Simulating
+
+Week 7 is where most candidates make the worst decision of their prep. They find a new topic they have not covered and spend the week on it. Do not do this.
+
+By week 7, your job is to simulate the actual interview experience. Run two full mock interview sessions back to back, with a short break in between, to replicate the onsite loop. The second session will always reveal what you actually do not know. Your energy is lower, your focus drifts, and the gaps show.
+
+Run at least three of these double sessions across the week. Focus on the transitions between rounds: how you reset mentally, how you manage time when you are stuck, how you communicate when you do not immediately see the solution. Saying "I am not sure of the optimal approach yet, but here is how I would start" is a skill. It needs practice.
+
+This is also the week to use [PrepFinity](https://prepfinity.co/register) for timed mock rounds. The AI interviewer follows up and pushes back the way a real Google interviewer would. Three free sessions are available without a credit card. Use one for coding, one for system design, and one for a behavioral round. The feedback on your answer structure at this stage is more useful than another 20 LeetCode problems.
+
+## What to Skip Entirely
+
+Skip: competitive programming tricks that rarely appear in SWE interviews (segment trees, heavy-light decomposition, suffix arrays). Unless you are targeting a very specific algorithmic role, these are not worth your time.
+
+Skip: grinding past 150 LeetCode problems if you have not done the re-solve step on the first 80. Volume without retention is not preparation.
+
+Skip: watching system design videos without speaking your answers out loud. Passive consumption feels productive. It is not the same as being able to explain a consistent hashing ring to a skeptical L6 engineer for 10 minutes.
+
+Skip: memorizing Google's mission statement for the behavioral round. The interviewers are not checking whether you can quote company values. They are checking whether you can navigate ambiguity, handle conflict, and work with people who disagree with you.
+
+## Week 8: Logistics Matter More Than You Think
+
+The week before your onsite, stop adding new practice. Your preparation is done. What remains is execution.
+
+If your onsite is virtual (Google India runs many rounds over Google Meet), test your audio, camera, and screen-sharing setup two days before. Have a backup device ready. Know which time zone your interviewer is in. Google India teams sometimes have interviewers in Bangalore coordinating with Mountain View, and start times can be unusual.
+
+Have a one-page summary of your STAR stories ready to glance at before the behavioral round, not during it. On interview day, eat before the first round. Eight hours of interviews on an empty stomach is a real problem that candidates treat as a joke until it happens to them. It affects your working memory more than you expect.
+
+## One Thing the 8-Week Plan Cannot Give You
+
+Reps. The plan tells you what to do each week. It cannot do the sessions for you.
+
+The candidates who clear Google India's loop are not always the strongest engineers in the room. They are usually the ones who practiced speaking out loud more than they practiced silently reading solutions. They can explain their reasoning under pressure because they have done it 40 times before the real thing, not because they are smarter.
+
+If you want to see where you actually stand before the phone screen, check the [PrepFinity pricing page](https://prepfinity.co/pricing) for session packs that cover the full loop: coding, system design, and behavioral in one place. Knowing your weak spots in week 3 is worth more than discovering them in the actual interview.
+
+*Want to try the most candid AI interviewer in the market? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
