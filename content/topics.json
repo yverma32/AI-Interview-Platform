@@ -174,7 +174,9 @@
         "/register",
         "/blog/top-10-ai-mock-interview-mistakes"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-26T04:56:18.495Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-26-before-technical-interview-checklist.mdx"
     },
     {
       "title": "Resume tips for Indian software engineers with 0-3 years experience",
