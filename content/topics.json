@@ -186,7 +186,9 @@
         "/register",
         "/blog"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-06-27T04:47:48.194Z",
+      "draftFile": "client/src/content/blog/auto/2026-06-27-software-engineer-resume-india-fresher.mdx"
     },
     {
       "title": "Wipro Elite NTH interview process explained",
