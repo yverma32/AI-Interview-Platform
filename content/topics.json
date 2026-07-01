@@ -208,7 +208,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-01T05:02:55.859Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-01-accenture-interview-for-freshers.mdx"
     },
     {
       "title": "Cognizant GenC interview questions and prep",
