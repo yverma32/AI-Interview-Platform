@@ -219,7 +219,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-03T04:45:47.303Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-03-cognizant-genc-interview-questions.mdx"
     },
     {
       "title": "Capgemini interview process and exam pattern",
