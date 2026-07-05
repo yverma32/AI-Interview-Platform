@@ -230,7 +230,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-05T04:48:43.287Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-05-capgemini-interview-process-exam-pattern.mdx"
     },
     {
       "title": "HCLTech TechBee and fresher interview guide",
