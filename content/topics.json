@@ -241,7 +241,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-06T04:57:03.229Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-06-hcltech-fresher-interview-guide.mdx"
     },
     {
       "title": "Tech Mahindra interview questions for freshers",
