@@ -252,7 +252,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-07T04:47:58.318Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-07-tech-mahindra-interview-questions-freshers.mdx"
     },
     {
       "title": "LTIMindtree interview process step by step",
