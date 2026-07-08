@@ -263,7 +263,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-08T04:37:24.984Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-08-ltimindtree-interview-process-step-by-step.mdx"
     },
     {
       "title": "Persistent Systems interview preparation guide",
