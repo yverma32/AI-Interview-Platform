@@ -274,7 +274,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-09T04:47:32.558Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-09-persistent-systems-interview-preparation.mdx"
     },
     {
       "title": "Mphasis interview questions and rounds",
