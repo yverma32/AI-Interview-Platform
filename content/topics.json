@@ -285,7 +285,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-10T04:47:11.421Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-10-mphasis-interview-questions-and-rounds.mdx"
     },
     {
       "title": "How to prepare for an Amazon India SDE interview",
