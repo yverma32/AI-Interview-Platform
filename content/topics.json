@@ -296,7 +296,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-14T04:30:31.287Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-14-amazon-india-sde-interview.mdx"
     },
     {
       "title": "Microsoft India SWE interview preparation guide",
