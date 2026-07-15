@@ -307,7 +307,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-15T04:30:40.112Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-15-microsoft-india-swe-interview-guide.mdx"
     },
     {
       "title": "How to crack a Flipkart SDE interview",
