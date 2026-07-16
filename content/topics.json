@@ -318,7 +318,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-16T04:33:49.980Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-16-how-to-crack-flipkart-sde-interview.mdx"
     },
     {
       "title": "Swiggy backend interview questions and prep",
