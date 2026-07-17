@@ -329,7 +329,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-17T04:33:46.416Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-17-swiggy-backend-interview-questions.mdx"
     },
     {
       "title": "Zomato software engineer interview guide",
