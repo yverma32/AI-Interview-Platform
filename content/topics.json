@@ -340,7 +340,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-18T04:30:45.198Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-18-zomato-software-engineer-interview-guide.mdx"
     },
     {
       "title": "Paytm interview questions for software engineers",
