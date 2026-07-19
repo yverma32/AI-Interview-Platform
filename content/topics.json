@@ -351,7 +351,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-19T04:38:15.454Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-19-paytm-interview-questions-for-software-engineers.mdx"
     },
     {
       "title": "PhonePe SDE interview preparation guide",
