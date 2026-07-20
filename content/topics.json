@@ -362,7 +362,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-20T04:45:05.326Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-20-phonepe-sde-interview-preparation.mdx"
     },
     {
       "title": "How to prepare for a Zepto engineering interview",
