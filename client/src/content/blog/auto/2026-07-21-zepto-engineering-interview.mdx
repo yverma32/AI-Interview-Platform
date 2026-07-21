@@ -1,0 +1,91 @@
+---
+title: "How to Prepare for a Zepto Engineering Interview"
+description: "Zepto engineering interviews move fast and focus on real quick-commerce scale problems. Here's what to expect and how to prepare without wasting weeks."
+date: "2026-07-21"
+slug: "zepto-engineering-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "zepto", "product-companies"]
+---
+
+Most candidates preparing for a Zepto engineering interview spend three weeks grinding LeetCode and then get surprised when the interviewer asks them to design a real-time inventory deduction system that handles 40,000 concurrent orders during a 10-minute flash sale. The coding problems are not the hard part. The context is.
+
+Zepto is a different kind of company to interview at. It's a 10-minute delivery startup operating at genuine scale, which means the engineering problems they care about are specific. Stale inventory reads, dark store routing, payment retries under load — these are not abstract system design questions. They come from real incidents. And the interviewers know the answers because they lived through them.
+
+Here is what the process actually looks like, and how to prepare for each stage.
+
+## The process runs four to five rounds, and they move fast
+
+Zepto's hiring loop is typically an online coding test, one or two technical rounds, a system design round, and a hiring manager conversation. The whole loop can close in under two weeks. That speed is intentional. They hire quickly and expect you to think quickly.
+
+The coding test is usually on HackerEarth or a similar platform. Two to three problems, 90 minutes. The difficulty sits around LeetCode medium, but the time pressure is real. You will not have time to think for 20 minutes before writing your first line. If you're used to a slow warm-up, fix that before you apply.
+
+## Zepto's coding bar is about speed, not just correctness
+
+This is the thing most candidates underestimate. At a service company like TCS or Infosys, a working solution is enough. At Zepto, a working solution that took you 45 minutes on a medium problem is a yellow flag. They want to see you arrive at a clean solution in 20 to 25 minutes.
+
+The implication: stop practicing by solving one problem per day at a comfortable pace. Start doing timed sets. Two mediums, 45 minutes total. Do this daily for two weeks and your baseline speed will shift noticeably. The first few sessions will feel brutal. That's the point.
+
+Focus on arrays, hashmaps, sliding window, and graph traversal. Zepto's real systems involve things like route optimization for delivery partners and real-time slot availability, so graph problems show up more than they do at a typical fintech.
+
+## Quick-commerce scale problems are the core of the system design round
+
+This is where the Zepto engineering interview separates from a generic product company interview. The system design questions are grounded in quick-commerce realities.
+
+Expect questions like:
+
+- Design an inventory management system that prevents overselling when 500 users add the same item to their cart simultaneously.
+- How would you design the order assignment system that routes orders to dark stores and delivery partners in under two seconds?
+- Design a notification service that sends order status updates to 100,000 users during peak hours without delay.
+
+These are not hypotheticals to them. Every one of these has a real equivalent inside Zepto's stack. Your answer needs to show that you understand the constraints: write latency matters more than read latency in checkout flows, eventual consistency is acceptable for product catalog but not for inventory counts, and delivery partner location data needs to be updated at sub-second intervals.
+
+If you have not studied distributed systems concepts like optimistic locking, Redis-based inventory reservation, and event-driven architecture, do that before your system design round. Not as theory. As applied solutions to the kinds of problems Zepto actually runs into.
+
+## Your resume will get interrogated, not just skimmed
+
+Zepto's interviewers read resumes carefully. If you wrote "improved API response time by 40%," someone will ask you how. If you wrote "designed a microservices architecture," they will ask you what drove that decision and what you would do differently now.
+
+This is not a gotcha. It's a signal check. They want to know if you actually built what you said you built. Candidates from large service companies sometimes list projects they touched peripherally. That gets exposed fast.
+
+Before your interview, write down the three most technically interesting things on your resume. For each one, prepare a two-minute answer covering: what the problem was, what you tried first, why that didn't fully work, and what you shipped. That structure handles 80% of resume follow-ups.
+
+## The managerial round is about speed of judgment, not culture fit
+
+Zepto operates at startup pace. The managerial round is less "tell me your strengths and weaknesses" and more "walk me through a time you had to make a technical call with incomplete information."
+
+They want to see that you can move. Candidates who say "I would gather more data before deciding" without specifying what data and how fast they'd get it tend to stall here. The right answer almost always involves a concrete timeline and a fallback plan.
+
+Prepare two or three stories about decisions you made under time pressure. Use the STAR format internally to structure your thinking, but don't recite it robotically. The interviewer wants a conversation, not a presentation.
+
+## Tier-2 college candidates can clear this, but the bar is the same
+
+Zepto does not filter by college name at the interview stage. We see candidates from NITs, IITs, and smaller state universities all reach the final round. What matters is the technical conversation.
+
+That said, if your college did not have strong placement prep culture, you may have gaps in system design exposure. Most undergraduate programs in India do not teach distributed systems in any practical way. If you have under two years of experience and your system design knowledge is thin, spend at least two weeks on this before applying. One good resource is your own codebase: trace a request from your frontend through to your database and ask yourself what breaks at 100x load.
+
+## Do at least two timed mock rounds before the real thing
+
+The biggest gap between prepared and underprepared candidates is not knowledge. It is performance under real-time pressure. Knowing how to design a rate limiter and explaining it coherently while someone watches you draw on a whiteboard are different skills.
+
+Two days before your interview, do a full timed mock session covering both coding and system design. Not a casual walkthrough. Set a timer, speak your answers out loud, and treat it like the real thing. The second mock will always reveal something the first one hid, usually a concept you thought you understood but cannot explain clearly under pressure.
+
+PrepFinity's AI interviewer runs exactly this kind of session. It follows up on vague answers, asks you to clarify trade-offs, and gives you specific feedback on what to fix. You can [run a full mock session for free at PrepFinity](https://prepfinity.co/register) before your Zepto loop starts.
+
+## One week before: stop learning, start consolidating
+
+A common mistake is trying to learn new concepts in the final week. That week should be entirely consolidation. Re-solve problems you got wrong. Rehearse your system design answers out loud. Tighten your resume stories until each one is under two minutes.
+
+New material introduced in the final week rarely sticks under interview pressure. It just adds noise. What you've already practiced will surface reliably. What you crammed on day six usually won't.
+
+If you have a PrepFinity session history, review your weakest topic scores and do one focused session on each. That's a better use of your final week than reading a new chapter on Kafka internals you've never touched before.
+
+## The offer range is real, and it's worth the preparation
+
+Zepto's engineering salaries for mid-level roles sit in the ₹30–50 LPA range depending on experience and team. Senior roles go higher. That's a meaningful jump from the ₹8–15 LPA range common at service companies, and it reflects the bar they hold.
+
+The preparation is not complicated. It is just specific. Speed on coding problems, depth on quick-commerce system design, honesty about your resume, and two or three good stories about decisions you made under pressure. That covers the vast majority of what the Zepto engineering interview actually tests.
+
+Do the work, run the mocks, and show up having actually thought about the problems they care about. That's the whole strategy.
+
+*Ready to run a timed mock before your loop starts? [Get 3 free interviews on PrepFinity](https://prepfinity.co/register) — no credit card needed.*
