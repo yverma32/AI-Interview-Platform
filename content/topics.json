@@ -373,7 +373,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-21T04:36:33.032Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-21-zepto-engineering-interview.mdx"
     },
     {
       "title": "CRED software engineer interview questions",
