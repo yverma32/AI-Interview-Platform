@@ -384,7 +384,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-22T04:37:50.078Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-22-cred-software-engineer-interview-questions.mdx"
     },
     {
       "title": "Atlassian India interview process explained",
