@@ -395,7 +395,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-23T04:37:17.000Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-23-atlassian-india-interview-process-explained.mdx"
     },
     {
       "title": "How to crack a Uber India SDE interview",
