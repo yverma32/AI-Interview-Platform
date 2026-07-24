@@ -406,7 +406,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-24T04:36:53.712Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-24-how-to-crack-uber-india-sde-interview.mdx"
     },
     {
       "title": "Google STEP and APAC internship interview guide",
