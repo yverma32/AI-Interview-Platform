@@ -417,7 +417,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-25T04:34:36.741Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-25-google-step-internship-interview-guide.mdx"
     },
     {
       "title": "Salesforce India interview preparation guide",
