@@ -428,7 +428,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-26T04:40:27.892Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-26-salesforce-india-interview-preparation.mdx"
     },
     {
       "title": "How to prepare for a Walmart Global Tech interview",
