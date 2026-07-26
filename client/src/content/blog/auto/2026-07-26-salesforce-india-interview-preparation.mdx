@@ -1,0 +1,87 @@
+---
+title: "Salesforce India Interview Preparation: Beyond LeetCode"
+description: "Salesforce India interviews test Apex, data modelling, and platform logic — not just DSA. Here's what to actually prepare and how to stop leaving offers on the table."
+date: "2026-07-26"
+slug: "salesforce-india-interview-preparation"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "salesforce", "apex"]
+---
+
+Most candidates walking into a Salesforce India interview have spent three weeks grinding LeetCode and almost zero time on Apex triggers or object relationship design. The first technical round goes fine. The second one, when the hiring manager asks you to explain governor limits in a multi-trigger scenario, goes badly. Salesforce India interview preparation is a different discipline from standard product company prep, and treating it like one is why so many strong engineers get rejected at the platform round.
+
+Here is what the process actually looks like, and how to prepare for the parts that catch people off guard.
+
+## The Salesforce India Hiring Process Is Not One Interview
+
+Salesforce India typically runs four to six rounds for engineering roles. The exact shape depends on the level (MTS I, MTS II, SMTS) and the team, but the common pattern is an HackerRank or CodeSignal online assessment, a technical screen with a platform or Apex focus, a system design round, two to three cross-functional rounds covering architecture and behavioural questions, and a hiring manager close.
+
+The OA is standard. Two to three medium-difficulty problems, some SQL, sometimes a debugging question. Clear that and the real work begins. Most candidates are underprepared for rounds two and three specifically. Engineers who have cleared similar OAs at Flipkart or Razorpay often assume the rest of the loop will feel familiar. It does not.
+
+## Governor Limits Are Not a Trivia Question
+
+Every Salesforce engineer knows the phrase "governor limits." Most candidates can recite a few numbers: 100 SOQL queries per transaction, 150 DML operations per transaction. That is not enough for the platform round.
+
+Interviewers at Salesforce India will give you a scenario. A batch job processes 10,000 Account records and needs to update related Contacts and Opportunities in the same transaction. Walk them through it. Where will you hit a limit? How do you restructure the code to avoid it? What does bulkification actually mean in practice, not in theory?
+
+If you cannot walk through that scenario fluently, you are not ready. Spend time writing actual Apex in a Developer Edition org. Break things intentionally. Watch where the limit exceptions fire. The difference between a candidate who has seen a LimitException in a real org and one who has only read about it is obvious within two minutes of conversation.
+
+## Data Modelling Questions Go Deeper Than ERDs
+
+Object relationships are a favourite topic in Salesforce India interviews. Candidates who come from a relational database background often underestimate how opinionated the Salesforce data model is.
+
+You need to be comfortable explaining when to use a Master-Detail relationship versus a Lookup, and what the consequences of each choice are: roll-up summary fields, cascade deletes, sharing rules, and what happens to child records when a parent is deleted. Interviewers will describe a business problem, say a financial services firm tracking loan applications with multiple co-applicants, and ask you to design the object model. Your answer needs to include junction objects, relationship type reasoning, and field-level security implications.
+
+Practise designing three or four real-world Salesforce schemas from scratch before your interview. An insurance claims model, a field service dispatch model, a subscription billing model. Do it on paper, then build it in a Developer Edition org and see what the platform forces you to reconsider.
+
+## Apex Triggers: The Code They Will Actually Ask You to Write
+
+Live coding in Salesforce India interviews almost always involves Apex triggers. The classic prompt: write a trigger that prevents duplicate Account names. Then the follow-up: now make it bulkified. Then: what if the requirement changes and we need to allow duplicates in different territories?
+
+Three things will separate you from other candidates here. First, writing handler classes instead of logic-heavy trigger bodies. Interviewers notice when you separate concerns. Second, using Sets and Maps correctly to avoid SOQL inside loops. Third, knowing when to use before triggers versus after triggers and being able to explain the difference without hesitation.
+
+One common mistake is writing a before insert trigger when the requirement actually needs an after insert trigger because it involves creating related child records. That swap will cost you the round if you cannot justify your choice. Write at least ten triggers from scratch before your interview. Not tutorials you copied. Problems you invented and solved yourself.
+
+## System Design at Salesforce Is Platform-Aware
+
+Generic system design prep (load balancers, Kafka, microservices) is necessary but not sufficient for Salesforce India interviews. The design round often involves designing on the Salesforce platform itself.
+
+A common prompt: design a customer support case escalation system in Salesforce that handles 50,000 cases per day, integrates with an external ticketing system via REST API, and sends real-time notifications to agents. You need to talk about Platform Events versus Change Data Capture, Outbound Messages, Named Credentials for external callouts, and how you would handle retry logic when the external API is down.
+
+If you have only prepared generic distributed systems design, you will give a technically sound answer that misses the platform entirely. Interviewers at Salesforce India are platform engineers. They will notice immediately. That will cost you the round even if your distributed systems thinking is strong.
+
+## SOQL and SOSL Are Not the Same as SQL
+
+Candidates with strong SQL backgrounds often assume SOQL is just a dialect. It is not. The differences matter in interviews.
+
+SOQL cannot do full-text search. It cannot join arbitrary objects. It has relationship query syntax (using dot notation for parent fields and a subquery for children) that looks nothing like a JOIN. SOSL searches across multiple objects simultaneously and is the right tool for search-bar-style features. Interviewers will ask you to write queries against a given schema and will expect you to know when a SOQL relationship query is more appropriate than two separate queries, and when SOSL is the right answer entirely.
+
+Practise writing SOQL in Salesforce's Developer Console. Use the Query Plan tool to understand performance. Know what a selective query means and why it matters at scale. A query that runs fine on 500 records in a sandbox will time out on 2 million records in production, and interviewers will ask you exactly that follow-up.
+
+## The Behavioural Rounds Have a Salesforce-Specific Flavour
+
+Salesforce uses its V2MOM framework (Vision, Values, Methods, Obstacles, Measures) internally, and the behavioural rounds often probe for alignment with it. You do not need to memorise the framework, but you should know it exists and understand that interviewers are looking for candidates who can articulate priorities clearly and handle ambiguity at the product level.
+
+Beyond V2MOM, the standard STAR format applies. But Salesforce interviewers tend to push hard on the Obstacles part. What went wrong? How did you course-correct? What would you do differently? Prepare two or three stories where you made a technical decision that turned out to be wrong and had to own the recovery. Candidates who only have success stories read as unaware. One strong failure story, told with clear reasoning and a concrete fix, is worth more than three polished wins.
+
+## The MTS I to SMTS Salary Range in India Is Wide
+
+For context: MTS I roles in Salesforce India (Hyderabad and Bangalore offices) typically land between ₹18 LPA and ₹28 LPA for candidates with two to four years of experience. SMTS roles with strong Salesforce platform depth can reach ₹50 LPA to ₹70 LPA. The spread is large because platform expertise is genuinely scarce. Engineers who can design, build, and debug complex Salesforce solutions are harder to find than engineers who can solve LeetCode mediums.
+
+This is worth knowing because it should calibrate how much time you invest in platform-specific prep. The ceiling is high. A candidate who spends two extra weeks building real Apex in a Developer Edition org, rather than doing two more weeks of generic DSA, is making a rational investment. The platform knowledge is what separates the ₹28 LPA offer from the ₹55 LPA offer.
+
+## Practise Platform Questions Out Loud, Not Just on Paper
+
+Reading about governor limits is not the same as explaining them under pressure. The platform round at Salesforce India is conversational. The interviewer will interrupt, redirect, and push back. You need to be able to think through an Apex problem while talking, not after you have had five minutes of silence to work it out.
+
+The most effective drill: take a Salesforce developer scenario (trigger bulkification, callout retry logic, sharing rule design) and explain your solution out loud to someone who will ask follow-up questions. If you do not have a study partner, use an AI mock interview tool that can simulate follow-up questions in real time. [PrepFinity](https://prepfinity.co/register) runs platform-aware technical mock interviews where the AI probes on the specific decision points Salesforce interviewers care about, not just whether your code compiles, but why you made each architectural choice.
+
+Do two of those sessions back-to-back the week before your interview. The second session will always reveal the gaps the first one hid.
+
+## The Candidates Who Get Offers Prepared for the Platform, Not the Algorithm
+
+Every candidate Salesforce India rejects has cleared the OA. The filter is the platform knowledge. Engineers who have spent time in a real Salesforce org, hit actual governor limits, designed real object models, and debugged real integration failures speak about these things differently than engineers who read about them the week before. Interviewers notice the difference immediately.
+
+Start your Salesforce India interview preparation in a Developer Edition org, not a documentation tab. Build something. Break it. Fix it. Then practise explaining what you did and why. That sequence, repeated across four or five realistic scenarios, is what actually moves candidates from rejection to offer.
+
+*Ready to stress-test your Salesforce platform knowledge before the real interview? [Start with 3 free mock interviews](https://prepfinity.co/register) — no credit card needed.*
