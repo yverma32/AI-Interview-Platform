@@ -439,7 +439,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-27T04:45:20.588Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-27-walmart-global-tech-interview.mdx"
     },
     {
       "title": "Adobe India software engineer interview guide",
