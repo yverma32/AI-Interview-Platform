@@ -450,7 +450,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-28T04:34:41.105Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-28-adobe-software-engineer-interview-guide.mdx"
     },
     {
       "title": "Two pointers technique for coding interviews",
