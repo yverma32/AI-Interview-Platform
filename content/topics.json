@@ -461,7 +461,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-30T04:32:48.156Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-30-two-pointers-technique-interview.mdx"
     },
     {
       "title": "Sliding window problems every fresher should know",
