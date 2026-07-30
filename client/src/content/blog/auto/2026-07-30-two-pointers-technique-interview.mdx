@@ -1,0 +1,101 @@
+---
+title: "Two Pointers Technique: 6 Interview Patterns"
+description: "Master the two pointers technique for interviews with this pattern-first guide. Six problem shapes, concrete examples, and the mistakes candidates make on each."
+date: "2026-07-30"
+slug: "two-pointers-technique-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures-algorithms", "coding-interviews"]
+---
+
+Most candidates who face a two pointers technique in an interview can solve a sorted-array pair sum. Ask them to find the minimum window substring or detect a cycle in a linked list, and they switch to brute force. This pattern shows up at Razorpay, Swiggy, Google India, and Amazon India far more broadly than that one problem type. This guide breaks it into six distinct problem shapes. Learn the shapes, not the solutions.
+
+## Why two pointers fails in real interviews
+
+You've seen the technique. Two indices, move them toward each other, done. That mental model covers maybe one-sixth of the actual problems that use it.
+
+The real trap is that "two pointers" is a family of patterns, not a single trick. When you only know the converging-pointers shape, you see a sliding window problem and reach for a nested loop. You see a fast-slow pointer problem and have no idea where to start. Interviewers at Flipkart and PhonePe ask these variants constantly because they reveal whether you understand the underlying principle or just memorized one example.
+
+The principle: two pointers exist to reduce O(n²) brute-force work to O(n) by using a structural property of the input, usually sorted order, or a cycle, or a monotonic constraint, to guarantee you never need to revisit an element.
+
+Hold that principle in your head. Every shape below is an application of it.
+
+## Shape 1: Converging pointers on a sorted array
+
+This is the classic. One pointer at the left, one at the right. Move them inward based on a comparison.
+
+The textbook problem is two-sum on a sorted array. If `arr[left] + arr[right] > target`, move right inward. If it's less, move left inward. You get O(n) instead of O(n²) because the sorted order tells you which direction to move.
+
+Where candidates go wrong: they forget to handle duplicates. In problems like 3Sum, you need to skip duplicate values after each move or you'll return the same triplet multiple times. Interviewers at Google India will specifically ask for all unique triplets. If you haven't practiced the de-duplication step, you'll produce a working-but-wrong solution and not understand why.
+
+Practice problem: LeetCode 15 (3Sum). Don't just solve it. Solve it, then ask yourself: what breaks if the input has repeated elements? Write the de-duplication logic from scratch until it takes you under three minutes.
+
+## Shape 2: Fast and slow pointers for cycle detection
+
+Two pointers on a linked list, moving at different speeds. If there's a cycle, the fast pointer laps the slow one. If there isn't, the fast pointer hits null.
+
+Floyd's cycle detection is the foundation. But the problem you'll actually see in an interview is often a step further: "find the entry point of the cycle," not just "detect it." That requires a second phase after detection, where you reset one pointer to the head and move both at speed 1 until they meet. Most candidates know phase one and blank on phase two entirely.
+
+This pattern also extends to "find the middle of a linked list" and "find the k-th node from the end." Same idea, different speed ratio or different starting offset. Amazon India backend interviews ask the k-th-from-end variant regularly as a warm-up question in round one.
+
+Practice problem: LeetCode 142 (Linked List Cycle II). Implement both phases from memory. Then explain why the math works to someone else, or out loud to yourself. If you can't explain it, you haven't learned it.
+
+## Shape 3: Sliding window with two pointers
+
+Sliding window is technically two pointers where both move in the same direction. The left pointer marks the start of the window, the right pointer expands it. When a constraint is violated, the left pointer shrinks the window from behind.
+
+The key insight is that the right pointer never moves backward. That's what gives you O(n). If you find yourself moving the right pointer left to "reset," you've broken the pattern and your solution is O(n²) in disguise. This is the single most common sliding window bug we see in PrepFinity sessions.
+
+Common problems: longest substring without repeating characters, minimum size subarray sum, fruits into baskets. These show up in Infosys and Wipro technical rounds but also in Zepto and CRED backend interviews when they want to test efficient string and array processing.
+
+The mistake candidates make here: they use a HashMap correctly but forget to handle the window shrink step. The window expands fine. Then when left moves forward, they don't remove the stale entry from the map. The solution produces wrong answers on inputs with repeated characters, and the candidate has no idea why.
+
+## The two pointers technique in service company interviews
+
+TCS Smart Hiring, Infosys InfyTQ, and Wipro NLTH all include array manipulation problems on HackerEarth or CodeSignal. The difficulty is moderate, but the time pressure is real. You'll have 30 to 45 minutes for two or three problems.
+
+The two patterns that appear most often in these rounds are converging pointers (pair sum variants) and the Dutch National Flag problem (three-way partition). The DNF problem uses two pointers plus a mid index to sort an array of 0s, 1s, and 2s in one pass. If you haven't drilled it, you'll spend 20 minutes reinventing it under pressure and likely run out of time.
+
+Drill these two shapes until you can write them in under 8 minutes each. That is the bar for clearing the first coding round at a service company. Candidates who clear this round quickly also have more time to review edge cases, which is where partial marks become full marks.
+
+## Shape 4: Partition and rearrangement
+
+This is the Dutch National Flag family. One pointer tracks where the left section ends, another tracks where the right section begins, and a third index scans through. You're partitioning in-place without extra space.
+
+The broader pattern: whenever you need to rearrange an array in-place around some condition (move zeros to end, separate even from odd, sort colors), ask whether two boundary pointers can do it in one pass. Usually they can.
+
+Where candidates go wrong: off-by-one errors on the boundary indices. When do you increment the scan pointer? When do you not? Write this out step by step the first few times. Don't try to hold it in your head while also thinking about the logic. Microsoft India interviewers will ask you to trace through your code on a small example, and off-by-one errors show up immediately in that trace.
+
+Practice problem: LeetCode 75 (Sort Colors). Then try LeetCode 283 (Move Zeroes) as a simpler warm-up before you attempt the three-way partition.
+
+## Shape 5: Two pointers across two separate arrays
+
+Both pointers exist, but they live in different arrays. You advance one or the other based on a comparison. Merge sort's merge step is the canonical example. So is finding the intersection of two sorted arrays.
+
+This pattern appears in problems about comparing sequences: are these two strings one edit apart, find common elements in two sorted lists, merge k sorted arrays (which reduces to repeated two-array merges). Amazon India interviews ask edit-distance adjacent problems regularly in their SDE-1 and SDE-2 loops.
+
+The rule: when one array's current element is smaller, advance that pointer. When they're equal, record the match and advance both. Never advance the pointer in the larger array when the other array still has smaller elements to process. Violating this rule produces missed intersections that are hard to debug under time pressure.
+
+Practice problem: LeetCode 88 (Merge Sorted Array). Then LeetCode 349 (Intersection of Two Arrays II) to see the same shape with a frequency-counting twist.
+
+## Shape 6: Opposite-end pointers for geometry and trapping problems
+
+Trapping rainwater and container with most water both use converging pointers, but the logic for which pointer to move is different from pair sum. You move the pointer at the smaller height because the taller side can only get worse by moving inward, not better.
+
+This shape requires you to reason about why the greedy choice is correct, not just what it is. Interviewers at Google India and Microsoft India ask you to explain your reasoning here. "I move the smaller pointer" is not enough. "I move the smaller pointer because the water trapped at any position is bounded by the minimum of the two heights, so moving the larger pointer can only decrease or maintain that bound, never increase it" is the answer that passes.
+
+Candidates who can't articulate this get follow-up questions until they either produce the reasoning or fail the round. Prepare the verbal explanation before you sit in the interview.
+
+Practice problem: LeetCode 11 (Container With Most Water). Write the explanation in plain English before you write the code. Then do LeetCode 42 (Trapping Rain Water) to see a harder variant of the same shape.
+
+## How to practice these six shapes without wasting time
+
+Don't solve 60 random LeetCode problems and hope two-pointer intuition appears. Solve two problems per shape, six shapes, twelve problems total. For each one, write down: what property of the input makes two pointers valid here? What breaks if that property doesn't hold?
+
+Then do one timed mock session where you get a two-pointer problem you haven't seen before. The goal is to identify the shape within 2 minutes, not to remember the solution. If you can name the shape, you can derive the solution. This identification speed is what separates candidates who finish coding rounds with time to spare from candidates who freeze at the whiteboard.
+
+[PrepFinity's AI interviewer](https://prepfinity.co/register) will ask you to explain your reasoning out loud, not just produce working code. That's where most candidates discover they understood the mechanics but not the principle. Two voice rounds back-to-back on array problems will show you exactly which shapes you can explain and which ones you're still faking. Check the [PrepFinity pricing page](https://prepfinity.co/pricing) to see how many sessions fit your prep timeline.
+
+The candidates who clear Google India and Razorpay coding rounds aren't the ones who solved the most problems. They're the ones who can look at a new problem, say "this is a sliding window with a frequency map constraint," and start writing correct code in under a minute. Six shapes. Learn them properly.
+
+*Want to practice two-pointer problems with an AI that pushes back when your reasoning is shaky? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
