@@ -1,0 +1,126 @@
+---
+title: "Sliding Window Problems Every Fresher Should Know"
+description: "Fixed vs variable window — most candidates mix them up and lose easy marks. Here's how to spot which approach a problem needs before writing a line of code."
+date: "2026-07-31"
+slug: "sliding-window-problems-every-fresher-should-know"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures", "algorithms"]
+---
+
+Most freshers who fail the coding round at Swiggy or Razorpay didn't fail because they'd never seen sliding window problems. They failed because they couldn't tell which kind of window the problem needed. Fixed or variable. That one distinction separates candidates who solve it in 15 minutes from candidates who burn 40 minutes and submit a brute-force O(n²) solution. If you're walking into sliding window problems in an interview without a clear mental model for this, you're leaving marks on the table.
+
+This post gives you that model. Eight sections, concrete examples, and a decision rule you can apply in the first 60 seconds of reading any problem.
+
+## The two types of window and why the difference matters
+
+A sliding window is a subarray or substring that moves across a larger array or string. The window "slides" so you avoid recomputing from scratch on every step. That's the shared idea. But the mechanics split cleanly into two categories.
+
+**Fixed-size window**: the window length k is given to you. You slide it one element at a time, adding the new element and dropping the old one. The window size never changes.
+
+**Variable-size window**: the window grows and shrinks based on a condition. You expand the right pointer when the condition allows it, shrink the left pointer when it doesn't. The window size is the answer you're computing.
+
+Confusing these is the most common error we see in coding sessions on PrepFinity. A candidate reads "longest substring without repeating characters" and starts writing a fixed-size loop because they saw a similar-looking problem that used k. Two minutes in, they realize the structure is wrong and start over. That costs them the round.
+
+## How to identify a fixed-size window problem in 30 seconds
+
+Fixed-size problems give you k explicitly. The question will say something like "find the maximum sum of any subarray of size k" or "find all anagrams of pattern p in string s" (where the window size equals the length of p).
+
+The giveaway is that the window length is a constant input, not something you derive. You don't need to track a condition across the window. You just maintain a running aggregate (sum, character count, whatever) and shift it forward.
+
+Classic examples:
+- Maximum sum subarray of size k
+- First negative number in every window of size k
+- Count of anagrams of a pattern in a string
+
+If you see k in the problem statement and the question asks you to evaluate every window of that exact size, stop thinking. It's fixed.
+
+## How to identify a variable-size window problem in 30 seconds
+
+Variable-size problems never give you the window length. Instead, they give you a condition, and you need to find the window that satisfies it optimally. The question usually says "longest," "smallest," "minimum length," or "maximum length."
+
+The condition is the signal. "Longest substring with at most two distinct characters." "Smallest subarray with sum greater than or equal to target." The window expands until the condition breaks, then contracts from the left.
+
+Classic examples:
+- Longest substring without repeating characters
+- Minimum size subarray sum
+- Longest substring with at most k distinct characters
+- Fruits into baskets (same problem, different costume)
+
+One practical test: if you can't write `for i in range(n - k + 1)` at the top of your loop because k is unknown, it's variable.
+
+## The two-pointer skeleton you should memorize
+
+For variable-size windows, every solution has the same skeleton. Memorize the shape, not the code.
+
+```
+left = 0
+for right in range(len(arr)):
+    # expand: add arr[right] to window state
+
+    while window_condition_violated():
+        # shrink: remove arr[left] from window state
+        left += 1
+
+    # update answer from current window
+```
+
+The only things that change problem to problem are what "window state" means (a sum, a frequency map, a count of distinct elements) and what "condition violated" means (sum too small, too many distinct chars, duplicate found).
+
+If you internalize this skeleton before your HackerEarth test at Infosys or your CodeSignal round at a startup, you'll spend your time on the logic, not the structure.
+
+## Fixed-size window skeleton for completeness
+
+```
+window_state = compute(arr[0:k])  # initialize first window
+answer = window_state
+
+for i in range(k, len(arr)):
+    # slide: add arr[i], remove arr[i - k]
+    window_state = update(window_state, arr[i], arr[i - k])
+    answer = best(answer, window_state)
+```
+
+The initialization step is where freshers often make off-by-one errors. Build the first window manually before the loop. Don't try to handle it inside the loop with a conditional — that adds complexity and bugs.
+
+## The problems that look like one type but are the other
+
+Two problems trip up candidates more than any others.
+
+**"Maximum sum subarray of size at most k"** looks variable because of "at most." It's still closer to fixed-size thinking because you can solve it by trying all windows up to size k, though a clean variable approach works too. The "at most" is the trap word.
+
+**"Longest subarray with sum equal to k"** looks like a variable window problem because of "longest." But if the array contains negative numbers, the two-pointer variable window breaks down because shrinking the left pointer doesn't guarantee the sum decreases. This problem needs a prefix sum with a hash map instead. Knowing when sliding window doesn't apply is as important as knowing when it does.
+
+If the array has negative numbers and you're asked for something with a fixed target sum, reach for prefix sums first.
+
+## What interviewers at product companies actually ask
+
+At Razorpay, Zepto, and PhonePe, the sliding window problems in technical rounds are rarely the textbook version. They layer constraints. "Longest substring with at most k replacements" (LeetCode 424) is a favorite. So is "minimum window substring" (LeetCode 76), which combines a variable window with a frequency map and a counter trick.
+
+The frequency map plus counter pattern is worth practicing separately. You maintain a map of character counts and a variable that tracks how many characters are currently satisfied. Expanding adds to the map, shrinking removes from it. When the counter hits the target, you have a valid window. This pattern appears in at least three of the ten most common sliding window problems in interviews at Indian product companies.
+
+At service companies like TCS or Wipro, the bar is lower but the format is tighter. You'll see maximum sum of subarray of size k and first negative in every window of size k on HackerEarth. Solve those cleanly and you're through. The product company rounds are where the variable window problems with layered constraints show up.
+
+## How to practice sliding window problems so the pattern sticks
+
+Don't solve 40 problems randomly. Solve in clusters.
+
+Week one: five fixed-size problems. Get the skeleton automatic. Week two: five variable-size problems using only a sum or count as state. Week three: five problems using a frequency map as state. By week three, you're solving "minimum window substring" and "longest substring with at most k distinct characters" with the same skeleton.
+
+Then do two timed sessions back to back. The second session always reveals what you actually don't know. You'll find yourself stalling on the shrink condition or getting the window initialization wrong under pressure. Fix those specific gaps, not general "practice more."
+
+PrepFinity's coding interview mode lets you run timed sessions with follow-up questions. After you submit a solution, the AI asks you to explain your shrink condition or asks what happens with an empty input. That's the part most solo practice skips. [Start with 3 free interviews](https://prepfinity.co/register) and use the first one on a sliding window problem you think you already know.
+
+## The decision rule to use in the first 60 seconds of any problem
+
+Read the problem. Ask two questions in order.
+
+First: is the window size given as a constant input? If yes, fixed window.
+
+Second: is there a condition I need to satisfy or optimize across a window of unknown size? If yes, variable window with two pointers — unless the array has negative numbers and the target is a fixed sum, in which case prefix sum.
+
+That's the whole decision tree. Write it on a sticky note if you need to. The goal is to make this automatic before your actual interview, not to figure it out under pressure while the clock runs.
+
+Sliding window problems in interviews reward candidates who recognize the type fast and execute the skeleton cleanly. The algorithm itself is not hard. The recognition is the skill. Train that, and you'll solve most of these problems in under 20 minutes.
+
+*Ready to test your pattern recognition under real interview pressure? [Start with 3 free interviews on PrepFinity](https://prepfinity.co/register) — no credit card needed.*
