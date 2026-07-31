@@ -472,7 +472,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-07-31T04:39:33.623Z",
+      "draftFile": "client/src/content/blog/auto/2026-07-31-sliding-window-problems-every-fresher-should-know.mdx"
     },
     {
       "title": "Binary search beyond sorted arrays in interviews",
