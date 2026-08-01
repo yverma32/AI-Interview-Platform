@@ -1,0 +1,99 @@
+---
+title: "Binary Search Interview Problems: Beyond Sorted Arrays"
+description: "Most candidates only know binary search on sorted arrays. This post teaches binary-search-on-answer, the technique that cracks hard interview problems in 20 lines."
+date: "2026-08-01"
+slug: "binary-search-interview-problems-beyond-sorted-arrays"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "algorithms", "binary-search"]
+---
+
+Most candidates who've practiced binary search interview problems can split a sorted array in their sleep. Ask them to find a peak element or search a rotated array and they'll manage. But then a Swiggy interviewer asks them to minimize the maximum distance between gas stations, or a Razorpay panel asks them to find the smallest divisor given a threshold, and they stare at the screen for five minutes before reaching for brute force.
+
+The problem isn't that these questions are fundamentally harder. The problem is that they require a different mental model: binary-search-on-answer. Once you have it, a whole class of "hard" problems collapses into 20-line solutions. This post teaches you that model, gives you the template to memorize, and shows you exactly where candidates break down in real interviews.
+
+## What binary-search-on-answer actually means
+
+Standard binary search finds a value in a collection. Binary-search-on-answer finds the best value in a range of possible answers.
+
+The setup is always the same. You have a problem where the answer is some number, and you know the answer lives somewhere between a low bound and a high bound. You also have a function, call it `feasible(mid)`, that tells you whether a given candidate answer is valid. If feasible is monotonic (all valid answers on one side, all invalid on the other), you can binary search on it.
+
+That's the whole idea. The collection you're searching isn't an array of input values. It's the space of possible answers. Many candidates have read this explanation before and nodded along. The ones who actually use it in interviews have also written the template from scratch at least ten times.
+
+## The template you should memorize before your next interview
+
+Before naming individual problems, internalize this skeleton:
+
+```python
+def solve():
+    lo, hi = lower_bound, upper_bound
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if feasible(mid):
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+```
+
+Two decisions determine everything: what `lo` and `hi` represent, and how you write `feasible`. Get those right and the binary search part writes itself. In interviews, say this out loud. "I'm going to binary search on the answer space. Let me define what feasible means here." That sentence alone signals to the interviewer that you know what you're doing. It also buys you time to think through the bounds before you write a single line of code.
+
+## "Koko Eating Bananas" is the gateway problem
+
+If you haven't solved LeetCode 875, do it tonight. Koko has piles of bananas and a time limit. She eats at speed `k` bananas per hour. You need the minimum `k` that lets her finish in time.
+
+The brute force checks every possible speed from 1 to max(piles). That's O(max\_pile \* n). Binary search on the answer checks speeds from 1 to max(piles) in O(log(max\_pile) \* n). Same `feasible` function, dramatically faster.
+
+`feasible(k)` here is: "can Koko finish all piles at speed k within h hours?" That's just `sum(ceil(pile/k) for pile in piles) <= h`. Monotonic? Yes. Low speed means more hours. High speed means fewer. This is the cleanest possible example of the technique because the feasibility check is a single line. Solve this problem until you can write it from scratch in under eight minutes, then move on.
+
+## "Capacity to Ship Packages" is the same idea in disguise
+
+LeetCode 1011. You have packages with weights. A ship with capacity `c` ships them in order. Find the minimum capacity to ship everything in `d` days.
+
+`feasible(c)` here is: "can we ship all packages in d days with capacity c?" Greedy simulation: load packages greedily, count days. If days <= d, feasible. Binary search between max(weights) and sum(weights).
+
+This problem appears in Amazon India interviews. Not as a direct LeetCode copy, but as a variant. The interviewer changes "packages" to "orders" or "API request batches." If you know the shape, you adapt in two minutes. If you don't, you spend 20 minutes reinventing the greedy simulation and never get to the binary search insight. The greedy simulation inside `feasible` is also a common source of bugs, so practice writing it carefully. A common mistake is failing to count the final partial batch as a separate day.
+
+## The "minimize the maximum" signal tells you which technique to use
+
+Many binary search interview problems that use this technique announce themselves with a specific phrase: "minimize the maximum" or "maximize the minimum." When you see either of those, your first instinct should be: binary search on the answer.
+
+"Minimize the maximum sum of subarrays split into k parts" (LeetCode 410). "Maximize the minimum distance between placed elements" (LeetCode 2064 and variants). Both follow the same skeleton. `feasible(mid)` checks whether you can achieve the target with a greedy pass. The greedy pass for LeetCode 410 counts how many splits are needed if no subarray exceeds `mid`. If splits <= k, feasible.
+
+When you spot this signal in an interview, name it out loud: "This looks like a minimize-the-maximum problem. I think binary search on the answer applies here." Even if you're not 100% certain yet, naming the technique correctly buys you credibility while you work out the details.
+
+## Writing feasible correctly is where candidates actually fail
+
+The binary search loop is not where people go wrong. They go wrong in `feasible`.
+
+Two common mistakes. First, off-by-one errors in the greedy simulation: forgetting to count the last batch, or miscounting days when a package exactly fills the remaining capacity. Second, choosing the wrong boundary for the binary search range. If `lo` is too low or `hi` is too high, you either search a range that doesn't include the answer, or you waste time on an impossibly large space.
+
+Before the interview, practice stating your bounds out loud: "The answer is at least X because [reason]. The answer is at most Y because [reason]." For the ship packages problem, lo is max(weights) because the ship must carry the heaviest single package, and hi is sum(weights) because one day with unlimited capacity ships everything. If you can't articulate both bounds before you start coding, you don't understand the problem well enough yet.
+
+## How this technique shows up in Google and Microsoft India rounds
+
+Google India's onsite rounds regularly include one problem that looks like a graph or greedy problem but is actually binary-search-on-answer once you spot the monotonic structure. Microsoft India's phone screens have used the "split array largest sum" problem (LeetCode 410) almost verbatim in recent hiring cycles.
+
+The tell is that these problems have large input ranges. If n can be 10^9, brute force is dead. If the answer space is also large but bounded, binary search on it is almost certainly the intended solution. Interviewers at these companies know that candidates who reach for binary-search-on-answer quickly are thinking algorithmically, not pattern-matching to memorized code. That distinction matters when the interviewer fills out the hiring committee feedback form.
+
+## Practice these five problems in order
+
+Start here. Each one adds a small wrinkle to the previous.
+
+1. **LeetCode 875** — Koko Eating Bananas. Pure template, single-line feasibility check.
+2. **LeetCode 1011** — Ship Packages Within D Days. Greedy feasibility check with careful boundary handling.
+3. **LeetCode 410** — Split Array Largest Sum. Harder greedy, same shape, appears in Microsoft interviews.
+4. **LeetCode 1552** — Magnetic Force Between Balls. "Maximize the minimum" variant, requires sorting first.
+5. **LeetCode 2064** — Minimum Number of Platforms. Real constraints, requires careful bounds reasoning.
+
+After these five, you'll recognize the pattern in any new problem that uses it. The goal isn't to memorize five solutions. It's to internalize the shape so you can construct `feasible` from scratch when the interviewer puts an unfamiliar variant in front of you. Time yourself on each one. You should be hitting clean solutions in under 15 minutes by the time you sit for a real round.
+
+## One thing to do the night before your interview
+
+Pull up any one of those five problems you've already solved. Close your solution. Write the `feasible` function from scratch without looking at it. Then write the binary search loop around it. Say your bounds out loud as you go.
+
+The first time you do this, you'll probably get the bounds slightly wrong or miscount in the simulation. That's the point. The second attempt will be clean. Doing this the night before a Flipkart or Google India round costs you 20 minutes and confirms whether you actually understand the technique or just remember having seen it once.
+
+That's the difference between candidates who solve the hard problem in 18 minutes and candidates who spend 35 minutes on brute force and never get to optimization. The technique is not complicated. The reps are what make it automatic. You can also use [PrepFinity's algorithm interview mode](https://prepfinity.co/register) to get a timed, follow-up-heavy session on exactly these problem types, which surfaces gaps that solo practice misses.
+
+*Want to practice binary search problems with an AI interviewer that follows up, pushes back, and tells you exactly where your reasoning broke down? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
