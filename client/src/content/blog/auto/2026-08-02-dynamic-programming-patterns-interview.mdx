@@ -1,0 +1,107 @@
+---
+title: "Dynamic Programming Patterns for Interviews: 5 Archetypes"
+description: "Master dynamic programming interview questions by learning the 5 core DP archetypes. Includes a recognition checklist for each pattern."
+date: "2026-08-02"
+slug: "dynamic-programming-patterns-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "dynamic-programming", "coding-interviews"]
+---
+
+Candidates who struggle with dynamic programming patterns in interviews almost never have a coding problem. They have a recognition problem. They stare at the question for five minutes, can't identify what type of DP it is, and then spiral into random memoization attempts that go nowhere. The problem isn't practice volume. It's that nobody told them there are really only five DP archetypes that cover the vast majority of interview questions, and each one has a fingerprint you can learn to spot in under 30 seconds.
+
+This post gives you those five archetypes, with a concrete recognition checklist for each. Work through these and you'll handle most DP questions at Razorpay, Google India, or Amazon India without freezing.
+
+## Why Most DP Prep Fails Before the Interview Starts
+
+The standard advice is "grind LeetCode DP problems." That's not wrong, but it's incomplete. Grinding without a taxonomy means you're memorizing solutions, not building pattern recognition. When a Swiggy interviewer gives you a problem you've never seen before, memorized solutions are useless.
+
+The five archetypes below are categories of structure, not categories of topic. Once you recognize the structure, you know which template to reach for, which state variables to define, and which recurrence relation to try first. That's what gets you unstuck in real time. A candidate who can say "this is a knapsack variant" within 60 seconds of reading the problem is already ahead of 80% of the room.
+
+## Archetype 1: Linear Sequence (the "Previous State" Pattern)
+
+**Recognition checklist:**
+- The input is a single array or string.
+- The answer at index `i` depends only on answers at `i-1` or a few earlier indices.
+- The question asks for a maximum, minimum, or count over the whole sequence.
+
+Classic examples: Longest Increasing Subsequence, Maximum Subarray (Kadane's), House Robber. The state is almost always `dp[i]` = best answer considering elements up to index `i`. You iterate left to right. The transition looks like `dp[i] = max(dp[i-1] + something, something_else)`.
+
+When you see "given an array, find the max/min/count of some property," start here. This archetype covers roughly 30% of DP questions at service companies like TCS and Infosys, and it shows up regularly in first technical rounds at product startups too. House Robber in particular is a favorite warm-up question before interviewers escalate to harder variants.
+
+## Archetype 2: Two-Sequence Alignment (the "Grid Diagonal" Pattern)
+
+**Recognition checklist:**
+- You have two strings or two arrays.
+- The problem asks how similar, different, or compatible they are.
+- Words like "edit," "match," "common," or "align" appear in the problem statement.
+
+Classic examples: Longest Common Subsequence, Edit Distance, Shortest Common Supersequence. The state is `dp[i][j]` = answer considering the first `i` characters of string A and first `j` characters of string B. You fill a 2D grid. The transition has two branches: characters match (carry diagonal) or they don't (take the best of left, up, or diagonal plus cost).
+
+Google India and Microsoft India favor this archetype for senior roles. Edit Distance comes up in real system design contexts too (diff algorithms, spell-checkers), so interviewers feel justified asking it even at the L5/L6 level. If you see two strings in the problem and the word "minimum," this is almost always your archetype.
+
+## Archetype 3: Interval DP (the "Merge Subproblems" Pattern)
+
+**Recognition checklist:**
+- The problem asks about an optimal way to split, merge, or evaluate a sequence.
+- The answer for a range `[i, j]` depends on answers for sub-ranges.
+- You see words like "burst," "cut," "multiply," or "parenthesize."
+
+Classic examples: Matrix Chain Multiplication, Burst Balloons, Palindrome Partitioning II. State is `dp[i][j]` = optimal cost or value for the subproblem on range `[i, j]`. You iterate by increasing interval length. The transition tries every split point `k` between `i` and `j`.
+
+This is the archetype that trips up candidates most often because the iteration order is non-obvious. You don't fill the grid row by row. You fill it by diagonal (interval length 1, then 2, then 3...). Get that wrong and your answers are undefined when you need them. Burst Balloons is a common choice at Amazon India because it looks like a simulation problem until you realize the subproblem structure.
+
+## Archetype 4: Knapsack and Variants (the "Include or Exclude" Pattern)
+
+**Recognition checklist:**
+- You have a set of items, each with a weight or cost and a value or profit.
+- You have a constraint (capacity, budget, target sum).
+- The question asks whether a target is reachable, or what the maximum value under constraint is.
+
+Classic examples: 0/1 Knapsack, Coin Change, Partition Equal Subset Sum, Target Sum. State is `dp[i][w]` = best value using first `i` items with capacity `w`, or `dp[i]` = can we reach sum `i`. Transition: for each item, either include it or exclude it.
+
+This archetype is the most common one in dynamic programming patterns across interview rounds at product companies. Coin Change alone has appeared in Amazon India, Flipkart, and PhonePe interviews recently, based on what candidates report to us. The 1D space-optimized version (iterate capacity backwards for 0/1 Knapsack, forwards for unbounded) is worth drilling until it's automatic. Getting the iteration direction wrong is one of the most common bugs we see in recorded sessions.
+
+## Archetype 5: State Machine DP (the "Mode Switching" Pattern)
+
+**Recognition checklist:**
+- The problem has explicit states or modes you can be in (holding a stock, on cooldown, inside a transaction).
+- Transitions between states have costs or conditions.
+- The question asks for max profit or min cost across a sequence of decisions.
+
+Classic examples: Best Time to Buy and Sell Stock (all variants), Jump Game II, Decode Ways with wildcards. State is `dp[i][state]` where `state` encodes which mode you're in at step `i`. The transition maps each (step, state) pair to valid next states.
+
+Candidates who know the first four archetypes often blank on this one because it doesn't look like DP at first glance. It looks like a simulation. The tell is that your options at step `i` depend on what you did at step `i-1` in a non-trivial way. The Stock Buy/Sell with Cooldown problem is a favorite at CRED and Zepto precisely because it breaks candidates who only know the basic stock problem.
+
+## The Recognition Protocol: What to Do in the First 3 Minutes
+
+Before writing a single line of code, run this checklist out loud (yes, out loud, the interviewer needs to hear your thinking):
+
+1. Is the input one sequence or two? One sequence points to Archetype 1 or 3. Two sequences point to Archetype 2.
+2. Does the problem involve a constraint and a set of items? That's Archetype 4.
+3. Are there explicit modes or states you can be in? That's Archetype 5.
+4. Does the problem ask about an optimal split or merge over a range? That's Archetype 3.
+
+If you're still unsure after 90 seconds, ask the interviewer: "Is there a constraint on how many times I can use each element?" The answer almost always narrows it to one or two archetypes. Interviewers at product companies expect this kind of clarifying question. Silence does not help you.
+
+## The One Mistake That Kills Otherwise Good DP Answers
+
+Getting the archetype right but defining the state wrong. This is where candidates lose points even after recognizing the pattern. The state definition is the most important line you'll write. It must be precise enough that the recurrence follows naturally, but not so specific that it becomes unsolvable.
+
+A weak state definition: `dp[i]` = "something about index i." A strong one: `dp[i]` = "the minimum number of coins needed to make exactly sum i, using any coins from the input array." Write the state definition as a comment before you write the recurrence. Every time, without exception. Interviewers have told candidates explicitly that they passed because of this habit. It signals that you understand what you're computing, not just how to compute it.
+
+## How to Practice These Archetypes Without Burning Out
+
+Don't do 200 random DP problems. Do 10 problems per archetype, in order of difficulty. After each problem, write one sentence: "This was Archetype X because Y." That sentence forces the pattern recognition to stick.
+
+Run two timed sessions per week where you see a problem cold, classify it in under 90 seconds, and then code it. The classification is the skill you're building. The coding follows from it. If you can't classify a problem after 90 seconds, that's your signal to study that archetype more, not to write code faster.
+
+[PrepFinity's interview simulator](https://prepfinity.co/register) includes DP problem sets tagged by archetype, so you can drill each pattern in isolation before mixing them. The feedback after each session tells you exactly where your state definition broke down, not just whether your output was correct.
+
+## The Honest Truth About DP in Interviews
+
+Most interviewers at Indian product companies are not trying to trick you with exotic DP variants. They're checking whether you can think structurally under pressure. A candidate who says "this looks like a knapsack variant because we're choosing items under a constraint, let me define the state as..." will pass even with a few bugs. A candidate who codes frantically without narrating their reasoning will fail even with a working solution.
+
+The five archetypes give you a vocabulary. Use it out loud. That's the whole point. If you walk into your next DP question knowing which of these five structures you're looking for, you've already solved the hardest part of the problem.
+
+*Ready to practice these patterns under real interview pressure? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
