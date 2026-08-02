@@ -494,7 +494,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-02T04:39:24.485Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-02-dynamic-programming-patterns-interview.mdx"
     },
     {
       "title": "Graph algorithms you need for SDE interviews",
