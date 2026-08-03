@@ -505,7 +505,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-03T04:42:58.770Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-03-graph-algorithms-for-interviews.mdx"
     },
     {
       "title": "How to approach tree problems in interviews",
