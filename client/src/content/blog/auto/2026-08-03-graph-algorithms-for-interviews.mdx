@@ -1,0 +1,142 @@
+---
+title: "Graph Algorithms for Interviews: BFS, DFS, and More"
+description: "Learn which graph algorithms show up in SDE interviews, when to use each one, and the exact templates that work under pressure at Swiggy, Google, and beyond."
+date: "2026-08-03"
+slug: "graph-algorithms-for-interviews"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures", "algorithms"]
+---
+
+Candidates who fail graph rounds don't usually fail because they don't know BFS. They fail because they stand in front of a whiteboard at Swiggy or Google India, see a problem that looks like a grid traversal, and reach for DFS out of habit when BFS was the right call. Knowing graph algorithms for interviews means knowing which tool fits which problem, not just knowing the tools exist. This post covers BFS, DFS, topological sort, and union-find: when each one appears, why it gets chosen, and a repeatable template you can drill before your next round.
+
+## The four algorithms that cover 90% of graph problems
+
+Most graph problems in SDE-1 and SDE-2 interviews reduce to one of four patterns. You won't see Bellman-Ford in a Razorpay coding round. You won't be asked to implement Tarjan's algorithm at a Zepto screening. The interviewers want to see that you can recognize a graph, model it correctly, and apply a clean traversal or connectivity check.
+
+This isn't a guess. The same problem archetypes appear across HackerEarth assessments for TCS and Infosys, and in the live coding rounds at Flipkart and Microsoft India. The surface details change. The underlying pattern almost never does. Master these four and you have a credible answer for nearly every graph question that comes up.
+
+## BFS is the shortest-path tool, not just a traversal
+
+BFS comes up when the problem involves minimum steps, minimum distance, or "how many moves to reach X." The classic example is the word ladder problem: given two words, find the shortest transformation sequence. Another is a grid where you need the minimum number of steps from a source to a target, avoiding obstacles. A third, which appears regularly in Amazon India rounds, is the rotting oranges problem: find the minimum time for all oranges to rot given that rot spreads to adjacent cells each minute.
+
+The reason BFS works here is that it explores nodes level by level. Every node at distance k is visited before any node at distance k+1. That property guarantees the first time you reach the target, you've found the shortest path.
+
+Template in Python:
+
+```python
+from collections import deque
+
+def bfs(graph, start):
+    visited = set([start])
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+```
+
+The only thing that changes between problems is what you do with each node and whether you track distance explicitly. Add a `dist` dictionary if you need shortest-path lengths. Add a `steps` counter by tracking levels in the queue.
+
+## DFS is the right call for exhaustive search and cycle detection
+
+DFS shows up when you need to explore all possibilities: find all paths, check if a path exists, detect a cycle, or count connected components. It also powers topological sort, which we'll get to next.
+
+Where candidates go wrong: they use DFS when they need BFS because DFS "feels simpler." DFS does not guarantee shortest paths. If an interviewer asks for the shortest path in an unweighted graph and you write DFS, you'll get partial credit at best. This mistake is especially common in grid problems where candidates conflate "explore the grid" with "find the shortest route."
+
+Template:
+
+```python
+def dfs(graph, node, visited):
+    visited.add(node)
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+```
+
+For cycle detection in a directed graph, you need two sets: one for globally visited nodes and one for the current recursion stack. A node appearing in both sets means you've found a cycle. This exact check is the core of the course schedule problem, which shows up in Google India and Microsoft India interviews more than almost any other graph question.
+
+## Topological sort appears whenever order matters
+
+Any problem involving dependencies maps to topological sort. Course schedule problems (common at Google India and Microsoft India rounds), build order problems, and task scheduling with prerequisites all follow the same shape. The question might be phrased as "can you finish all courses?" or "in what order should you compile these modules?" Either way, you're looking for a valid linear ordering of a directed acyclic graph.
+
+Two approaches exist: DFS-based and Kahn's algorithm (BFS-based). Kahn's is easier to reason about under pressure and easier to explain to an interviewer without drawing a recursion tree.
+
+Kahn's algorithm:
+1. Compute in-degree for every node.
+2. Push all zero-in-degree nodes into a queue.
+3. Pop a node, add it to the result, decrement in-degree of its neighbors.
+4. If a neighbor's in-degree hits zero, push it.
+5. If the result contains all nodes, there's no cycle. Otherwise, a cycle exists.
+
+This is also how you detect cycles in directed graphs without a separate DFS pass. If topological sort can't complete because the result length is less than total nodes, the graph has a cycle. Stating that observation out loud during an interview signals that you understand the algorithm, not just the steps.
+
+## Union-find handles connectivity questions in near-constant time
+
+Union-find (also called disjoint set union, or DSU) is the right structure when you need to answer "are these two nodes in the same component?" repeatedly and efficiently. It shows up in problems about connecting cities, detecting redundant edges, and Kruskal's minimum spanning tree. A common variant in interviews: given a list of edges added one at a time, find the first edge that creates a cycle.
+
+The key operations are `find` (with path compression) and `union` (with rank). Both run in effectively O(1) amortized time, which is what makes union-find preferable to repeated BFS when you're processing thousands of connectivity queries.
+
+```python
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py:
+            return False
+        if self.rank[px] < self.rank[py]:
+            px, py = py, px
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]:
+            self.rank[px] += 1
+        return True
+```
+
+If `union` returns `False`, the two nodes were already connected, meaning adding this edge creates a cycle. That's the core of the redundant connection problem, and it's also the check you embed inside Kruskal's to build a minimum spanning tree without re-examining edges.
+
+## How to recognize which algorithm the problem is asking for
+
+This is where most candidates fail. They know the algorithms but can't pattern-match quickly under pressure. Here's a rough decision tree:
+
+- "Shortest path, unweighted" → BFS
+- "All paths, any path, cycle detection, connected components" → DFS
+- "Dependencies, ordering, prerequisites" → Topological sort (Kahn's)
+- "Are these two nodes connected? Merge groups efficiently?" → Union-find
+
+When you see a grid problem, mentally convert it first: each cell is a node, each adjacent cell is an edge. Then apply the same decision tree. A flood fill problem is DFS. A minimum steps problem is BFS. A problem asking whether two cells belong to the same island after a sequence of merges is union-find. The grid framing is a distraction. The underlying structure is always a graph.
+
+## Pattern recognition matters as much as implementation
+
+Practicing graph algorithms for interviews without drilling the decision tree is like memorizing vocabulary without learning grammar. You'll recognize individual words but freeze when you need to construct a sentence under time pressure.
+
+One drill that works: take any graph problem on LeetCode, cover the solution, and write down which algorithm you'd use and why before writing a single line of code. Do this for 15 problems and the pattern matching becomes automatic. A second drill: take a problem you've already solved and ask yourself whether a different algorithm could also work and why it would be slower or incorrect. That second question is exactly what interviewers at Flipkart and CRED ask as follow-ups.
+
+## The mistakes that cost candidates at Flipkart and Amazon India
+
+Two specific errors show up constantly in graph rounds at product companies.
+
+First: not handling disconnected graphs. Candidates write BFS or DFS from a single source and miss nodes in other components. If the problem involves counting components or checking a property across the whole graph, you need to loop over all nodes and start a new traversal for each unvisited one. Skipping this step produces wrong answers that pass small test cases and fail large ones.
+
+Second: forgetting to handle the input format. Interview problems often give you an edge list, not an adjacency list. Build the adjacency list first. Write that conversion as the first four lines of your solution, every time. It signals to the interviewer that you think about data representation before jumping to traversal, and it prevents the off-by-one errors that come from working directly on an edge list.
+
+## The night before a coding round, drill these in this order
+
+Run through BFS on a grid problem (shortest path in a maze). Then DFS for cycle detection in a directed graph. Then Kahn's for a course schedule variant. Then union-find for a redundant edge problem. Four problems, roughly 90 minutes total. Keep a timer running so you're practicing under the same constraint you'll face in a real HackerEarth or CodeSignal round.
+
+The second pass through each template reveals what you haven't actually internalized. You'll discover you're shaky on how to track distances in BFS, or that you mix up the in-degree initialization in Kahn's. Better to find that tonight than mid-interview.
+
+If you want timed mock rounds with follow-up questions on graph problems, [PrepFinity's AI interviewer](https://prepfinity.co/register) will push back on your approach the way a real interviewer at Google or Razorpay would. The pressure of explaining your algorithm choice out loud is different from writing it silently, and that difference is what separates candidates who practiced from candidates who prepared.
+
+Graph problems reward candidates who think out loud about structure before touching code. Build that habit now, and the whiteboard round stops being the scary one.
+
+*Ready to practice graph problems under real interview conditions? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
