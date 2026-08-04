@@ -516,7 +516,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-04T04:34:57.211Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-04-tree-problems-coding-interview-mental-model.mdx"
     },
     {
       "title": "Backtracking explained for coding interviews",
