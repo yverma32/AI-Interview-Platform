@@ -1,0 +1,135 @@
+---
+title: "Tree Problems in Coding Interviews: A Recursion-First Mental Model"
+description: "Stop guessing how to approach binary tree questions. This recursion-shaped mental model tells you exactly what to write before you touch the code."
+date: "2026-08-04"
+slug: "tree-problems-coding-interview-mental-model"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures", "recursion"]
+---
+
+Most candidates who fail tree problems in coding interviews don't fail because they don't know recursion. They fail because they stare at the problem, write a function signature, and then try to think their way through the entire call stack in their head. That's not solvable. The human brain can't simulate 15 recursive calls simultaneously. The candidates who clear these rounds at Razorpay, Google India, and Flipkart aren't smarter — they have a repeatable mental model that they apply before writing a single line of code.
+
+This post gives you that model.
+
+## The reason tree questions feel different from array questions
+
+With arrays, you can usually see the whole structure. You iterate left to right, maybe maintain a pointer or a running sum, and the logic is visible. With trees, the structure is hidden inside recursive calls. You can't see it. You have to trust it.
+
+That trust is what most candidates are missing. They don't trust that if they define the function correctly for one node, the recursion handles the rest. So they try to manually simulate the whole tree in their head, get confused around depth three, and freeze.
+
+The fix isn't more practice. It's a different way of thinking before you code.
+
+## The three-question framework you run before writing code
+
+When a tree question lands in front of you, answer these three questions in order. Write them on the whiteboard or in your notepad. Don't skip to code.
+
+**Question 1: What does this function return for a single node?**
+Not the whole tree. One node. Nail this first.
+
+**Question 2: What does it return for null?**
+This is your base case. Get it wrong and the whole solution breaks.
+
+**Question 3: How do I combine the results from the left and right subtrees to get the answer for the current node?**
+This is the recursive step. Once you can answer all three, the code almost writes itself.
+
+That's the model. Three questions, then code. Let's see it in practice.
+
+## Apply it to the most common question type: height of a binary tree
+
+Height of a binary tree shows up constantly. Infosys, TCS Smart Hiring, and every FAANG-India loop has a variant of it.
+
+Run the three questions:
+
+1. What does `height(node)` return for a single node with no children? Answer: 1 (or 0, depending on your definition — clarify this with the interviewer).
+2. What does it return for null? Answer: 0.
+3. How do I combine left and right? Answer: `1 + max(height(left), height(right))`.
+
+Now write the code:
+
+```python
+def height(node):
+    if node is None:
+        return 0
+    return 1 + max(height(node.left), height(node.right))
+```
+
+Five lines. No simulation. No confusion. The framework did the thinking.
+
+## The base case is where most candidates introduce bugs
+
+Ask ten candidates where they make mistakes on tree questions. Eight will say "the logic." The real answer is the base case. Getting `null` wrong breaks every case above it.
+
+Two common failures: returning -1 for null when the rest of your logic expects 0, and forgetting to handle null entirely and getting a NullPointerException two minutes before the interview ends.
+
+The fix: write the null case first, always. Before you think about the recursive step, write `if node is None: return X` and confirm with the interviewer what X should be. This takes ten seconds and eliminates an entire class of bugs.
+
+## How to handle tree problems in coding interviews that ask for a value at the path level
+
+Some questions aren't about a single node or the whole tree. They're about paths: "does a root-to-leaf path sum to a target?" or "find the longest path where all values are equal." These feel harder because you need to carry information down the tree.
+
+The model still works. You just add a parameter.
+
+For path sum: `hasPathSum(node, remaining_target)`. At each node, subtract the current value and pass the new remaining target to children. The base case becomes: if `node` is a leaf and `remaining_target == node.val`, return True.
+
+The three questions don't change. What changes is that "the answer for a single node" now depends on information passed from above. Recognize this pattern and you've unlocked a large family of problems.
+
+## When the answer lives at a non-root node: the global variable trick
+
+The hardest tree questions are the ones where the optimal answer might sit anywhere in the tree, not necessarily at the root. Diameter of a binary tree is the canonical example. The longest path might pass through some node deep in the middle, never touching the root.
+
+Here's where candidates get tangled. Their recursive function wants to return the answer, but the answer isn't at the root.
+
+The clean solution: your recursive function returns something useful for combining (in diameter's case, the height), and you maintain a separate variable that tracks the best answer seen so far across all nodes. In Python, a list of one element works. In Java, a class-level variable.
+
+```python
+def diameter(root):
+    best = [0]
+    def height(node):
+        if node is None:
+            return 0
+        left = height(node.left)
+        right = height(node.right)
+        best[0] = max(best[0], left + right)
+        return 1 + max(left, right)
+    height(root)
+    return best[0]
+```
+
+This pattern covers diameter, max path sum, and several other problems that show up in Swiggy and PhonePe backend rounds.
+
+## Communicating the model out loud matters as much as writing it
+
+An interviewer at a product company is not just watching your code. They're watching how you think. If you stare silently for two minutes and then write a correct solution, you've given them nothing to evaluate except the final answer. That's a weak signal.
+
+Walk them through the three questions before you code. Say: "Let me think about what this function should return for a single node first." Then say the base case out loud. Then say how you'll combine. This shows structured thinking, which is what separates a hire from a no-hire at companies like CRED and Zepto where the bar is explicitly about reasoning, not just output.
+
+At PrepFinity, we track how often candidates verbalize their approach before coding. Candidates who talk through the structure before writing code clear technical rounds at a significantly higher rate than those who code in silence. The difference is not their knowledge of trees. It's the habit of structured communication.
+
+## Variations you should drill before your next round
+
+Once the core model is solid, these are the variants worth drilling in order of frequency:
+
+- **Level-order traversal** (BFS with a queue): appears in almost every Infosys and Wipro technical round.
+- **Lowest Common Ancestor**: standard at Google India and Amazon India.
+- **Validate BST**: common trap question where candidates forget to pass min/max bounds down the tree.
+- **Serialize and deserialize**: harder, shows up at Flipkart and Razorpay senior rounds.
+- **Balanced tree check**: looks like height, but you need to short-circuit early. The naive solution is O(n²) and interviewers at product companies will push you on it.
+
+Don't drill all five at once. Do one variant per day, apply the three-question framework every single time, and after five days the framework will be automatic.
+
+## The night before: two back-to-back voice rounds
+
+The worst thing you can do the night before a tree-heavy interview is grind ten more LeetCode problems. By that point, you either know the patterns or you don't. What you need is to activate the habit of communicating the model out loud under mild pressure.
+
+Do two back-to-back voice mock interviews, tree questions only. The first one will feel fine. The second one, when you're a little tired, is where you'll discover which parts of the model you haven't actually internalized. Fix those. Sleep.
+
+[PrepFinity's mock interview sessions](https://prepfinity.co/register) let you run back-to-back rounds on specific topics with follow-up questions calibrated to your target company's difficulty level. That second round, the harder one, is where the real prep happens.
+
+## One thing to remember when the problem looks unfamiliar
+
+Every tree problem you haven't seen before is still a tree problem. The structure doesn't change. Run the three questions. Define what the function returns for one node. Define the null case. Figure out how to combine left and right. If you're stuck on question three, try returning a tuple instead of a single value. Most hard tree problems become tractable once you realize the function can return two things at once.
+
+The model isn't a trick. It's a way of thinking that makes the structure of the problem visible before you're under pressure to produce code.
+
+*Ready to test this model against real interview pressure? [Start with 3 free mock interviews](https://prepfinity.co/register) — no credit card needed.*
