@@ -527,7 +527,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-05T04:34:45.984Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-05-backtracking-coding-interview.mdx"
     },
     {
       "title": "Heap and priority queue interview problems",
