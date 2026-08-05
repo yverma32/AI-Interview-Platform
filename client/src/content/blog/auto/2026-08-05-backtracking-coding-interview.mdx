@@ -1,0 +1,162 @@
+---
+title: "Backtracking Coding Interview: The Only Template You Need"
+description: "Master backtracking coding interviews with one template: choose, explore, un-choose. Four classic problems, one mental model that unlocks them all."
+date: "2026-08-05"
+slug: "backtracking-coding-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "algorithms", "backtracking"]
+---
+
+Most candidates who fail a backtracking coding interview problem don't fail because they can't code. They fail because they try to hold the entire recursion tree in their head at once. The interviewer asks "generate all valid parentheses" and the candidate stares at the whiteboard, writes a few lines, erases them, and asks for a hint. That moment is entirely avoidable. One repeatable template handles nearly every problem in this category: **choose, explore, un-choose**. Learn that template cold, then map four classic problems onto it. That's the whole game.
+
+## The mental model most candidates skip
+
+Backtracking is recursive search with cleanup. At every step, you make a choice, recurse into the consequences of that choice, then undo the choice so the next branch can start clean. The "undo" step is what separates backtracking from plain recursion, and it's the step most candidates forget to write.
+
+Think of it like exploring a maze. You mark a cell as visited, walk forward, and if you hit a dead end, you unmark the cell and try a different direction. The marking and unmarking is the whole mechanism. Without the unmark step, every branch inherits the garbage left by the previous one, and your results come out wrong in ways that are very hard to debug under interview pressure.
+
+The template in pseudocode:
+
+```
+def backtrack(state, choices):
+    if is_solution(state):
+        record(state)
+        return
+    for choice in choices:
+        make(choice)           # choose
+        backtrack(state, remaining_choices)  # explore
+        undo(choice)           # un-choose
+```
+
+Three lines of logic. Everything else is problem-specific setup. Once you internalize this shape, you stop improvising and start filling in blanks.
+
+## Why interviewers at Razorpay and Google love this topic
+
+Backtracking problems are cheap to state and expensive to solve without structure. "Print all subsets of an array" takes one sentence to explain and reveals immediately whether you think recursively. At Razorpay and Swiggy, this category appears in second-round technical screens where the interviewer wants to watch you think, not just produce output.
+
+At Google India, the Kickstart and internal interview pools have historically included permutations and combination sum variants. At Amazon India, the "generate all valid IP addresses" problem shows up more than candidates expect. At Microsoft India's Hyderabad campus, N-Queens appears in roughly one in five senior engineering loops. These aren't trick questions. They're pattern recognition tests. If you know the template, the interviewer sees structure in your approach within the first two minutes, and that alone shifts how the rest of the conversation goes.
+
+## Problem 1: Subsets (the cleanest entry point)
+
+Given an array of distinct integers, return all possible subsets. This is the first problem to practice because the un-choose step is obvious. You add an element to your current subset, recurse, then pop it off.
+
+```python
+def subsets(nums):
+    result = []
+    def backtrack(start, current):
+        result.append(list(current))
+        for i in range(start, len(nums)):
+            current.append(nums[i])     # choose
+            backtrack(i + 1, current)   # explore
+            current.pop()               # un-choose
+    backtrack(0, [])
+    return result
+```
+
+Notice that `result.append` happens at every node, not just leaf nodes. That's the subsets-specific detail. The template is unchanged. For input `[1, 2, 3]`, you get eight subsets: the empty set, three singletons, three pairs, and the full triple. Tracing this by hand before the interview takes four minutes and makes the recursion tree concrete in your memory.
+
+Time complexity: O(2^n * n). Space: O(n) for the recursion stack. Know these numbers. Interviewers ask, and "I'm not sure" after writing a correct solution is a missed opportunity to close strongly.
+
+## Problem 2: Permutations (when order matters)
+
+Same array, but now order matters. Every arrangement is a valid answer. The difference from subsets: you don't pass a `start` index. Instead, you track which elements have been used.
+
+```python
+def permute(nums):
+    result = []
+    def backtrack(current, used):
+        if len(current) == len(nums):
+            result.append(list(current))
+            return
+        for i in range(len(nums)):
+            if used[i]:
+                continue
+            used[i] = True              # choose
+            current.append(nums[i])
+            backtrack(current, used)    # explore
+            current.pop()               # un-choose
+            used[i] = False
+    backtrack([], [False] * len(nums))
+    return result
+```
+
+The `used` array is your un-choose mechanism. Flip it True before recursing, flip it False after. For `[1, 2, 3]`, this produces six permutations. Candidates who write this correctly the first time in an interview almost always pass the round, because the `used` array pattern shows up again in Word Search and N-Queens. Recognizing the reuse is what interviewers are actually testing.
+
+## Problem 3: Combination Sum (the most common variant)
+
+Given candidates and a target, find all combinations that sum to target. Elements can be reused. The reuse detail changes one thing in the template: you pass `i` instead of `i + 1` when you recurse.
+
+```python
+def combinationSum(candidates, target):
+    result = []
+    def backtrack(start, current, remaining):
+        if remaining == 0:
+            result.append(list(current))
+            return
+        if remaining < 0:
+            return
+        for i in range(start, len(candidates)):
+            current.append(candidates[i])          # choose
+            backtrack(i, current, remaining - candidates[i])  # explore (i, not i+1)
+            current.pop()                           # un-choose
+    backtrack(0, [], target)
+    return result
+```
+
+This is LeetCode 39. It appears in HackerEarth rounds for Infosys and Cognizant hiring pipelines and in Google India's online assessments. A common follow-up is Combination Sum II, where elements cannot be reused and the input may contain duplicates. The fix is to sort the array first, pass `i + 1` instead of `i`, and skip duplicate values at the same recursion level with `if i > start and candidates[i] == candidates[i-1]: continue`. One extra condition, same template.
+
+## Problem 4: Valid Parentheses Generation (the follow-up that trips people)
+
+Generate all valid combinations of n pairs of parentheses. This one feels different because there's no input array to iterate over. Your choices at each step are just two: add `(` or add `)`.
+
+```python
+def generateParenthesis(n):
+    result = []
+    def backtrack(current, open_count, close_count):
+        if len(current) == 2 * n:
+            result.append("".join(current))
+            return
+        if open_count < n:
+            current.append("(")                              # choose
+            backtrack(current, open_count + 1, close_count) # explore
+            current.pop()                                    # un-choose
+        if close_count < open_count:
+            current.append(")")                              # choose
+            backtrack(current, open_count, close_count + 1) # explore
+            current.pop()                                    # un-choose
+    backtrack([], 0, 0)
+    return result
+```
+
+The constraints (`open_count < n` and `close_count < open_count`) are the pruning logic. Pruning is what separates a correct backtracking solution from a fast one. For n=3, the answer is five strings. Interviewers at Microsoft India specifically ask about pruning after you write the initial solution. "Can you make this faster?" usually means "did you add constraints to cut branches early?" If you pruned upfront, the answer is already yes.
+
+## How to talk through your solution without losing the interviewer
+
+Writing correct code is half the job. Narrating it is the other half. When you start a backtracking problem, say this out loud: "I'll use backtracking. At each step I'll make a choice, recurse, and undo the choice. Let me identify what the state is, what the choices are, and what the base case looks like." That sentence alone signals to the interviewer that you have a framework, not just a guess.
+
+Then code the base case first. Then the loop. Then the choose/explore/un-choose block. Don't write the whole function top-to-bottom and hope it works. Build it in layers. When you're done, trace through one small example by hand. For subsets with `[1, 2]`, walk the tree: empty set, then `[1]`, then `[1,2]`, backtrack to `[1]`, backtrack to `[]`, then `[2]`. Two minutes of tracing in front of the interviewer shows confidence and catches bugs before the run button does.
+
+## The one mistake that costs candidates the most
+
+Forgetting to copy the state before appending to results. This is the bug that passes three of five test cases and fails the rest.
+
+```python
+# Wrong
+result.append(current)
+
+# Right
+result.append(list(current))
+```
+
+`current` is a reference. If you append the reference, every entry in `result` points to the same list, which ends up empty after all the un-choosing. `list(current)` creates a snapshot. This mistake shows up in roughly one in three backtracking attempts we see on PrepFinity, even from candidates who understand the algorithm conceptually. It's the kind of bug that looks fine during dry-run and explodes only when you check the final output. Write `list(current)` by reflex, every time.
+
+## How to build this into your prep schedule
+
+Don't practice by reading solutions. Practice by writing the template from memory, then filling in the problem-specific details. For each of the four problems above: close this post, open a blank editor, write the `backtrack` function signature, write the base case, write the loop, write choose/explore/un-choose. Check your answer. If you got it wrong, identify which of the three steps you missed. Do this twice a day for a week and the pattern becomes instinct.
+
+Then move to the follow-ups: Subsets II with duplicates, Permutations II, Word Search on a grid, N-Queens. Each one is the same template with a different pruning condition and a different state representation. Once you see that, the category stops feeling like a collection of unrelated hard problems and starts feeling like one problem with four costumes.
+
+The candidates who walk into a [PrepFinity mock session](https://prepfinity.co/register) and handle backtracking problems cleanly aren't necessarily smarter. They practiced the template until the template became reflex. That's a replicable outcome. Check out [more prep resources on the PrepFinity blog](https://prepfinity.co/blog) if you want the same approach applied to dynamic programming and graph traversal.
+
+*Ready to test your backtracking under real interview pressure? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
