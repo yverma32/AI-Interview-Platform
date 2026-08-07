@@ -1,0 +1,109 @@
+---
+title: "Heap Priority Queue Interview: Spot the Pattern Fast"
+description: "When you see 'top-k' or 'k-th something' in an interview problem, a heap is almost always the answer. Here's the exact pattern to recognize and write."
+date: "2026-08-07"
+slug: "heap-priority-queue-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures", "heap"]
+---
+
+Most candidates who fail a heap priority queue interview don't fail because they forgot the API. They fail because they spent 90 seconds staring at the problem trying to figure out which data structure applies. By the time they recognize it's a heap problem, the interviewer has already formed an opinion. This post gives you the recognition pattern so you can name the structure in under 10 seconds, then shows you exactly what to write once you do.
+
+## The two phrases that almost always mean "use a heap"
+
+Read these into your long-term memory: **"k-th something"** and **"top-k something."**
+
+"Find the k-th largest element in an array." Heap. "Return the top-k most frequent words." Heap. "Find the k closest points to the origin." Heap. "Find the k-th smallest element in a sorted matrix." Heap (with a twist, but still a heap).
+
+This is not a coincidence. Both problem shapes require you to maintain a bounded set of the best candidates seen so far, and update it efficiently as you scan. A sorted array does that in O(n log n) total. A heap of size k does it in O(n log k). When n is large and k is small, that difference is the whole point.
+
+If you spot either phrase in a problem statement, write "min-heap of size k" or "max-heap of size k" at the top of your scratch space before you write a single line of code. That one habit will save you from going down the wrong path.
+
+## Why a min-heap for top-k largest (and not a max-heap)
+
+This is the counterintuitive part that trips up a lot of candidates at Razorpay and Swiggy onsite rounds.
+
+You want the top-k largest elements. Your instinct says "max-heap, obviously." But a max-heap of all n elements costs O(n log n) to build and then k extractions. A min-heap of size k does the same job in O(n log k).
+
+Here is the logic: keep a min-heap capped at size k. For each new element, push it in. If the heap grows beyond k, pop the minimum. At the end, everything left in the heap is the top-k largest, because you threw out every element smaller than the k-th largest.
+
+The minimum element in the heap is your "eviction candidate." When the heap is full, you're asking: "Is this new element better than the worst element I'm currently tracking?" If yes, swap it in. A min-heap answers that question in O(log k).
+
+Flip the logic for top-k smallest: use a max-heap of size k, evict the maximum.
+
+## The four-line template you write every time
+
+Once you recognize the pattern, the code structure is almost mechanical. In Python:
+
+```python
+import heapq
+
+def top_k_largest(nums, k):
+    heap = []
+    for num in nums:
+        heapq.heappush(heap, num)        # Python's heapq is a min-heap
+        if len(heap) > k:
+            heapq.heappop(heap)          # evict the smallest
+    return list(heap)
+```
+
+Four logical steps: initialize an empty heap, iterate over input, push the current element, evict if over budget. That's it. The k-th largest element specifically is just `heapq.heappop(heap)` at the end, or `heap[0]` since the root of a min-heap is always the smallest remaining.
+
+Memorize this shape. Interviewers at Google India and Amazon India do not care whether you can type fast. They care whether you can explain why each line exists. Practice saying out loud: "I'm maintaining a min-heap of size k. The invariant is that every element in this heap is larger than everything I've evicted. So when I finish, the heap contains exactly the k largest elements."
+
+## "K-th something" is slightly different from "top-k"
+
+Top-k asks for a collection. K-th asks for one specific rank. The heap setup is identical, but the return value changes.
+
+For k-th largest, return `heap[0]` after processing all elements. The root of your size-k min-heap is the smallest of the k largest, which is by definition the k-th largest overall.
+
+For k-th smallest, use a max-heap of size k. Return `heap[0]` (negate the sign in Python since heapq is a min-heap by default, so push `-num` and return `-heap[0]`).
+
+One variant that shows up at Flipkart and CRED interviews: k-th smallest in a sorted matrix. The heap approach still applies, but you initialize the heap with the first element of each row, then pop-and-push k-1 times. The k-th pop is your answer. Same mental model, different initialization.
+
+## When the heap needs a custom comparator
+
+Some problems attach extra data to each element. "Top-k most frequent elements" requires you to track (frequency, element) pairs. "K closest points to origin" requires (distance, point) pairs.
+
+Python's heapq sorts tuples lexicographically. Push `(frequency, element)` and the heap orders by frequency first. For top-k most frequent, you want a min-heap on frequency so you evict the least frequent, which means push `(freq, element)` directly.
+
+In Java, use `PriorityQueue` with a lambda comparator: `new PriorityQueue<>((a, b) -> a[0] - b[0])` for a min-heap on the first element of an int array. State the comparator logic to your interviewer before you write it. "I'm ordering by distance ascending so the root is always the closest-but-smallest-tracked point" is the kind of sentence that separates candidates who understand the structure from candidates who memorized the syntax.
+
+## At heap priority queue interview rounds, complexity matters more than code
+
+Every interviewer will ask about time and space. Know these cold.
+
+Building a heap from n elements: O(n). Pushing one element: O(log n). Popping one element: O(log n). The top-k pattern over n elements: O(n log k) time, O(k) space.
+
+That O(k) space claim is why the heap approach beats sorting when memory is constrained. A full sort requires O(n) space (or O(1) with an in-place sort but O(n log n) time). The heap gives you O(k) space and O(n log k) time. When k is much smaller than n, both numbers are better.
+
+Say this comparison explicitly in the interview. "I could sort and slice, which is O(n log n) time and O(n) space. The heap approach is O(n log k) time and O(k) space. Since k is small here, I'll use the heap." That one sentence demonstrates you're thinking about trade-offs, not just reaching for the first solution that works.
+
+## The merge-k-sorted-lists problem uses the same instinct
+
+This is a harder variant, but the heap recognition is the same. You have k sorted lists and want to merge them into one sorted list. Brute force: dump everything into an array and sort. O(n log n). Heap approach: initialize a min-heap with the first element of each list (storing the value, list index, and element index). Pop the minimum, push the next element from the same list. O(n log k).
+
+The pattern is identical: maintain a bounded set of candidates (one per list), always process the current minimum, replace it with the next candidate from the same source. Once you see that structure, you know it's a heap problem.
+
+This variant appears in Infosys specialist track interviews and in Google India L4 rounds. The brute force answer gets you partial credit. The heap answer with correct complexity analysis gets you through.
+
+## The one mistake that kills otherwise correct solutions
+
+Candidates write the right heap logic, get the right answer on the example, and then say "done." The interviewer asks: "What if k equals n?" or "What if there are duplicate elements?"
+
+K equals n: your heap degenerates to a full sort. Still correct, just not optimal. Say that. "If k equals n, this is equivalent to sorting, and the complexity becomes O(n log n). That's acceptable, but if k equals n is a common case, I might just sort directly for simplicity."
+
+Duplicates: depends on the problem. "Top-k most frequent" explicitly counts duplicates. "K-th largest element" in the LeetCode sense counts duplicates as separate elements. Clarify which interpretation applies before you start coding. Asking that question in the first two minutes signals to the interviewer that you think carefully about problem constraints.
+
+If you want to practice recognizing these patterns under real interview pressure, the fastest way is to do timed sessions where someone actually follows up on your answers. [PrepFinity's AI interviewer](https://prepfinity.co/register) runs exactly that kind of session — it pushes back on complexity claims, asks about edge cases, and doesn't let you skip the "why did you choose a heap here?" question.
+
+## The pattern recognition shortcut, restated plainly
+
+You will see a heap problem in almost every technical interview loop at a product company. The signal is almost always "k-th" or "top-k." When you see it, write "min-heap of size k" before anything else. Then decide: min-heap for top-k largest, max-heap for top-k smallest. Build the four-line template. State the comparator if you need custom ordering. Cite O(n log k) time and O(k) space. Handle the k-equals-n edge case verbally.
+
+That sequence takes about 30 seconds once it's automatic. The candidates who get offers at Zepto and PhonePe are not smarter than the candidates who don't. They've just run the sequence enough times that it feels like reflex.
+
+[Sign up for three free mock interviews](https://prepfinity.co/register) and run heap problems until the pattern recognition is automatic. The next time an interviewer says "find the k-th largest," you'll already be writing the heap before they finish the sentence.
+
+*Want to drill this pattern with an AI that pushes back the way a real interviewer does? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
