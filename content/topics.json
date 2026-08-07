@@ -538,7 +538,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-07T05:12:01.943Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-07-heap-priority-queue-interview.mdx"
     },
     {
       "title": "Hashing and hashmap tricks for interviews",
