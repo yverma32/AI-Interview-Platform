@@ -549,7 +549,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-08T04:34:35.679Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-08-hashmap-interview-problems-tricks.mdx"
     },
     {
       "title": "Bit manipulation interview questions explained",
