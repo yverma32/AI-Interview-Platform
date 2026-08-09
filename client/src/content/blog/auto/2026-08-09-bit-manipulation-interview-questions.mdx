@@ -1,0 +1,94 @@
+---
+title: "Bit Manipulation Interview Questions Explained"
+description: "The XOR pairing trick, bitmasks, and lowest-set-bit patterns that keep showing up in technical interviews — explained with real examples."
+date: "2026-08-09"
+slug: "bit-manipulation-interview-questions"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures", "bit-manipulation"]
+---
+
+Most candidates skip bit manipulation entirely during prep. They figure it's rare, niche, or only relevant at FAANG. Then they sit down in a Razorpay or Google India technical round and get asked to find the single non-duplicate number in an array in O(1) space. Blank stare. Time's up. The bit manipulation interview questions that show up in real rounds are not random — they cluster around five or six patterns, and interviewers reuse them constantly. Learn those patterns, and you can walk into almost any coding round with a real answer ready.
+
+## Interviewers are not testing your knowledge of binary
+
+This is the first thing to understand. Nobody cares whether you can convert 47 to binary in your head. What interviewers care about is whether you recognize a problem that has a bitwise shortcut and whether you can explain why it works. A candidate who says "XOR cancels equal values, so if I XOR every element, duplicates zero out and I'm left with the unique one" sounds like an engineer. A candidate who says "I think XOR does something here" does not.
+
+The goal of every bit manipulation question is to replace an expensive operation (sorting, hashing, looping twice) with a single pass using bit tricks. That's the story you need to tell.
+
+## The XOR pairing trick is the most common pattern
+
+If you only learn one bit trick before your next round, make it this one.
+
+XOR has two properties that interviewers exploit constantly. First, `a ^ a = 0` — any value XORed with itself becomes zero. Second, `a ^ 0 = a` — any value XORed with zero is unchanged. Put those together and you get a powerful tool: XOR all elements in an array, and every value that appears twice cancels out, leaving only the value that appears once.
+
+The classic question: "Given an array where every element appears twice except one, find the unique element in O(n) time and O(1) space." The answer is one line: `result = 0; for num in arr: result ^= num`. The follow-up is always "why does this work?" — and now you can answer it.
+
+Variations include finding two unique numbers in an array of pairs (you XOR everything, then use any set bit to partition the array into two groups and XOR each group separately).
+
+## Bitmasks let you represent sets without extra memory
+
+A bitmask is just an integer where each bit position represents a yes/no flag. Instead of a boolean array of size 32, you use one integer and toggle individual bits.
+
+The three operations you need:
+- **Set bit k**: `n | (1 << k)`
+- **Clear bit k**: `n & ~(1 << k)`
+- **Check bit k**: `(n >> k) & 1`
+
+Where this shows up in interviews: subset enumeration. If you have n items (n ≤ 20), you can iterate over all 2^n subsets by counting from 0 to 2^n - 1 and treating each integer as a bitmask. Bit j is set means item j is in the subset. This pattern appears in problems about minimum cost to visit all nodes (bitmask DP), word break with memoization, and assignment problems.
+
+At companies like Flipkart and Amazon India, bitmask DP questions show up in senior engineer rounds (SDE-2 and above). If you're targeting those levels, this pattern is worth a full practice session on its own.
+
+## The lowest set bit trick powers two important algorithms
+
+`n & (-n)` isolates the lowest set bit of n. That single expression is the engine behind two algorithms interviewers ask about directly.
+
+**Fenwick trees (Binary Indexed Trees):** The update and query operations both use `i += i & (-i)` and `i -= i & (-i)` to walk the tree. If an interviewer asks you to implement a prefix sum with point updates, a Fenwick tree is the expected answer, and you need to explain what that line does.
+
+**Counting set bits (Kernighan's method):** `while n: n &= n - 1; count += 1`. Each iteration clears the lowest set bit. The loop runs exactly as many times as there are set bits, making it faster than checking all 32 positions when the number is sparse.
+
+Know both. They appear in Codeforces-style rounds that HackerEarth uses for Infosys and Wipro hiring tests, and they appear in Google India system design follow-ups when you mention tries or segment trees.
+
+## Power-of-two checks are a one-liner with a reason behind them
+
+"Is n a power of two?" is a question that appears in screening rounds and in follow-ups to larger problems. The answer: `n > 0 and (n & (n - 1)) == 0`.
+
+Why? Powers of two in binary look like `1000...0`. Subtract one and you get `0111...1`. AND them together and every bit cancels. For any non-power-of-two, at least one bit survives.
+
+Interviewers ask this because they want to see if you know the trick or if you'll reach for `math.log`. The trick is correct. The log approach has floating-point edge cases and is slower. Say that.
+
+## Bit shifting replaces multiplication and division by two
+
+Left shift by 1 (`n << 1`) doubles n. Right shift by 1 (`n >> 1`) halves it (integer division). This matters in two places.
+
+First, mid-point calculation in binary search: `mid = left + ((right - left) >> 1)` avoids integer overflow compared to `(left + right) / 2`. Google interviewers notice when you write this. It signals you've thought about edge cases.
+
+Second, any problem that involves powers of two as boundaries (memory alignment, segment tree node indexing, hash table sizing) becomes cleaner when you think in shifts. Segment tree implementations index nodes as `2*i` and `2*i+1`, which is `i << 1` and `(i << 1) | 1`. Write it either way, but understand both.
+
+## Counting set bits comes up more often than you'd expect
+
+The "Hamming weight" or "popcount" question ("count the number of 1 bits in an integer") is a direct interview question at Microsoft India and Google India, and it's also a sub-problem in harder questions about Hamming distance between arrays, or finding the number with the most set bits in a range.
+
+Three approaches, in order of what interviewers want to hear:
+
+1. Check each of the 32 bits with a loop. O(32) = O(1). Works. Not impressive.
+2. Kernighan's method: `n &= n - 1` in a loop. Runs in O(set bits). Better.
+3. Built-in: `bin(n).count('1')` in Python or `__builtin_popcount(n)` in C++. Fast in production, but say "in an interview I'd implement Kernighan's to show the reasoning."
+
+## Bit manipulation interview questions reward pattern recognition, not memorization
+
+Here's the honest take: you cannot memorize your way through these. The questions mutate. An interviewer at Zepto might ask the classic "find the unique number" question, or they might ask "find the unique number where every other element appears three times" (which requires a completely different approach using bit counting modulo 3).
+
+What carries you through is recognizing the category. When you see "O(1) space," think XOR or bitmask. When you see "subset enumeration," think bitmask DP. When you see "prefix sums with updates," think Fenwick tree and lowest-set-bit. When you see "power of two," think `n & (n-1)`.
+
+Practice on PrepFinity's [coding interview simulator](https://prepfinity.co/register) by doing two bit manipulation problems back-to-back, then explaining your reasoning out loud on the second one. The second explanation always reveals the gaps in the first.
+
+## The one thing most candidates skip: explaining the bit operation
+
+You can write the correct code and still lose the round. If you type `n & (n-1)` without saying "this clears the lowest set bit because subtracting one flips all bits from the rightmost 1 downward," the interviewer has no signal that you understand it versus copied it.
+
+Every bit trick has a one-sentence explanation. Learn the explanation alongside the trick. Write it in your notes. Say it out loud when you practice. That's what separates a candidate who scores an offer from a candidate who gets "the solution was correct but the communication wasn't there."
+
+Bit manipulation is one of the few areas where the gap between knowing the answer and being able to explain the answer is large enough to cost you the job. Close that gap before your next round.
+
+*Ready to practice these patterns with an AI that asks real follow-up questions? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
