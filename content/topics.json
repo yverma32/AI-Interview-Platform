@@ -560,7 +560,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-09T04:44:46.884Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-09-bit-manipulation-interview-questions.mdx"
     },
     {
       "title": "Recursion vs iteration for coding interviews",
