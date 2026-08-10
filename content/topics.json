@@ -571,7 +571,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-10T05:04:57.338Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-10-recursion-vs-iteration-interview.mdx"
     },
     {
       "title": "Greedy algorithms in coding interviews",
