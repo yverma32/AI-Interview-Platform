@@ -604,7 +604,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-13T05:18:11.850Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-13-linked-list-interview-questions-patterns.mdx"
     },
     {
       "title": "System design interview prep for freshers",
