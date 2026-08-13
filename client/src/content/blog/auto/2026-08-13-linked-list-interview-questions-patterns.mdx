@@ -1,0 +1,87 @@
+---
+title: "Linked List Interview Questions: Patterns That Actually Work"
+description: "Master linked list interview questions with fast/slow pointers, reversal, and the dummy-node trick — plus the edge-case bugs that trip up most candidates."
+date: "2026-08-13"
+slug: "linked-list-interview-questions-patterns"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "data-structures", "linked-lists"]
+---
+
+Most candidates treat linked lists as a warm-up topic. They solve a few easy problems on LeetCode, feel confident, and then blank out when an interviewer at Razorpay or Microsoft asks them to reverse a sublist between positions m and n. Linked list interview questions look simple on paper. They fail in practice because the bugs live in the edge cases, not the main logic.
+
+This post covers the three patterns that show up in 80% of linked list problems: fast/slow pointers, in-place reversal, and the dummy-node trick. More importantly, it covers the exact places where each pattern breaks, because that's what the interviewer is actually testing.
+
+## Why Linked Lists Still Appear in Every Interview Loop
+
+Linked lists are not legacy content. Google, Amazon, and every mid-stage startup from Zepto to PhonePe still use them because they test pointer manipulation, off-by-one reasoning, and the ability to think step-by-step without a visual aid. You cannot draw a diagram on a whiteboard and call it done. You have to trace through the pointers in your head, and interviewers know exactly which candidates can do that.
+
+Service companies like TCS and Infosys use them in aptitude-style coding rounds on HackerEarth. Product companies use them in the first technical screen. Either way, skipping this topic costs you real opportunities. A candidate who freezes on LeetCode 206 (reverse a linked list) in a Flipkart screen is not going to recover in the same round.
+
+## The Fast/Slow Pointer Pattern and Where It Breaks
+
+Fast/slow pointers (Floyd's algorithm) solve cycle detection, finding the middle node, and detecting the start of a cycle. The idea is simple: move one pointer one step at a time and another two steps at a time.
+
+The bug most candidates write: they check `fast != null && fast.next != null` but put the check in the wrong order, causing a null pointer exception on an even-length list. The correct guard is always `fast != null && fast.next != null` evaluated left-to-right, and you must check both conditions.
+
+The second bug: when finding the middle of a list for a merge sort, candidates return the wrong node for even-length lists. For `[1, 2, 3, 4]`, do you want node 2 or node 3? The answer depends on the problem. Know which one you need before you write a single line. Practice LeetCode 141 (cycle detection) and 876 (middle of linked list) back-to-back. The second one will expose whether you actually understand the pointer movement or just memorized the pattern.
+
+## In-Place Reversal: The Three-Pointer Setup
+
+Reversing a linked list is the most common linked list interview question you will face. The standard approach uses three pointers: `prev`, `curr`, and `next`. You save `curr.next` before you overwrite it, redirect `curr.next` to `prev`, then advance both pointers.
+
+Where candidates fail: they forget to set `prev = null` before the loop starts. The result is a list that points back to the original head, creating a cycle. The interviewer will ask you to trace through your code on `[1, 2, 3]`. If you haven't internalized the null initialization, you will draw a wrong diagram and not notice until the interviewer points it out.
+
+The harder version, reversing a sublist from position m to n, requires you to find the node just before position m, save it, run the reversal, then reconnect. Most candidates correctly reverse the sublist but fail to reconnect the tail to `n.next`. That's a one-line bug that reads as a fundamental misunderstanding of pointer state. Write the reversal from scratch three times without looking at any reference. By the third time, the pointer dance should feel mechanical.
+
+## The Dummy-Node Trick Eliminates a Whole Class of Bugs
+
+A dummy node (sometimes called a sentinel node) is a fake head you prepend to the list before doing any operations. You return `dummy.next` at the end.
+
+Why does this matter? Operations on the head node always require special-casing. Without a dummy node, you write: "if we're deleting the head, handle that separately; otherwise, find the previous node and redirect." With a dummy node, the head is just another node, and your loop handles it uniformly.
+
+Problems where the dummy node is almost mandatory: delete the nth node from the end, merge two sorted lists, and remove duplicates. In each case, the first element can be the answer, and without a dummy you'll write extra conditionals that introduce subtle bugs. The mistake candidates make with dummy nodes: they forget to set `dummy.next = head` before the loop. They create the dummy, then immediately start iterating, and their logic operates on an empty list. Set it up in two explicit lines, then forget about it.
+
+## Detecting the Start of a Cycle (Not Just Its Existence)
+
+Detecting that a cycle exists is the easy version. Finding where the cycle starts is the version that shows up in senior-level screens at companies like Google India and Amazon.
+
+The math: once the fast and slow pointers meet inside the cycle, reset one pointer to the head. Move both pointers one step at a time. They will meet at the cycle's entry point. Most candidates know this fact but cannot explain why it works. If you cannot explain it, the interviewer will ask. Spend 20 minutes deriving the proof from the distance equations. You don't need to memorize the derivation verbatim, but you need to be able to sketch it on a whiteboard.
+
+"I know it works but I don't know why" is a red flag in a senior interview at any product company. Interviewers at Microsoft India routinely follow up cycle-detection problems with exactly that question.
+
+## Merging Two Sorted Lists Without Losing Nodes
+
+This problem looks trivial. It fails in interviews because candidates try to be clever and lose track of which pointer is advancing.
+
+The clean approach: create a dummy node, use a `current` pointer starting at dummy, and at each step attach the smaller of the two list heads to `current.next`, then advance that list's pointer and advance `current`. When one list is exhausted, attach the remainder of the other directly. No loop needed for the tail.
+
+The bug: advancing `current` before attaching the node. You end up with `current.next` pointing to nothing, and the rest of the list is lost. Trace through `[1, 3]` and `[2, 4]` by hand, step by step, before you write any code. Tracing first is not slow. It prevents the 10-minute debugging session that happens otherwise, and it demonstrates structured thinking to the interviewer, which is half of what they're evaluating.
+
+## Palindrome Check Requires You to Restore the List
+
+Finding whether a linked list is a palindrome combines three patterns: find the middle (fast/slow), reverse the second half (in-place reversal), compare both halves, then restore the original list.
+
+The restore step is what most candidates skip. In an interview, if you modify the input without restoring it, the interviewer will ask: "what happens to the caller's list after your function returns?" If you don't have an answer, you've failed a systems-thinking question disguised as a data-structures question.
+
+Restore the list by reversing the second half again before returning. It adds six lines. Those six lines are the difference between a correct solution and a correct-looking solution. This problem (LeetCode 234) is a staple in Swiggy and CRED technical screens precisely because it tests whether you think about side effects, not just correctness.
+
+## How to Practice These Patterns Before a Real Interview
+
+Do not practice each pattern in isolation. Real linked list interview questions mix patterns. LeetCode 143 (reorder list) requires finding the middle, reversing the second half, and merging, all in one problem. That's the kind of question that appears in a 45-minute screen at a Series B startup or a Google India phone round.
+
+One approach that works: solve a pattern problem, then immediately solve a problem that combines that pattern with one you've already done. The combination is where the real learning happens. The individual patterns are just vocabulary. Another useful drill is explaining your solution out loud while you code it. If your explanation and your code diverge, you've found a bug before the interviewer does.
+
+If you want to test whether your explanations hold up under follow-up questions, [practice with PrepFinity's AI interviewer](https://prepfinity.co/register). It will ask you to trace through your code, challenge your edge-case handling, and push back when your explanation is vague. That's the pressure you need to build before the real thing.
+
+## The Edge Cases Every Interviewer Will Check
+
+Before you finish any linked list problem, run through this list mentally: empty list, single node, two nodes, even-length list, odd-length list, all identical values. These are not exotic cases. They are the first five test cases every interviewer types.
+
+An empty list crashes code that assumes `head` is not null. A single node breaks reversal code that assumes there's a `next`. Two nodes expose off-by-one errors in cycle detection. Even-length lists break the middle-finding logic if you haven't decided which middle node you want. If your solution handles all six cases, you're in good shape. If it handles three, you'll get partial credit at best, and partial credit rarely converts to an offer.
+
+The fastest way to internalize this habit is to run mock sessions under time pressure and then immediately check your solution against these cases. [PrepFinity's session feedback](https://prepfinity.co/register) flags exactly which edge cases your explanation missed, which is more useful than a green checkmark on a judge that only tests the happy path.
+
+Linked lists are not a topic you master once. They're a topic you stay sharp on by tracing pointer operations until the movement is automatic. Get the dummy-node habit, get the null-check order right, and restore whatever you modify. That's the whole game.
+
+*Ready to test your linked list explanations under real interview pressure? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
