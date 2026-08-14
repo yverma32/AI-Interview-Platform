@@ -615,7 +615,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-14T05:14:42.950Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-14-system-design-interview-for-freshers.mdx"
     },
     {
       "title": "How to design a URL shortener in an interview",
