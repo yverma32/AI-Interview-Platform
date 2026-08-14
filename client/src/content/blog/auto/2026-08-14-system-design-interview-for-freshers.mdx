@@ -1,0 +1,101 @@
+---
+title: "System Design Interview for Freshers: What's Fair Game"
+description: "Freshers panic about system design interviews, but interviewers don't expect senior-level answers. Here's exactly what you're expected to know — and what you can admit you'd learn."
+date: "2026-08-14"
+slug: "system-design-interview-for-freshers"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "system-design", "freshers"]
+---
+
+Most freshers preparing for a system design interview spend three weeks memorizing how Netflix built its CDN. Then they walk into a Razorpay or Swiggy interview, get asked "how would you design a URL shortener?", and blank out because they were preparing for the wrong level of question. The system design interview for freshers is a different test than the one senior engineers sit. The bar is lower in the right places and higher in the places freshers ignore. This post tells you exactly which is which.
+
+## Interviewers Know You Haven't Built Distributed Systems
+
+A fresher walking out of BITS Pilani or a Tier-2 college in Pune has not run a Kafka cluster in production. Every interviewer knows this. They are not testing whether you have. They are testing whether you can reason about a problem you haven't solved before, whether you ask the right clarifying questions, and whether you know enough fundamentals to sketch a plausible architecture.
+
+That's a very different test. Fail to understand that distinction and you'll either over-prepare on topics that won't come up, or under-prepare on the thinking process that will. We see this pattern constantly in PrepFinity sessions: candidates who can recite consistent hashing from memory but cannot explain why they'd add a cache to a simple read-heavy API.
+
+## The Fundamentals You Actually Need to Know Cold
+
+There are a handful of concepts where "I'd need to read up on that" is not acceptable. These are table stakes.
+
+**Client-server model.** What a request and response look like. HTTP verbs. Status codes. You should be able to explain this without hesitating.
+
+**Databases.** The difference between SQL and NoSQL at a conceptual level. When you'd reach for one over the other. You don't need to know Cassandra's internal architecture. You do need to know why a relational schema might struggle with unstructured data.
+
+**APIs.** REST basics. What an endpoint is. What a payload looks like. If you've built anything with a backend, even a college project, you know this already.
+
+**Caching.** The idea that you store frequently accessed data somewhere faster than the database. Redis is the standard example. Know what a cache hit and cache miss are.
+
+**Load balancing.** Traffic comes in, gets distributed across multiple servers. Know why this exists. Round-robin is enough for a fresher interview.
+
+These are not optional. If you're shaky on any of them, fix that before you do anything else. A good way to test yourself: explain each concept out loud to someone who isn't technical. If you stumble, you don't know it well enough yet.
+
+## What You're Allowed to Say You'd Learn
+
+Here is the list interviewers at Swiggy, Zepto, and similar product companies are genuinely fine with a fresher not knowing in depth: consistent hashing, message queues beyond a surface-level explanation, database sharding strategies, CAP theorem trade-offs in real deployments, service mesh architecture, and anything involving distributed transactions.
+
+The correct move when one of these comes up is not to fake it. Say: "I know the concept at a high level, but I haven't worked with it in production. Given more time, I'd read the engineering blogs from companies that have solved this problem at scale and prototype something small."
+
+That answer is honest, shows awareness, and signals intellectual seriousness. Interviewers at product companies have told us they prefer this over a confident wrong answer. Faking depth on a topic like Kafka partitioning is easy to detect. Most interviewers who ask the question have actually debugged Kafka in production.
+
+## The Clarifying Questions Matter More Than the Design
+
+This is the part freshers consistently get wrong. They hear the question, panic, and start drawing boxes on the whiteboard immediately.
+
+Don't.
+
+The first two to three minutes of a system design question should be you asking questions. How many users? Read-heavy or write-heavy? Does this need to be real-time? What's the consistency requirement? Is this a mobile-first product?
+
+You will not know the answers to these questions. That's the point. You're supposed to ask them. An interviewer at a company like PhonePe or CRED is watching to see whether you understand that system design decisions depend on constraints. A candidate who asks good questions and builds a modest, well-reasoned design beats a candidate who launches into a complex architecture without understanding the problem.
+
+Practice asking these questions out loud. It feels unnatural at first. Do it anyway. Time yourself: two full minutes of clarifying questions before you touch the diagram.
+
+## The URL Shortener Is Not a Trick Question
+
+The URL shortener, the rate limiter, the notification service. These are the standard fresher-level system design questions. They feel simple. That's not an accident.
+
+For a URL shortener, a fresher is expected to cover: a database to store the mapping from short code to long URL, an API layer to handle redirects, a basic hashing strategy to generate short codes, and a mention of caching for popular URLs.
+
+That's it. You don't need to design for a billion requests per second. If you cover those four components clearly, explain your trade-offs, and handle two or three follow-up questions, you've passed.
+
+Where freshers fail is by trying to make the answer sound senior. They introduce Kafka because they read about it. They mention sharding without explaining why the current scale would need it. Interviewers notice. It reads as pattern-matching, not reasoning. Design for the stated scale and justify every component you add.
+
+## Drawing the Diagram Is a Skill You Need to Practice Separately
+
+Most freshers have never drawn a system architecture diagram under time pressure while talking out loud. It is genuinely hard the first few times. Your hand goes one direction, your mouth goes another, and you lose your train of thought.
+
+The fix is to practice drawing while narrating. Not just thinking through designs, but physically sketching boxes and arrows while explaining what each component does. Do this ten times and it becomes automatic. Do it zero times and you'll struggle in the actual interview even if you know the material.
+
+PrepFinity's mock interview sessions include system design rounds where you can practice this exact format, get feedback on your diagram logic, and see where your explanations lose coherence. [Try a session before your next interview](https://prepfinity.co/register) — the first three are free.
+
+## Service Companies and Product Companies Have Different Bars
+
+If you're targeting TCS Smart Hiring or Infosys InfyTQ, system design is either not in scope or is very lightweight. These rounds focus on aptitude, basic programming, and sometimes a high-level architecture question. Don't over-invest here.
+
+If you're targeting Razorpay, Swiggy, Zepto, Flipkart, or any company in the 20 to 60 LPA fresher range, system design is real and matters. The questions are still fresher-calibrated, but the process rigor is higher. You'll be expected to think out loud, handle follow-ups, and defend your choices.
+
+Know which category your target company falls into before you start preparing. Spending two weeks on system design when you're targeting TCS is wasted time. Skipping it when you're targeting Zepto is a fast path to rejection.
+
+## Structured Thinking Separates Good Fresher Answers From Bad Ones
+
+It is not knowing more concepts. It is structured thinking.
+
+Good fresher answers follow a pattern: understand the requirements, define the scope, identify the components, explain how they connect, call out trade-offs, and mention what you'd improve with more time or scale.
+
+Bad fresher answers jump to components without establishing requirements, add complexity without justification, and trail off when the interviewer asks "why did you choose that?"
+
+The structure is learnable. It takes about two weeks of deliberate practice to internalize it. One week of reading and one week of actually doing mock sessions out loud, getting feedback, and adjusting. Reading alone is not enough. You need to say the words out loud and hear where your reasoning breaks down. That's the only way to know what you actually understand versus what you think you understand.
+
+## Build One Project You Can Talk About in Depth
+
+The fastest way to make system design concrete is to have built something, even something small. A college project with a backend and a database is enough. Know its architecture. Know why you made the choices you made. Know what you'd change if a thousand people used it instead of five.
+
+Interviewers at product companies often pivot from the hypothetical design question to "have you built anything like this?" A real example you can discuss in detail is worth more than a memorized answer about how Twitter's timeline works.
+
+If you haven't built anything yet, build something small in the next two weeks. A basic REST API with a database, deployed on a free tier somewhere. That's enough to have a real conversation about real trade-offs. Pick a problem you actually care about so you'll finish it.
+
+The system design interview for freshers rewards honest reasoning over borrowed complexity. Know your fundamentals cold, ask good questions, design for the stated scale, and be clear about what you'd need to learn. That's the actual bar.
+
+*Ready to find out what a fresher-level system design interview actually feels like? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
