@@ -626,7 +626,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-15T04:04:00.752Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-15-design-a-url-shortener-interview.mdx"
     },
     {
       "title": "How to design a rate limiter in an interview",
