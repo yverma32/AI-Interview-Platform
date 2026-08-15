@@ -1,0 +1,85 @@
+---
+title: "How to Design a URL Shortener in an Interview"
+description: "Most candidates whiteboard a URL shortener and get stuck on encoding. Here's the full walkthrough interviewers actually want to hear, step by step."
+date: "2026-08-15"
+slug: "design-a-url-shortener-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "system-design"]
+---
+
+URL shorteners are the most commonly assigned system design question at Indian product companies right now. Razorpay, Swiggy, PhonePe, and Google India all use it. The reason is simple: the problem is small enough to finish in 45 minutes but deep enough to separate candidates who understand distributed systems from those who have memorized a template. When you design a URL shortener in an interview, you need to go beyond "generate a short code and store it in a database." This post walks through the full answer, in the order interviewers want to hear it, with the specific details that move you from a hire-maybe to a strong-hire.
+
+## Start with requirements, not architecture
+
+Every strong system design answer opens with requirements. Not because it is a ritual, but because your architecture changes completely depending on what you are actually building.
+
+Ask your interviewer two things. First: what is the scale? Are we talking 1 million URLs a day or 1 billion? Second: what is the read-to-write ratio? URL shorteners are almost always read-heavy. A 100:1 read-to-write ratio is a reasonable assumption to start with, and stating that assumption out loud shows you understand the problem space.
+
+Also ask whether custom aliases are needed ("short.ly/my-brand"), whether URLs expire, and whether click analytics matter. These three features each add real complexity. Write the requirements on the whiteboard before drawing a single box. If you skip this step, an interviewer at Razorpay or Google India will stop you and ask you to go back, which costs you time and signals poor structure.
+
+## Estimate before you design
+
+Numbers matter. Interviewers at companies like Google and Amazon are trained to push back on candidates who skip capacity estimation. Do it yourself before they ask.
+
+1 million new URLs per day is roughly 12 writes per second. At an average of 500 bytes per URL record, that is 500 MB of new data per day and about 180 GB per year. 100 million redirects per day is 1,160 reads per second. These numbers tell you two things immediately: writes are low enough that a single primary database can handle them, and reads are high enough that you need a caching layer.
+
+Say this out loud. Write the numbers on the board. Interviewers are watching to see whether you can translate business scale into engineering constraints. A candidate who skips estimation and jumps straight to microservices is signaling that they design by pattern-matching, not by reasoning.
+
+## Pick the right encoding scheme and defend it
+
+This is where most candidates get vague. They say "hash the URL" and stop there. Interviewers want specifics.
+
+The standard approach is Base62 encoding (characters a-z, A-Z, 0-9). A 7-character Base62 string gives you 62^7, which is roughly 3.5 trillion unique codes. At 1 million URLs per day, that is 9,500 years of headroom. Say that number out loud. It signals you did the math rather than guessing.
+
+Two common generation strategies exist. Option one: generate a random 7-character code and check for collisions in the database before writing. Option two: use a counter (auto-increment ID) and convert it to Base62. The counter approach is simpler and collision-free, but it is predictable. Sequential IDs mean a user can guess adjacent URLs, which is a privacy issue for sensitive links. The random approach with collision retry is safer but adds latency on the write path. State the trade-off explicitly and let your interviewer guide you toward the one they care about.
+
+## Design the core database schema
+
+Keep it simple. You need one primary table to start.
+
+A `urls` table with columns: `short_code` (varchar, primary key), `original_url` (text), `created_at` (timestamp), `expires_at` (timestamp, nullable), `user_id` (bigint, nullable). That covers the baseline product.
+
+Use PostgreSQL for this table. The write volume is low enough that a single primary instance handles it comfortably. Index on `short_code` since every redirect is a lookup by that column. If custom aliases are in scope, add a unique constraint on `original_url` per user so the same long URL does not generate duplicate short codes for the same account. Do not add more tables until your interviewer asks about additional features. Over-designing the schema early is a common mistake that wastes your time budget.
+
+## Explain the redirect flow precisely
+
+A candidate who can describe this flow precisely stands out from one who waves their hands at a diagram.
+
+User hits `short.ly/abc1234`. The request goes to your load balancer, then to an application server. The server checks Redis for the key `abc1234`. Cache hit: return the redirect immediately. Cache miss: query PostgreSQL, write the result to Redis with a TTL of 24 hours, then return the redirect.
+
+One detail most candidates miss: the choice between 301 and 302 matters commercially. A 301 is a permanent redirect. The browser caches it and will not hit your servers on subsequent clicks from the same user. That is good for server load but bad for analytics, because you lose visibility into repeat visits. A 302 is temporary. Every click comes through your servers. For a product that sells click analytics to marketing teams, 302 is the correct default. Saying this in your answer is exactly the kind of trade-off reasoning that earns a hire signal from a senior interviewer.
+
+## Scale reads with caching and CDN
+
+At 1,160 redirects per second, your database will struggle without a caching layer in front of it. Redis is the standard choice. An in-memory lookup takes under 1 millisecond. A database query under load takes 5 to 50 milliseconds, and that gap compounds at scale.
+
+For popular URLs, think of a payment link shared in a viral WhatsApp forward during a Zepto sale, even Redis can become a bottleneck on a single node. The next layer is a CDN. If you configure your short URL endpoint with appropriate cache headers, Cloudflare or AWS CloudFront will serve the redirect from an edge node close to the user without touching your origin servers at all. Mention this. Interviewers at Swiggy and Zepto, companies that deal with traffic spikes constantly, will take note because they have lived through exactly this problem.
+
+You can also shard Redis by the first character of the short code, spreading load across 62 potential nodes if you ever need that level of scale. Most interviewers will not push you that far, but knowing it exists and saying so briefly shows depth.
+
+## Handle write scale with a key generation service
+
+This is where answers to the design a URL shortener interview question usually plateau. Most candidates stop after caching. The stronger answer addresses write scaling directly.
+
+If you are generating random codes, you risk collision retries piling up under high write load. One solution is a dedicated Key Generation Service (KGS): a small service that pre-generates millions of short codes and stores them in a "keys available" table. When a new URL comes in, the application server claims one pre-generated key, marks it used, and writes the record. No collision checking happens at write time. This is the architecture Bitly has described publicly in engineering blog posts.
+
+The trade-off: the KGS is now a critical dependency. If it goes down, new URL creation stops. You need it to be highly available, which means a primary-replica setup with automatic failover. State that trade-off out loud. Your interviewer will appreciate that you are thinking about failure modes and not just the happy path.
+
+## Talk about analytics and expiry without being asked
+
+Proactively mentioning adjacent features shows system thinking beyond component knowledge.
+
+For analytics: if the product needs click counts, do not write to PostgreSQL on every redirect. At 1,160 writes per second, that is a bottleneck. Instead, publish click events to a Kafka topic and process them asynchronously with a consumer that batches updates into a separate analytics table every 30 seconds. This keeps the redirect path fast and decouples your analytics pipeline from your critical path.
+
+For expiry: if URLs can expire, you need a cleanup job. A nightly batch process that deletes rows where `expires_at` is in the past works at moderate scale. At larger scale, use the TTL feature in Redis to auto-evict expired entries from cache, and move expired rows to a cold archive table rather than deleting them outright. Regulators in India sometimes require you to retain data for audit purposes, which makes archival the safer default for any fintech product.
+
+## What interviewers are actually scoring you on
+
+The URL shortener question is not really about URL shorteners. It is a proxy for four things: can you structure an ambiguous problem, can you reason about trade-offs under real constraints, do you know your distributed systems fundamentals, and can you communicate technical decisions clearly to a non-expert in the room.
+
+Candidates who score well do not just answer the question. They narrate their thinking. They say "I am choosing Redis here because the read volume makes database latency unacceptable" rather than "we will add Redis." That narration is what separates a 7 out of 10 answer from a 9 out of 10 answer in a panel at Google India or Razorpay. Practicing the narration out loud, with someone pushing back, is the only way to make it feel natural by interview day.
+
+The best preparation is running the full walkthrough with follow-up questions you cannot predict. "What happens if your KGS goes down?" "Why not use MD5?" "How would you support custom short codes for enterprise customers?" These are the questions that reveal whether you actually understand the system or just memorized the diagram. [PrepFinity](https://prepfinity.co/register) simulates exactly this kind of pressure, with an AI interviewer that probes your reasoning the way a senior engineer would.
+
+*Ready to run through this end-to-end with an interviewer that pushes back on every assumption? [Start with 3 free interviews on PrepFinity](https://prepfinity.co/register) — no credit card needed.*
