@@ -1,0 +1,89 @@
+---
+title: "How to Design a Rate Limiter in an Interview"
+description: "Token bucket, sliding window, and the follow-up questions that separate strong candidates when you design a rate limiter in a system design interview."
+date: "2026-08-16"
+slug: "design-a-rate-limiter-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "system-design"]
+---
+
+Most candidates can sketch a token bucket on a whiteboard. Ask them what happens when two servers try to refill the bucket at the same millisecond, and the room goes quiet. That's the moment that separates a hire from a no-hire at Razorpay, Swiggy, or any company running distributed infrastructure at scale. If you want to design a rate limiter in an interview and actually impress the panel, you need to get past the diagram and into the edge cases.
+
+This post covers the two algorithms you'll actually need, the trade-offs between them, and the follow-up questions interviewers use to filter candidates. No vague advice. Just the things that matter.
+
+## Start with clarifying questions, not the algorithm
+
+Before you draw anything, ask. Interviewers at Google and Amazon are trained to reward candidates who slow down and scope the problem. A rate limiter for a public REST API is different from one for an internal microservice, which is different again from one protecting a payment gateway.
+
+The questions that matter: Is this per-user, per-IP, or per-API-key? What's the expected request volume? Is the system distributed across multiple nodes? What should happen when the limit is hit — hard reject, queue, or degrade gracefully? Getting these answers in the first two minutes shows you think like an engineer, not a student reciting a pattern.
+
+## Token bucket vs sliding window: know when to use each
+
+These are the two algorithms you need to own. Both are valid. They have different properties, and picking the right one without being asked is a strong signal.
+
+**Token bucket**: Tokens accumulate at a fixed rate up to a maximum bucket size. Each request consumes one token. If the bucket is empty, the request is rejected or queued. The key property is that it allows short bursts. If a user has 10 tokens saved up, they can fire 10 requests instantly. This matters for APIs where bursty traffic is normal, like a mobile app that batches requests when it regains connectivity.
+
+**Sliding window log**: Store a timestamp for every request in a sorted set. On each new request, remove timestamps older than the window, then check the count. Accurate, but memory-heavy. At high throughput, storing millions of timestamps per user is not realistic.
+
+**Sliding window counter**: A practical middle ground. Divide time into fixed windows, track counts in each, and use a weighted average between the current and previous window to smooth the boundary problem. This is what most production systems actually use.
+
+## The fixed window boundary problem trips up most candidates
+
+Fixed window counters have a known flaw. If your window is 60 seconds and a user sends 100 requests at second 59, then another 100 at second 61, they've sent 200 requests in two seconds while staying within the per-minute limit. Interviewers at Flipkart and CRED specifically probe this.
+
+If you spot this yourself and explain it before they ask, you've just moved into the top tier of candidates for that round. If you wait to be told, you're average. The sliding window counter fix is the right answer here: weight the previous window's count by how much of it overlaps the current window. Simple to explain, effective in practice.
+
+## Distributed rate limiting is where most candidates fall apart
+
+A single-node rate limiter is a solved problem. The real question, especially at companies like PhonePe or Zepto where services run across dozens of pods, is what happens when you have 20 instances of your API server and each one has its own local counter.
+
+User A hits server 1 and server 3 alternately. Both counters say they're under the limit. Together, the user has exceeded it. You need a shared state.
+
+The standard answer is Redis. A single Redis instance (or a Redis cluster for availability) holds all counters. Each API server does an atomic increment and checks the result. Redis's INCR command is atomic by design, so you don't get race conditions on the counter itself.
+
+Then the interviewer asks: what if Redis goes down? This is the real filter question. Your options are fail-open (allow all requests, accept the risk) or fail-closed (reject all requests, accept the downtime). Neither is universally correct. The right answer depends on the business context you clarified at the start. A payment API probably fails closed. A content feed probably fails open.
+
+## Lua scripts and atomic operations matter more than you think
+
+If you're using Redis and you need to check-then-increment (read the current count, compare to the limit, then increment), a naive implementation has a race condition. Two requests arrive simultaneously, both read a count of 99 against a limit of 100, both decide to proceed, and both increment. Now you're at 101.
+
+The fix is to use a Lua script executed atomically in Redis, or to use Redis's built-in commands that combine check and increment. Mentioning this without being prompted tells the interviewer you've thought about concurrent systems, not just happy-path flows. At senior level interviews across MAANG-India, this is often the deciding detail.
+
+## Header responses and user experience aren't optional
+
+A rate limiter that silently drops requests is a bad API. Good rate limiters return HTTP 429 with headers that tell the client what happened and when to retry. The standard headers are `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `Retry-After`.
+
+Interviewers who come from product-focused companies like Razorpay or CRED will ask about this. They care about developer experience, not just infrastructure. Mentioning these headers proactively signals that you think about the full system, including the engineers consuming your API.
+
+## How to structure your answer in 35 minutes
+
+Most system design rounds give you 35 to 45 minutes. Here's a time split that works: five minutes on requirements and clarifying questions, five minutes on high-level design (which algorithm, where state lives), fifteen minutes on the deep dive (distributed setup, Redis, race conditions, failure modes), five minutes on scaling and monitoring, and five minutes for their follow-ups.
+
+Don't spend 20 minutes drawing boxes. Interviewers want to hear you talk through trade-offs. The diagram is a prop for the conversation, not the answer itself.
+
+## The follow-up questions that decide the outcome
+
+When you design a rate limiter in an interview at a senior level, the base algorithm is table stakes. The follow-ups are where offers are made or lost. Here are the ones we see most often on PrepFinity, based on sessions from candidates targeting roles at Google India, Amazon India, and Indian startups:
+
+"How would you rate-limit a GraphQL API where one request can trigger 50 resolver calls?" (Answer: rate limit on query complexity, not request count.)
+
+"How do you handle a user who is rate-limited but has a paid tier with a higher limit?" (Answer: key the counter on user ID plus tier, or use separate buckets per tier.)
+
+"How would you test this system?" (Answer: unit tests on the algorithm, integration tests against a real Redis instance, chaos tests that simulate Redis unavailability.)
+
+If you can answer all three without hesitation, you're ready. If one of them made you pause, that's exactly where to focus your prep.
+
+## Practicing the follow-ups is where most candidates skip
+
+Reading about token buckets is easy. Talking through a distributed rate limiter out loud, handling interruptions, defending your choices when pushed, is hard. Most candidates read articles like this one and feel prepared. They're not. The gap between knowing the answer and delivering it under pressure is real, and the only way to close it is to practice the actual conversation.
+
+Do at least three timed mock rounds on this topic before your interview. The first one will expose what you don't actually know. The second will sharpen your structure. The third will feel like the real thing.
+
+You can run those rounds right now at PrepFinity. The [system design interview simulator](https://prepfinity.co/register) will push you on the distributed edge cases, the failure modes, and the follow-ups listed above. It won't let you get away with vague answers.
+
+Check the [PrepFinity pricing page](https://prepfinity.co/pricing) if you want to see what's included in each plan.
+
+The candidates who get offers at Razorpay, Swiggy, and Google India aren't the ones who memorized the most algorithms. They're the ones who practiced talking through them under pressure until the thinking became automatic.
+
+*Ready to test your system design instincts with an interviewer that actually pushes back? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
