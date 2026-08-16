@@ -637,7 +637,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-16T04:07:27.334Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-16-design-a-rate-limiter-interview.mdx"
     },
     {
       "title": "How to design a chat application interview answer",
