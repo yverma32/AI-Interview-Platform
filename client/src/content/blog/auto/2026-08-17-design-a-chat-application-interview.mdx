@@ -1,0 +1,95 @@
+---
+title: "How to Design a Chat Application in Interviews"
+description: "Ace your design a chat application interview with this 45-minute framework covering WebSocket fan-out, delivery guarantees, and presence detection."
+date: "2026-08-17"
+slug: "design-a-chat-application-interview"
+author: "PrepFinity Team"
+readingMinutes: 7
+tags: ["interview-prep", "system-design", "chat-application"]
+---
+
+Most candidates who walk into a design a chat application interview know what WhatsApp looks like from the outside. They sketch boxes labeled "server" and "database," say "WebSockets" once, and then stall when the interviewer asks: "How does a message get from Priya's phone to Rahul's when Rahul is offline?" That stall costs offers at Razorpay, Swiggy, and every FAANG-India team that runs system design rounds.
+
+This post gives you a 45-minute framework that covers the three parts interviewers actually probe: WebSocket fan-out, delivery guarantees, and presence. Everything else is table stakes.
+
+## Scope the problem in the first three minutes or you'll run out of time
+
+Before you draw a single box, ask two questions: "One-on-one or group chat?" and "What's the scale target?" These answers change the architecture more than anything else.
+
+For a 45-minute round, propose a focused scope: one-on-one messaging, up to 10 million daily active users, with group chats capped at 256 members. That's the WhatsApp-2015 problem. It's well-understood, has real failure modes to discuss, and fits the time. If the interviewer wants to expand scope later, great. But starting with "let's build Slack for 500,000 enterprise users with threads, reactions, and bot integrations" will leave you with no time to go deep on anything.
+
+Write your assumptions on the whiteboard. Interviewers at Google India and Microsoft India specifically watch whether you drive this step or wait to be led.
+
+## The connection layer: why WebSockets beat polling for this problem
+
+HTTP polling works, but it's the wrong answer here. With 10 million daily active users, even 30-second polling intervals generate traffic that makes your interviewer wince.
+
+WebSockets give you a persistent, bidirectional connection. When Priya sends a message, the server pushes it to Rahul's open socket immediately. No polling, no lag.
+
+The part most candidates skip: a single server cannot hold 10 million open WebSocket connections. You need a connection service, a horizontally scaled tier of stateful nodes where each node holds a slice of active connections. A separate routing layer (often backed by Redis Pub/Sub or a message broker like Kafka) handles cross-node fan-out. When Priya's message arrives at Node A and Rahul is connected to Node B, Node A publishes to the broker, Node B subscribes and pushes to Rahul's socket.
+
+Say this explicitly. "I'll use a connection service with Redis Pub/Sub for cross-node fan-out" is the sentence that separates candidates who understand the problem from candidates who Googled WebSockets the night before.
+
+## Fan-out at scale is where group chats get painful
+
+One-on-one messaging is straightforward: one sender, one recipient, one push. Group chats with 256 members mean one message triggers 255 pushes. At scale, that fan-out becomes your bottleneck.
+
+Two patterns to know. Write fan-out: when a message arrives, the server immediately writes a copy to each recipient's inbox and pushes to each open socket. Simple, but expensive for large groups. Read fan-out: store the message once, and each client fetches it on next load. Cheaper to write, but adds latency on read and complicates "unread count" logic.
+
+For a 256-member cap, write fan-out with async workers is defensible. Tell the interviewer: "I'd use a queue of fan-out jobs processed by a worker pool. Each worker handles a batch of recipient pushes. This keeps the sender's write path fast and decouples delivery from the message store."
+
+That answer shows you've thought about back-pressure, not just the happy path.
+
+## Delivery guarantees: at-most-once is not good enough
+
+This is the question that separates strong candidates in a design a chat application interview. "How do you know the message was delivered?"
+
+Three levels to know by name. At-most-once: fire and forget. Messages may be lost. At-least-once: retry until you get an ACK, but duplicates are possible. Exactly-once: the hardest, requires idempotency keys and careful state management.
+
+For chat, at-least-once with client-side deduplication is the standard answer. Here's how it works: the sender assigns a UUID to each message before sending. The server stores the message and returns an ACK. If the client doesn't receive the ACK within a timeout, it retries with the same UUID. The server checks for that UUID before writing — if it already exists, it skips the write and returns the existing ACK. The recipient deduplicates on UUID before rendering.
+
+Walk through this flow on the whiteboard. Most candidates say "we'll retry on failure" and leave it there. Showing the UUID-based idempotency flow takes 90 seconds and immediately signals senior-level thinking.
+
+## Offline delivery requires a message store, not just a socket push
+
+If Rahul's phone is off when Priya sends a message, the socket push fails. You need a message store.
+
+The standard design: every message is written to a persistent store (Cassandra is the canonical choice here because of its write throughput and time-series access patterns) keyed by conversation ID and timestamp. When Rahul comes online, his client sends a "sync since last seen timestamp" request and receives any missed messages.
+
+Mention the retention question. You probably don't need messages older than 30 days in hot storage. Older messages can move to cold storage (S3 or equivalent). This shows you think about operational cost, not just correctness.
+
+One thing to flag: message ordering. Cassandra gives you eventual consistency. If two messages arrive within milliseconds of each other, their ordering in the store may not match send order. Use a logical clock or sequence number per conversation to enforce ordering on the client side.
+
+## Presence: harder than it looks
+
+"Show a green dot when someone is online." Sounds trivial. It's not.
+
+Naive approach: when a WebSocket connection opens, set user status to "online" in Redis with a short TTL. Refresh the TTL every 30 seconds via a heartbeat. When the connection closes, delete the key. Presence queries read from Redis.
+
+The failure mode: mobile clients lose connectivity without sending a close frame. The server doesn't know the client is gone until the heartbeat misses. That means a user can appear online for up to 30 seconds after their phone drops signal. For most products, that's fine. Say so.
+
+At scale, presence queries become expensive if every message render triggers a Redis read for each participant's status. Cache presence state on the connection service node and push updates via a presence pub/sub channel. Subscribers get updates when status changes, not on every read.
+
+## The storage schema question always comes up
+
+Interviewers at Flipkart and PhonePe commonly ask: "How do you store messages?" Have a clear answer.
+
+A minimal schema: a `messages` table with `conversation_id`, `message_id` (UUID), `sender_id`, `content`, `created_at`, and `status` (sent/delivered/read). Partition by `conversation_id` so all messages in a thread live on the same node. Sort by `created_at` within a partition.
+
+For read receipts, a separate `receipts` table with `message_id`, `user_id`, and `status` is cleaner than embedding receipt state in the message row. This lets you update receipts without touching the message record.
+
+Don't go deeper than this unless asked. The schema question is a checkpoint, not the main event.
+
+## How to use your last ten minutes in the round
+
+Most candidates run out of steam after covering the happy path. Use the final ten minutes to show you know where the system breaks.
+
+Pick two failure scenarios and walk through them. "What happens if the connection service node holding 50,000 sessions crashes?" Answer: sessions reconnect, the load balancer distributes them to healthy nodes, missed messages are fetched from the message store on reconnect. "What happens if the Kafka consumer lag spikes during a traffic surge?" Answer: messages queue up, delivery is delayed but not lost, you'd set alerts on consumer lag and scale the worker pool.
+
+Raising your own failure scenarios, and answering them, is the move that gets you from "hire" to "strong hire" at most companies. Interviewers are not looking for a perfect system. They're looking for an engineer who knows where the cracks are.
+
+---
+
+Preparing a tight 45-minute answer for a design a chat application interview takes more than reading about WebSockets. You need to say it out loud, get interrupted, and recover. The only way to build that muscle is repetition under realistic conditions. [Practice a full system design round on PrepFinity](https://prepfinity.co/register) and get specific feedback on whether your fan-out and delivery guarantee explanations actually land. If you want to know what the platform looks like before you commit, [see how it works here](https://prepfinity.co/register).
+
+*Ready to find out how your chat system design holds up under real follow-up questions? [Start with 3 free interviews](https://prepfinity.co/register) — no credit card needed.*
