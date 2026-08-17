@@ -648,7 +648,9 @@
       "internalLinks": [
         "/register"
       ],
-      "used": false
+      "used": true,
+      "draftedAt": "2026-08-17T04:10:35.974Z",
+      "draftFile": "client/src/content/blog/auto/2026-08-17-design-a-chat-application-interview.mdx"
     },
     {
       "title": "How to design a news feed system interview",
